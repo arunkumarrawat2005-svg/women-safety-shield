@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block title %}Guardian Profile - Women Safety Shield{% endblock %}
+{% block content %}
+<div class="container my-4" style="max-width:750px;">
+    <div class="page-header mb-4">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div>
+                <h4 class="fw-800 mb-1">&#128737; My Guardian Profile</h4>
+                <p class="mb-0 opacity-75">{{ guardian.get_guardian_type_display }}</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="{% url 'toggle_availability' %}" class="btn btn-{% if guardian.is_available %}warning{% else %}success{% endif %} btn-sm fw-600">
+                    {% if guardian.is_available %}Go Offline{% else %}Go Available{% endif %}
+                </a>
+                <a href="{% url 'guardian_emergencies' %}" class="btn btn-danger btn-sm fw-600">Active SOS</a>
+            </div>
+        </div>
+    </div>
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body p-4">
+            <div class="d-flex align-items-center gap-4 mb-4">
+                <div class="avatar-circle flex-shrink-0" style="width:80px;height:80px;font-size:2.2rem;background:{% if guardian.is_verified %}#27ae60{% else %}#f39c12{% endif %};">
+                    {{ request.user.first_name|first|default:request.user.username|first }}
+                </div>
+                <div>
+                    <h4 class="fw-800 mb-1">{{ request.user.full_name }}</h4>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% if guardian.is_verified %}<span class="badge bg-success">Verified Guardian</span>{% else %}<span class="badge bg-warning text-dark">Pending Verification</span>{% endif %}
+                        <span class="badge {% if guardian.is_available %}bg-success{% else %}bg-secondary{% endif %}">{% if guardian.is_available %}Available{% else %}Offline{% endif %}</span>
+                    </div>
+                    {% if guardian.organization_name %}<div class="mt-1 text-muted small">{{ guardian.organization_name }}</div>{% endif %}
+                </div>
+            </div>
+            <div class="row g-3 mb-4">
+                <div class="col-3"><div class="text-center p-3 bg-light rounded-3"><div class="fw-800 fs-4 text-danger">{{ guardian.trust_score }}</div><small class="text-muted">Trust Score</small></div></div>
+                <div class="col-3"><div class="text-center p-3 bg-light rounded-3"><div class="fw-800 fs-4">{{ guardian.total_responses }}</div><small class="text-muted">Total</small></div></div>
+                <div class="col-3"><div class="text-center p-3 bg-light rounded-3"><div class="fw-800 fs-4 text-success">{{ guardian.successful_responses }}</div><small class="text-muted">Successful</small></div></div>
+                <div class="col-3"><div class="text-center p-3 bg-light rounded-3"><div class="fw-800 fs-4">{{ guardian.response_rate }}%</div><small class="text-muted">Rate</small></div></div>
+            </div>
+            {% if guardian.description %}<div class="alert alert-light border mb-3"><small>{{ guardian.description }}</small></div>{% endif %}
+            <h6 class="fw-700 mb-2">Update My Location</h6>
+            <form method="post" action="{% url 'guardian_update_location' %}">
+                {% csrf_token %}
+                <input type="hidden" name="latitude" id="g_lat">
+                <input type="hidden" name="longitude" id="g_lng">
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="getAndSetLocation()">Use Current Location</button>
+                    <button type="submit" class="btn btn-success btn-sm" id="saveLocBtn" disabled>Save Location</button>
+                </div>
+                <div id="locStatus" class="mt-2 small text-muted">
+                    {% if guardian.latitude %}Location saved: {{ guardian.latitude|floatformat:4 }}, {{ guardian.longitude|floatformat:4 }}{% else %}No location saved yet.{% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+    {% if not guardian.is_verified %}
+    <div class="alert alert-warning rounded-4"><h6 class="fw-700">Verification Pending</h6><p class="mb-0 small">Admin will verify your profile within 24-48 hours. Once verified, you will receive SOS alerts within 3KM.</p></div>
+    {% endif %}
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+function getAndSetLocation() {
+    navigator.geolocation.getCurrentPosition(function(pos) {
+        const lat = pos.coords.latitude.toFixed(6);
+        const lng = pos.coords.longitude.toFixed(6);
+        document.getElementById('g_lat').value = lat;
+        document.getElementById('g_lng').value = lng;
+        document.getElementById('locStatus').textContent = 'Location ready: ' + lat + ', ' + lng + ' - click Save';
+        document.getElementById('locStatus').className = 'mt-2 small text-success';
+        document.getElementById('saveLocBtn').disabled = false;
+    }, function() {
+        document.getElementById('locStatus').textContent = 'Could not get location. Please enable GPS.';
+        document.getElementById('locStatus').className = 'mt-2 small text-danger';
+    }, {enableHighAccuracy:true});
+}
+</script>
+{% endblock %}

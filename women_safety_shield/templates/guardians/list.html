@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+{% block title %}Community Guardians - Women Safety Shield{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="page-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+            <h4 class="fw-800 mb-1">🛡️ Community Guardians</h4>
+            <p class="mb-0 opacity-75">Verified community members who respond to emergencies</p>
+        </div>
+        <div class="d-flex gap-2">
+            {% if request.user.role != 'guardian' %}
+            <a href="{% url 'guardian_register' %}" class="btn btn-danger fw-600">
+                <i class="bi bi-shield-plus me-1"></i>Become a Guardian
+            </a>
+            {% else %}
+            <a href="{% url 'guardian_profile' %}" class="btn btn-outline-danger fw-600">
+                <i class="bi bi-shield-fill me-1"></i>My Guardian Profile
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Stats Bar -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="stat-card green">
+                <div class="stat-number text-success">{{ guardians.count }}</div>
+                <div class="stat-label">Verified Guardians</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card blue">
+                <div class="stat-number text-primary">3 KM</div>
+                <div class="stat-label">Alert Radius</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="stat-number text-danger">&lt;30s</div>
+                <div class="stat-label">Alert Time</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card yellow">
+                <div class="stat-number text-warning">24/7</div>
+                <div class="stat-label">Coverage</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body py-3">
+            <div class="row g-2 align-items-center">
+                <div class="col-md-4">
+                    <input type="text" class="form-control" id="searchGuardian" placeholder="🔍 Search guardians...">
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" id="filterType">
+                        <option value="">All Types</option>
+                        <option value="volunteer">Volunteer</option>
+                        <option value="security">Security Staff</option>
+                        <option value="ngo">NGO Member</option>
+                        <option value="citizen">Verified Citizen</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-check form-switch mt-2">
+                        <input class="form-check-input" type="checkbox" id="availableOnly">
+                        <label class="form-check-label fw-600" for="availableOnly">Available Now</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Guardian Cards -->
+    {% if guardians %}
+    <div class="row g-3" id="guardianGrid">
+        {% for guardian in guardians %}
+        <div class="col-md-6 col-lg-4 guardian-item"
+             data-name="{{ guardian.user.full_name|lower }}"
+             data-type="{{ guardian.guardian_type }}"
+             data-available="{{ guardian.is_available|yesno:'true,false' }}">
+            <div class="guardian-card h-100">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="avatar-circle" style="width:52px;height:52px;font-size:1.3rem;background:#27ae60;">
+                        {{ guardian.user.first_name|first|default:guardian.user.username|first }}
+                    </div>
+                    <div class="flex-fill">
+                        <h6 class="fw-700 mb-0">{{ guardian.user.full_name }}</h6>
+                        <small class="text-muted">{{ guardian.get_guardian_type_display }}</small>
+                    </div>
+                    <div>
+                        {% if guardian.is_available %}
+                        <span class="badge bg-success"><span class="online-dot" style="width:8px;height:8px;border-radius:50%;"></span>Online</span>
+                        {% else %}
+                        <span class="badge bg-secondary">Offline</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Trust Score -->
+                <div class="mb-2">
+                    <div class="d-flex justify-content-between mb-1">
+                        <small class="fw-600">Trust Score</small>
+                        <small class="fw-700">{{ guardian.trust_score }}/10</small>
+                    </div>
+                    <div class="progress" style="height:8px;border-radius:4px;">
+                        <div class="progress-bar bg-warning" style="width:{{ guardian.trust_score|floatformat:0 }}0%;"></div>
+                    </div>
+                </div>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-6">
+                        <div class="text-center p-2 bg-light rounded-3">
+                            <div class="fw-700">{{ guardian.total_responses }}</div>
+                            <small class="text-muted">Responses</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-center p-2 bg-light rounded-3">
+                            <div class="fw-700">{{ guardian.response_rate }}%</div>
+                            <small class="text-muted">Success Rate</small>
+                        </div>
+                    </div>
+                </div>
+
+                {% if guardian.organization_name %}
+                <div class="mb-2">
+                    <small class="text-muted"><i class="bi bi-building me-1"></i>{{ guardian.organization_name }}</small>
+                </div>
+                {% endif %}
+
+                {% if guardian.user.city %}
+                <small class="text-muted"><i class="bi bi-geo-alt me-1"></i>{{ guardian.user.city }}</small>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <div style="font-size:5rem;">🛡️</div>
+        <h5 class="text-muted mt-3">No verified guardians yet</h5>
+        <p class="text-muted">Be the first to become a community guardian!</p>
+        <a href="{% url 'guardian_register' %}" class="btn btn-danger">Register as Guardian</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Filter logic
+function filterGuardians() {
+    const search = document.getElementById('searchGuardian').value.toLowerCase();
+    const type = document.getElementById('filterType').value;
+    const availableOnly = document.getElementById('availableOnly').checked;
+
+    document.querySelectorAll('.guardian-item').forEach(item => {
+        const name = item.dataset.name;
+        const itemType = item.dataset.type;
+        const available = item.dataset.available === 'true';
+
+        const matchSearch = !search || name.includes(search);
+        const matchType = !type || itemType === type;
+        const matchAvail = !availableOnly || available;
+
+        item.style.display = (matchSearch && matchType && matchAvail) ? '' : 'none';
+    });
+}
+
+document.getElementById('searchGuardian').addEventListener('input', filterGuardians);
+document.getElementById('filterType').addEventListener('change', filterGuardians);
+document.getElementById('availableOnly').addEventListener('change', filterGuardians);
+</script>
+{% endblock %}

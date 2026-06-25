@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}Notifications{% endblock %}
+{% block content %}
+<div class="container my-4" style="max-width:700px;">
+    <div class="page-header d-flex justify-content-between align-items-center">
+        <div><h4 class="fw-800 mb-1">🔔 Notifications</h4><p class="mb-0 opacity-75">Your alerts and updates</p></div>
+        <form method="get" action="{% url 'mark_all_read' %}"><button type="submit" class="btn btn-outline-light btn-sm">Mark All Read</button></form>
+    </div>
+    {% if notifications %}
+    <div class="d-flex flex-column gap-2">
+        {% for notif in notifications %}
+        <div class="card border-0 shadow-sm rounded-4 {% if not notif.is_read %}border-start border-danger border-3{% endif %}">
+            <div class="card-body py-3 d-flex align-items-start gap-3">
+                <div style="font-size:1.5rem;">{% if notif.notif_type == 'sos' %}🆘{% elif notif.notif_type == 'guardian_nearby' %}🛡️{% else %}🔔{% endif %}</div>
+                <div class="flex-fill">
+                    <div class="d-flex justify-content-between"><strong class="small">{{ notif.title }}</strong><small class="text-muted">{{ notif.created_at|date:"d M, H:i" }}</small></div>
+                    <p class="mb-0 text-muted small">{{ notif.message }}</p>
+                    {% if notif.data.emergency_id %}<a href="{% url 'emergency_track' notif.data.emergency_id %}" class="small text-danger fw-600">View Emergency →</a>{% endif %}
+                </div>
+                {% if not notif.is_read %}<span class="badge bg-danger rounded-pill">New</span>{% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5"><div style="font-size:4rem;">🔔</div><h5 class="text-muted mt-3">No notifications yet</h5></div>
+    {% endif %}
+</div>
+{% endblock %}

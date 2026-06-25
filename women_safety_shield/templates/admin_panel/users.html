@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}User Management{% endblock %}
+{% block content %}
+<div class="container my-4">
+    <div class="page-header"><h4 class="fw-800 mb-1">👥 User Management</h4><p class="mb-0 opacity-75">All registered users</p></div>
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light"><tr><th>User</th><th>Email</th><th>Role</th><th>Phone</th><th>Joined</th><th>Status</th></tr></thead>
+                    <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td><div class="d-flex align-items-center gap-2"><div class="avatar-circle" style="width:32px;height:32px;font-size:0.8rem;">{{ user.first_name|first|default:user.username|first }}</div><div><div class="fw-600 small">{{ user.full_name }}</div><small class="text-muted">@{{ user.username }}</small></div></div></td>
+                        <td><small>{{ user.email }}</small></td>
+                        <td><span class="badge {% if user.role == 'admin' %}bg-danger{% elif user.role == 'guardian' %}bg-success{% elif user.role == 'organization' %}bg-primary{% else %}bg-secondary{% endif %}">{{ user.role }}</span></td>
+                        <td><small>{{ user.phone|default:"—" }}</small></td>
+                        <td><small>{{ user.date_joined|date:"d M Y" }}</small></td>
+                        <td><span class="badge {% if user.is_active %}bg-success{% else %}bg-danger{% endif %}">{% if user.is_active %}Active{% else %}Inactive{% endif %}</span></td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

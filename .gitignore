@@ -1,0 +1,23 @@
+# Women Safety Shield Django Project
+
+# Python virtual environment
+venv/
+env/
+
+# Python cache files
+__pycache__/
+*.pyc
+
+# Django database (local)
+db.sqlite3
+
+# Secret keys and environment variables
+.env
+
+# Django static and uploaded files
+staticfiles/
+media/
+
+# IDE settings
+.vscode/
+.idea/

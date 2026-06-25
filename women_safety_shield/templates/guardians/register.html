@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block title %}Become a Guardian - Women Safety Shield{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="page-header text-center mb-4">
+                <div style="font-size:3rem;">🛡️</div>
+                <h4 class="fw-800 mb-1">Become a Community Guardian</h4>
+                <p class="opacity-75">Help protect women in your community by becoming a verified guardian</p>
+            </div>
+
+            <!-- Benefits -->
+            <div class="row g-3 mb-4">
+                <div class="col-4 text-center">
+                    <div class="p-3 bg-white rounded-4 shadow-sm">
+                        <div style="font-size:2rem;">🏆</div>
+                        <small class="fw-600">Trust Score</small>
+                    </div>
+                </div>
+                <div class="col-4 text-center">
+                    <div class="p-3 bg-white rounded-4 shadow-sm">
+                        <div style="font-size:2rem;">📍</div>
+                        <small class="fw-600">3KM Alerts</small>
+                    </div>
+                </div>
+                <div class="col-4 text-center">
+                    <div class="p-3 bg-white rounded-4 shadow-sm">
+                        <div style="font-size:2rem;">✅</div>
+                        <small class="fw-600">Verified Badge</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label fw-600">Guardian Type *</label>
+                            <select name="guardian_type" class="form-select" required>
+                                <option value="volunteer">🤝 Volunteer</option>
+                                <option value="security">🔒 Security Staff</option>
+                                <option value="ngo">🏢 NGO Member</option>
+                                <option value="citizen">👤 Verified Citizen</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-600">Organization Name <small class="text-muted">(if applicable)</small></label>
+                            <input type="text" name="organization_name" class="form-control" placeholder="e.g. Red Cross, Police Dept">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-600">Description *</label>
+                            <textarea name="description" class="form-control" rows="4" required
+                                placeholder="Tell us about yourself — your experience, why you want to be a guardian, and how you can help..."></textarea>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label fw-600">Verification Document</label>
+                            <input type="file" name="verification_document" class="form-control" accept=".pdf,.jpg,.jpeg,.png">
+                            <div class="form-text">Upload ID, badge, or any proof of identity (PDF/Image). This helps us verify you faster.</div>
+                        </div>
+
+                        {% if form.errors %}
+                        <div class="alert alert-danger">
+                            {% for field, errors in form.errors.items %}
+                                {% for error in errors %}<div>{{ error }}</div>{% endfor %}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <div class="alert alert-info py-2 mb-3">
+                            <i class="bi bi-info-circle me-1"></i>
+                            <strong>Verification Process:</strong> After submitting, our admin team will review your application within 24-48 hours. You'll be notified once approved.
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-danger btn-lg fw-600">
+                                <i class="bi bi-shield-fill-check me-2"></i>Submit Guardian Application
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

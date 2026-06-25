@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard - Women Safety Shield{% endblock %}
+
+{% block content %}
+<!-- Hero Banner -->
+<div class="dashboard-hero">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h2 class="fw-700 mb-1">Welcome back, {{ user.first_name|default:user.username }} 👋</h2>
+                <p class="mb-0 opacity-75">
+                    <span class="online-dot"></span>
+                    You are protected | Role: <span class="badge bg-danger">{{ user.get_role_display }}</span>
+                </p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <a href="{% url 'sos' %}" class="sos-main-btn d-inline-flex" style="width:100px;height:100px;font-size:1rem;">
+                    <span style="font-size:2rem;">🆘</span>
+                    <span>SOS</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container my-4">
+
+    {% if active_emergencies > 0 %}
+    <div class="emergency-active-banner mb-4">
+        <div class="d-flex align-items-center justify-content-between">
+            <div>
+                <i class="bi bi-exclamation-triangle-fill me-2 fs-4"></i>
+                <strong>⚠️ You have {{ active_emergencies }} active emergency!</strong>
+            </div>
+            <a href="{% url 'emergency_list' %}" class="btn btn-light btn-sm">View Now</a>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Stats Row -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="stat-number text-danger">{{ active_emergencies }}</div>
+                <div class="stat-label">Active SOS</div>
+                <a href="{% url 'emergency_list' %}" class="small text-muted">View →</a>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card green">
+                <div class="stat-number text-success">{{ trusted_contacts }}</div>
+                <div class="stat-label">Trusted Contacts</div>
+                <a href="{% url 'trusted_contacts' %}" class="small text-muted">Manage →</a>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card blue">
+                <div class="stat-number text-primary">3KM</div>
+                <div class="stat-label">Guardian Radius</div>
+                <a href="{% url 'guardian_list' %}" class="small text-muted">View →</a>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card yellow">
+                <div class="stat-number text-warning">24/7</div>
+                <div class="stat-label">Protection</div>
+                <a href="{% url 'safety_map' %}" class="small text-muted">Map →</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Quick Actions -->
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-white border-0 py-3">
+                    <h6 class="fw-700 mb-0">⚡ Quick Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'sos' %}" class="btn btn-danger">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>Trigger SOS
+                        </a>
+                        <a href="{% url 'trusted_contacts' %}" class="btn btn-outline-primary">
+                            <i class="bi bi-people-fill me-2"></i>Manage Trusted Contacts
+                        </a>
+                        <a href="{% url 'safety_map' %}" class="btn btn-outline-success">
+                            <i class="bi bi-map-fill me-2"></i>View Safety Map
+                        </a>
+                        <a href="{% url 'guardian_list' %}" class="btn btn-outline-info">
+                            <i class="bi bi-shield-fill me-2"></i>Find Guardians
+                        </a>
+                        {% if user.role != 'guardian' %}
+                        <a href="{% url 'guardian_register' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-person-badge me-2"></i>Become a Guardian
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Guardian Info (if guardian) -->
+        {% if user.role == 'guardian' and guardian %}
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-white border-0 py-3">
+                    <h6 class="fw-700 mb-0">🛡️ Your Guardian Status</h6>
+                </div>
+                <div class="card-body">
+                    {% if guardian.is_verified %}
+                        <div class="alert alert-success py-2">
+                            <i class="bi bi-check-circle-fill me-1"></i>Verified Guardian
+                        </div>
+                    {% else %}
+                        <div class="alert alert-warning py-2">
+                            <i class="bi bi-clock me-1"></i>Pending Verification
+                        </div>
+                    {% endif %}
+                    <div class="mb-2">
+                        <strong>Availability:</strong>
+                        {% if guardian.is_available %}
+                            <span class="badge bg-success ms-1">🟢 Available</span>
+                        {% else %}
+                            <span class="badge bg-secondary ms-1">⚫ Offline</span>
+                        {% endif %}
+                    </div>
+                    <div class="mb-2">
+                        <strong>Trust Score:</strong>
+                        <span class="text-warning">{% for i in "12345"|make_list %}★{% endfor %}</span>
+                        {{ guardian.trust_score }}/10
+                    </div>
+                    <div class="mb-3">
+                        <strong>Responses:</strong> {{ guardian.total_responses }} total
+                    </div>
+                    <a href="{% url 'toggle_availability' %}" class="btn btn-sm btn-outline-primary">
+                        Toggle Availability
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Safety Tips -->
+        <div class="col-md-{% if user.role == 'guardian' and guardian %}4{% else %}8{% endif %}">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-white border-0 py-3">
+                    <h6 class="fw-700 mb-0">💡 Safety Tips</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li class="mb-2">✅ Keep your trusted contacts updated</li>
+                        <li class="mb-2">✅ Enable location sharing for guardians</li>
+                        <li class="mb-2">✅ Report unsafe areas on the safety map</li>
+                        <li class="mb-2">✅ Test your SOS button regularly</li>
+                        <li class="mb-2">✅ Verify your emergency contact number</li>
+                        <li class="mb-2">🚨 In emergency, press SOS immediately</li>
+                        <li class="mb-2">📞 Always keep phone charged when going out</li>
+                    </ul>
+                    <div class="alert alert-danger py-2 mb-0">
+                        <strong>Emergency Hotlines:</strong><br>
+                        🚔 Police: 100 | 🚑 Ambulance: 108 | 📞 Women Helpline: 1091
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

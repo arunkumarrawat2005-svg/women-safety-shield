@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+{% block title %}Safety Map - Women Safety Shield{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+#safetyMap { height: 520px; border-radius: 16px; }
+.report-form-card { position: sticky; top: 80px; }
+.legend-dot { width: 14px; height: 14px; border-radius: 50%; display: inline-block; }
+.category-badge { font-size: 0.72rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid my-4 px-4">
+    <div class="row g-4">
+        <!-- Map -->
+        <div class="col-lg-8">
+            <div class="page-header">
+                <h4 class="fw-800 mb-1">🗺️ Community Safety Map</h4>
+                <p class="mb-0 opacity-75">Community-powered safety intelligence — real-time incident reports</p>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 mb-3">
+                <div class="card-body p-3">
+                    <!-- Legend -->
+                    <div class="d-flex gap-3 mb-3 flex-wrap">
+                        <span><span class="legend-dot" style="background:#27ae60;"></span> <small>Safe Zone</small></span>
+                        <span><span class="legend-dot" style="background:#f39c12;"></span> <small>Medium Risk</small></span>
+                        <span><span class="legend-dot" style="background:#e74c3c;"></span> <small>High Risk</small></span>
+                        <span><span class="legend-dot" style="background:#3498db;"></span> <small>Your Location</small></span>
+                        <span><span class="legend-dot" style="background:#9b59b6;"></span> <small>Incident Report</small></span>
+                    </div>
+                    <div id="safetyMap"></div>
+                </div>
+            </div>
+
+            <!-- Recent Reports -->
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-white border-0 py-3">
+                    <h6 class="fw-700 mb-0">📋 Recent Community Reports</h6>
+                </div>
+                <div class="card-body p-0">
+                    {% if recent_reports %}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Location</th>
+                                    <th>Reporter</th>
+                                    <th>Time</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for report in recent_reports %}
+                            <tr>
+                                <td>
+                                    <span class="badge rounded-pill category-badge
+                                        {% if report.category == 'safe' %}bg-success
+                                        {% elif report.category in 'harassment,theft' %}bg-danger
+                                        {% else %}bg-warning text-dark{% endif %}">
+                                        {{ report.get_category_display }}
+                                    </span>
+                                </td>
+                                <td><small>{{ report.location_name|default:"Unknown" }}</small></td>
+                                <td><small>{% if report.is_anonymous %}Anonymous{% else %}{{ report.user.full_name }}{% endif %}</small></td>
+                                <td><small class="text-muted">{{ report.created_at|date:"d M, H:i" }}</small></td>
+                                <td>
+                                    <button class="btn btn-xs btn-outline-secondary py-0 px-2"
+                                        onclick="flyTo({{ report.latitude }}, {{ report.longitude }})"
+                                        style="font-size:0.72rem;">📍 View</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4 text-muted">
+                        <div style="font-size:2rem;">📍</div>
+                        <p class="mt-2">No reports yet. Be the first to report!</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Report Form -->
+        <div class="col-lg-4">
+            <div class="report-form-card">
+                <div class="card border-0 shadow-sm rounded-4 mb-3">
+                    <div class="card-header bg-danger text-white py-3 border-0 rounded-top-4">
+                        <h6 class="fw-700 mb-0">📢 Report an Incident</h6>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="{% url 'submit_safety_report' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="latitude" id="report_lat">
+                            <input type="hidden" name="longitude" id="report_lng">
+
+                            <div class="mb-3">
+                                <label class="form-label fw-600 small">Category *</label>
+                                <select name="category" class="form-select" required>
+                                    <option value="">Select category...</option>
+                                    <option value="harassment">😰 Harassment</option>
+                                    <option value="theft">💰 Theft/Robbery</option>
+                                    <option value="unsafe_area">⚠️ Unsafe Area</option>
+                                    <option value="poor_lighting">🌑 Poor Lighting</option>
+                                    <option value="no_crowd">🚶 Isolated Area</option>
+                                    <option value="accident">🚗 Accident</option>
+                                    <option value="suspicious">👁️ Suspicious Activity</option>
+                                    <option value="safe">✅ Safe Area</option>
+                                    <option value="other">📌 Other</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-600 small">Location Name</label>
+                                <input type="text" name="location_name" class="form-control" placeholder="e.g. Near Central Park">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-600 small">Description</label>
+                                <textarea name="description" class="form-control" rows="3" placeholder="Describe what happened..."></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="p-2 bg-light rounded-3 text-center" id="reportLocationDisplay">
+                                    <small class="text-muted">📍 Click on the map to set location, or use current location</small>
+                                </div>
+                                <button type="button" class="btn btn-outline-secondary btn-sm w-100 mt-2" onclick="useCurrentLocation()">
+                                    <i class="bi bi-geo-alt-fill me-1"></i>Use My Current Location
+                                </button>
+                            </div>
+
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" name="is_anonymous" id="anonCheck">
+                                <label class="form-check-label small" for="anonCheck">Submit anonymously</label>
+                            </div>
+
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-danger fw-600" id="submitReportBtn" disabled>
+                                    <i class="bi bi-send-fill me-1"></i>Submit Report
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Safety Tips Box -->
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-body">
+                        <h6 class="fw-700 mb-2">💡 Safety Tip</h6>
+                        <p class="text-muted small mb-0">Avoid isolated areas after dark. Always share your live location with trusted contacts when travelling alone. Report any suspicious activity to help your community stay safe.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{# Pass Django data to JS via JSON script tags — avoids template tags inside JS blocks #}
+<script id="zonesData" type="application/json">
+[{% for zone in zones %}{"lat":{{ zone.latitude }},"lng":{{ zone.longitude }},"name":"{{ zone.name|escapejs }}","status":"{{ zone.status }}","risk":{{ zone.risk_score }},"radius":{{ zone.radius_meters }}}{% if not forloop.last %},{% endif %}{% endfor %}]
+</script>
+<script id="reportsData" type="application/json">
+[{% for r in recent_reports %}{"lat":{{ r.latitude }},"lng":{{ r.longitude }},"category":"{{ r.get_category_display|escapejs }}","location":"{{ r.location_name|default:'Unknown'|escapejs }}","time":"{{ r.created_at|date:'d M H:i' }}"}{% if not forloop.last %},{% endif %}{% endfor %}]
+</script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// Init map centered on India
+const map = L.map('safetyMap').setView([20.5937, 78.9629], 5);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+}).addTo(map);
+
+// Get user location and center map
+navigator.geolocation.getCurrentPosition(function(pos) {
+    const lat = pos.coords.latitude;
+    const lng = pos.coords.longitude;
+    map.setView([lat, lng], 14);
+
+    // Blue user marker
+    L.marker([lat, lng], {
+        icon: L.divIcon({
+            html: '<div style="background:#3498db;width:18px;height:18px;border-radius:50%;border:3px solid white;box-shadow:0 0 10px rgba(52,152,219,0.8);"></div>',
+            iconSize:[18,18], iconAnchor:[9,9]
+        })
+    }).addTo(map).bindPopup('<b>📍 Your Location</b>');
+}, function() {});
+
+// Plot safety zones — data from JSON script tags (no template tags in JS)
+const zones = JSON.parse(document.getElementById('zonesData').textContent);
+
+zones.forEach(zone => {
+    const color = zone.status === 'safe' ? '#27ae60' : zone.status === 'medium' ? '#f39c12' : '#e74c3c';
+    L.circle([zone.lat, zone.lng], {
+        radius: zone.radius, color: color, fillColor: color, fillOpacity: 0.2, weight: 2
+    }).addTo(map).bindPopup(`<b>${zone.name}</b><br>Risk Score: ${zone.risk}/10<br>Status: ${zone.status}`);
+});
+
+// Plot reports
+const reports = JSON.parse(document.getElementById('reportsData').textContent);
+
+reports.forEach(r => {
+    const isSafe = r.category.toLowerCase().includes('safe');
+    const icon = L.divIcon({
+        html: `<div style="background:${isSafe?'#27ae60':'#9b59b6'};width:12px;height:12px;border-radius:50%;border:2px solid white;"></div>`,
+        iconSize:[12,12], iconAnchor:[6,6]
+    });
+    L.marker([r.lat, r.lng], {icon}).addTo(map)
+        .bindPopup(`<b>${r.category}</b><br>${r.location}<br><small>${r.time}</small>`);
+});
+
+// Click on map to select location for report
+let reportMarker = null;
+map.on('click', function(e) {
+    const lat = e.latlng.lat.toFixed(6);
+    const lng = e.latlng.lng.toFixed(6);
+    document.getElementById('report_lat').value = lat;
+    document.getElementById('report_lng').value = lng;
+    document.getElementById('reportLocationDisplay').innerHTML = `<small class='text-success fw-600'>✅ Location: ${lat}, ${lng}</small>`;
+    document.getElementById('submitReportBtn').disabled = false;
+
+    if (reportMarker) map.removeLayer(reportMarker);
+    reportMarker = L.marker([lat, lng], {
+        icon: L.divIcon({
+            html: '<div style="background:#e74c3c;width:14px;height:14px;border-radius:50%;border:2px solid white;"></div>',
+            iconSize:[14,14], iconAnchor:[7,7]
+        })
+    }).addTo(map).bindPopup('📍 Selected Location').openPopup();
+});
+
+function useCurrentLocation() {
+    navigator.geolocation.getCurrentPosition(function(pos) {
+        const lat = pos.coords.latitude.toFixed(6);
+        const lng = pos.coords.longitude.toFixed(6);
+        document.getElementById('report_lat').value = lat;
+        document.getElementById('report_lng').value = lng;
+        document.getElementById('reportLocationDisplay').innerHTML = `<small class='text-success fw-600'>✅ Current Location: ${lat}, ${lng}</small>`;
+        document.getElementById('submitReportBtn').disabled = false;
+        map.setView([lat, lng], 16);
+    }, function() {
+        alert('Could not get your location. Please click on the map instead.');
+    });
+}
+
+function flyTo(lat, lng) {
+    map.flyTo([lat, lng], 16, { animate: true, duration: 1.5 });
+}
+</script>
+{% endblock %}

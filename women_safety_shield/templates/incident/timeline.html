@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Timeline - Emergency #{{ emergency.id }}{% endblock %}
+{% block content %}
+<div class="container my-4" style="max-width:700px;">
+    <div class="page-header mb-4">
+        <h4 class="fw-800 mb-1">⏱️ Incident Timeline — #{{ emergency.id }}</h4>
+        <p class="mb-0 opacity-75">{{ emergency.victim.full_name }} | {{ emergency.created_at|date:"d M Y, H:i" }}</p>
+    </div>
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4">
+            {% if events %}
+            <div class="timeline">
+                {% for event in events %}
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="d-flex justify-content-between">
+                            <strong>{{ event.get_event_name_display }}</strong>
+                            <small class="text-muted">{{ event.timestamp|date:"H:i:s" }}</small>
+                        </div>
+                        {% if event.latitude %}<small class="text-muted">📍 {{ event.latitude|floatformat:5 }}, {{ event.longitude|floatformat:5 }}</small>{% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-center text-muted py-4">No events recorded yet.</p>
+            {% endif %}
+        </div>
+    </div>
+    <div class="mt-3 d-flex gap-2">
+        <a href="{% url 'incident_report' emergency.id %}" class="btn btn-danger">📋 View Full Report</a>
+        <a href="{% url 'emergency_track' emergency.id %}" class="btn btn-outline-primary">🗺️ Live Map</a>
+    </div>
+</div>
+{% endblock %}

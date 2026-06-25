@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}My Profile{% endblock %}
+{% block content %}
+<div class="container my-4" style="max-width:700px;">
+    <div class="page-header"><h4 class="fw-800 mb-1">👤 My Profile</h4><p class="mb-0 opacity-75">Manage your account details</p></div>
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="text-center mb-4">
+                    {% if user.profile_pic %}
+                    <img src="{{ user.profile_pic.url }}" class="rounded-circle" width="90" height="90" alt="Profile">
+                    {% else %}
+                    <div class="avatar-circle mx-auto" style="width:90px;height:90px;font-size:2.5rem;background:#e74c3c;">{{ user.first_name|first|default:user.username|first }}</div>
+                    {% endif %}
+                    <div class="mt-2"><input type="file" name="profile_pic" class="form-control form-control-sm" accept="image/*" style="max-width:250px;margin:auto;"></div>
+                </div>
+                <div class="row g-3">
+                    <div class="col-6"><label class="form-label fw-600">First Name</label><input type="text" name="first_name" value="{{ form.first_name.value|default:user.first_name }}" class="form-control"></div>
+                    <div class="col-6"><label class="form-label fw-600">Last Name</label><input type="text" name="last_name" value="{{ form.last_name.value|default:user.last_name }}" class="form-control"></div>
+                    <div class="col-12"><label class="form-label fw-600">Email</label><input type="email" name="email" value="{{ user.email }}" class="form-control"></div>
+                    <div class="col-12"><label class="form-label fw-600">Phone</label><input type="text" name="phone" value="{{ user.phone }}" class="form-control"></div>
+                    <div class="col-12"><label class="form-label fw-600">Emergency Contact</label><input type="text" name="emergency_contact" value="{{ user.emergency_contact }}" class="form-control" placeholder="Backup contact number"></div>
+                    <div class="col-12"><label class="form-label fw-600">Bio</label><textarea name="bio" class="form-control" rows="3">{{ user.bio }}</textarea></div>
+                    <div class="col-12"><label class="form-label fw-600">Address</label><textarea name="address" class="form-control" rows="2">{{ user.address }}</textarea></div>
+                    <div class="col-6"><label class="form-label fw-600">City</label><input type="text" name="city" value="{{ user.city }}" class="form-control"></div>
+                    <div class="col-6"><label class="form-label fw-600">State</label><input type="text" name="state" value="{{ user.state }}" class="form-control"></div>
+                </div>
+                <div class="d-grid mt-4"><button type="submit" class="btn btn-danger fw-600">Save Changes</button></div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

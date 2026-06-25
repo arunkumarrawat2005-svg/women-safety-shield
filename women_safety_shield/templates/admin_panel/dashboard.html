@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard - Women Safety Shield{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="page-header">
+        <h4 class="fw-800 mb-1">⚙️ Admin Control Panel</h4>
+        <p class="mb-0 opacity-75">System-wide management and monitoring</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="stat-number text-danger">{{ total_users }}</div>
+                <div class="stat-label">Total Users</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="stat-number text-warning">{{ active_emergencies }}</div>
+                <div class="stat-label">Active SOS</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card green">
+                <div class="stat-number text-success">{{ verified_guardians }}</div>
+                <div class="stat-label">Verified Guardians</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card yellow">
+                <div class="stat-number text-warning">{{ pending_guardians }}</div>
+                <div class="stat-label">Pending Approval</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Pending Guardians -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-white border-0 py-3 d-flex justify-content-between">
+                    <h6 class="fw-700 mb-0">⏳ Pending Guardian Approvals</h6>
+                    <span class="badge bg-warning text-dark">{{ pending_guardians }}</span>
+                </div>
+                <div class="card-body p-0">
+                    {% if pending_guardian_list %}
+                    <div class="list-group list-group-flush rounded-bottom-4">
+                        {% for guardian in pending_guardian_list %}
+                        <div class="list-group-item border-0 py-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="avatar-circle" style="width:42px;height:42px;">
+                                    {{ guardian.user.first_name|first|default:guardian.user.username|first }}
+                                </div>
+                                <div class="flex-fill">
+                                    <div class="fw-600">{{ guardian.user.full_name }}</div>
+                                    <small class="text-muted">{{ guardian.get_guardian_type_display }}</small>
+                                    {% if guardian.organization_name %}
+                                    <br><small class="text-muted">{{ guardian.organization_name }}</small>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex flex-column gap-1">
+                                    <a href="{% url 'verify_guardian' guardian.id %}" class="btn btn-success btn-sm"
+                                       onclick="return confirm('Verify {{ guardian.user.username }}?')">
+                                        <i class="bi bi-check-lg me-1"></i>Verify
+                                    </a>
+                                    <small class="text-muted text-center">{{ guardian.created_at|date:"d M" }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4 text-muted">
+                        <i class="bi bi-check-circle-fill text-success fs-3"></i>
+                        <p class="mt-2 mb-0">No pending approvals</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Emergencies -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-white border-0 py-3 d-flex justify-content-between">
+                    <h6 class="fw-700 mb-0">🆘 Recent Emergencies</h6>
+                    <span class="badge bg-danger">{{ total_emergencies }} total</span>
+                </div>
+                <div class="card-body p-0">
+                    {% if recent_emergencies %}
+                    <div class="list-group list-group-flush rounded-bottom-4">
+                        {% for emergency in recent_emergencies %}
+                        <div class="list-group-item border-0 py-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong class="small">#{{ emergency.id }} — {{ emergency.victim.full_name }}</strong><br>
+                                    <small class="text-muted">{{ emergency.created_at|date:"d M H:i" }} | {{ emergency.get_trigger_type_display }}</small>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge
+                                        {% if emergency.status == 'ACTIVE' %}bg-danger
+                                        {% elif emergency.status == 'ACCEPTED' %}bg-warning text-dark
+                                        {% elif emergency.status == 'CLOSED' %}bg-secondary
+                                        {% else %}bg-success{% endif %} rounded-pill">
+                                        {{ emergency.status }}
+                                    </span>
+                                    <a href="{% url 'emergency_track' emergency.id %}" class="btn btn-xs btn-outline-primary py-0 px-2" style="font-size:0.72rem;">View</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4 text-muted">No emergencies yet</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Admin Links -->
+        <div class="col-12">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-white border-0 py-3">
+                    <h6 class="fw-700 mb-0">🔗 Quick Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-2 col-4 text-center">
+                            <a href="/admin/" class="text-decoration-none">
+                                <div class="p-3 bg-light rounded-3 mb-2 hover-shadow">
+                                    <div style="font-size:1.8rem;">⚙️</div>
+                                </div>
+                                <small class="fw-600">Django Admin</small>
+                            </a>
+                        </div>
+                        <div class="col-md-2 col-4 text-center">
+                            <a href="{% url 'admin_users' %}" class="text-decoration-none">
+                                <div class="p-3 bg-light rounded-3 mb-2">
+                                    <div style="font-size:1.8rem;">👥</div>
+                                </div>
+                                <small class="fw-600">Manage Users</small>
+                            </a>
+                        </div>
+                        <div class="col-md-2 col-4 text-center">
+                            <a href="{% url 'guardian_list' %}" class="text-decoration-none">
+                                <div class="p-3 bg-light rounded-3 mb-2">
+                                    <div style="font-size:1.8rem;">🛡️</div>
+                                </div>
+                                <small class="fw-600">Guardians</small>
+                            </a>
+                        </div>
+                        <div class="col-md-2 col-4 text-center">
+                            <a href="{% url 'safety_map' %}" class="text-decoration-none">
+                                <div class="p-3 bg-light rounded-3 mb-2">
+                                    <div style="font-size:1.8rem;">🗺️</div>
+                                </div>
+                                <small class="fw-600">Safety Map</small>
+                            </a>
+                        </div>
+                        <div class="col-md-2 col-4 text-center">
+                            <a href="{% url 'incident_list' %}" class="text-decoration-none">
+                                <div class="p-3 bg-light rounded-3 mb-2">
+                                    <div style="font-size:1.8rem;">📋</div>
+                                </div>
+                                <small class="fw-600">Reports</small>
+                            </a>
+                        </div>
+                        <div class="col-md-2 col-4 text-center">
+                            <a href="{% url 'notifications' %}" class="text-decoration-none">
+                                <div class="p-3 bg-light rounded-3 mb-2">
+                                    <div style="font-size:1.8rem;">🔔</div>
+                                </div>
+                                <small class="fw-600">Notifications</small>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

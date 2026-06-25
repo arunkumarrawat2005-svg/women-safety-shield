@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% block title %}Trusted Circle - Women Safety Shield{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="page-header d-flex justify-content-between align-items-center">
+        <div>
+            <h4 class="fw-800 mb-1">👥 My Trusted Circle</h4>
+            <p class="mb-0 opacity-75">These people will be alerted when you press SOS</p>
+        </div>
+        <span class="badge bg-light text-dark fs-6 fw-600">{{ contacts.count }} Contact{{ contacts.count|pluralize }}</span>
+    </div>
+
+    <div class="row g-4">
+        <!-- Existing Contacts -->
+        <div class="col-lg-7">
+            {% if contacts %}
+            <div class="row g-3">
+                {% for tc in contacts %}
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm rounded-4 h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                <div class="avatar-circle" style="width:48px;height:48px;font-size:1.2rem;background:{% cycle '#e74c3c' '#3498db' '#27ae60' '#9b59b6' '#f39c12' %};">
+                                    {{ tc.contact.first_name|first|default:tc.contact.username|first }}
+                                </div>
+                                <div>
+                                    <h6 class="fw-700 mb-0">{{ tc.contact.full_name }}</h6>
+                                    <small class="text-muted">@{{ tc.contact.username }}</small>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="badge bg-light text-dark me-1">
+                                        {% if tc.relation == 'family' %}👨‍👩‍👧 
+                                        {% elif tc.relation == 'friend' %}👫 
+                                        {% elif tc.relation == 'colleague' %}💼 
+                                        {% elif tc.relation == 'neighbor' %}🏠 
+                                        {% else %}👤 {% endif %}
+                                        {{ tc.get_relation_display }}
+                                    </span>
+                                    {% if tc.contact.phone %}
+                                    <small class="text-muted">📞 {{ tc.contact.phone }}</small>
+                                    {% endif %}
+                                </div>
+                                <a href="{% url 'remove_trusted_contact' tc.id %}"
+                                   class="btn btn-outline-danger btn-sm"
+                                   onclick="return confirm('Remove {{ tc.contact.full_name }} from trusted circle?')">
+                                    <i class="bi bi-trash3"></i>
+                                </a>
+                            </div>
+                            <div class="mt-2">
+                                <small class="text-muted"><i class="bi bi-clock me-1"></i>Added {{ tc.added_at|date:"d M Y" }}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body text-center py-5">
+                    <div style="font-size:4rem;">👥</div>
+                    <h5 class="mt-3 text-muted">No trusted contacts yet</h5>
+                    <p class="text-muted">Add family and friends who will be alerted in an emergency.</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Add Contact Form -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 sticky-top" style="top:80px;">
+                <div class="card-header bg-danger text-white py-3 border-0 rounded-top-4">
+                    <h6 class="fw-700 mb-0"><i class="bi bi-person-plus-fill me-2"></i>Add Trusted Contact</h6>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{% url 'add_trusted_contact' %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label fw-600">Select Person</label>
+                            <select name="contact_id" class="form-select" required id="contactSelect">
+                                <option value="">Search and select user...</option>
+                                {% for user in all_users %}
+                                <option value="{{ user.id }}">{{ user.full_name }} (@{{ user.username }}) - {{ user.phone }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-600">Relation</label>
+                            <select name="relation" class="form-select">
+                                <option value="family">👨‍👩‍👧 Family</option>
+                                <option value="friend">👫 Friend</option>
+                                <option value="colleague">💼 Colleague</option>
+                                <option value="neighbor">🏠 Neighbor</option>
+                                <option value="other">👤 Other</option>
+                            </select>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-danger fw-600">
+                                <i class="bi bi-person-plus-fill me-2"></i>Add to Trusted Circle
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Info box -->
+            <div class="card border-0 shadow-sm rounded-4 mt-3">
+                <div class="card-body">
+                    <h6 class="fw-700"><i class="bi bi-info-circle-fill text-primary me-2"></i>How it works</h6>
+                    <ul class="text-muted small mb-0 ps-3">
+                        <li class="mb-1">When you press SOS, all trusted contacts get instant notifications</li>
+                        <li class="mb-1">They can see your live location on the map</li>
+                        <li class="mb-1">They receive updates as the emergency progresses</li>
+                        <li>They can contact you or emergency services</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

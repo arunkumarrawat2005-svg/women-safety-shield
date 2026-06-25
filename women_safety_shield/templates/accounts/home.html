@@ -1,0 +1,203 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Women Safety Shield - Empowering Women's Safety</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="{% static 'css/main.css' %}" rel="stylesheet">
+    <style>
+        .feature-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s;
+            height: 100%;
+        }
+        .feature-card:hover { transform: translateY(-8px); }
+        .feature-icon { font-size: 3rem; margin-bottom: 1rem; }
+        .hero-stat { text-align: center; }
+        .hero-stat-num { font-size: 2.5rem; font-weight: 800; color: #e74c3c; }
+        .section-bg { background: #f8f9fa; }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="#">
+            <span class="me-2">🛡️</span>
+            <span class="brand-text">Women Safety Shield</span>
+        </a>
+        <div class="ms-auto d-flex gap-2">
+            <a href="{% url 'login' %}" class="btn btn-outline-light btn-sm">Login</a>
+            <a href="{% url 'register' %}" class="btn btn-danger btn-sm">Register Free</a>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero -->
+<section class="landing-hero">
+    <div class="container position-relative">
+        <div class="row align-items-center">
+            <div class="col-lg-6 text-start">
+                <span class="badge bg-danger mb-3 px-3 py-2 fs-6">🛡️ Your Safety, Our Priority</span>
+                <h1 class="display-4 fw-800 mb-4">
+                    Women Safety<br>
+                    <span style="color:#e74c3c;">Shield</span>
+                </h1>
+                <p class="lead mb-4 text-white-50">
+                    An intelligent safety ecosystem with one-tap SOS, live location sharing, 
+                    3KM community guardian network, and real-time incident tracking.
+                </p>
+                <div class="d-flex gap-3 mb-5">
+                    <a href="{% url 'register' %}" class="btn btn-danger btn-lg px-4 pulse-btn">
+                        <i class="bi bi-shield-fill-check me-2"></i>Get Protected Now
+                    </a>
+                    <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg px-4">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                    </a>
+                </div>
+                <div class="d-flex gap-4">
+                    <div class="hero-stat">
+                        <div class="hero-stat-num">3KM</div>
+                        <small class="text-white-50">Guardian Radius</small>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-num">&lt;30s</div>
+                        <small class="text-white-50">Alert Time</small>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-num">24/7</div>
+                        <small class="text-white-50">Protection</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 d-none d-lg-flex justify-content-center">
+                <div class="sos-main-btn" style="pointer-events:none;">
+                    <span style="font-size:3rem;">🆘</span>
+                    <span>SOS</span>
+                    <small style="font-size:0.7rem;letter-spacing:1px;">ONE TAP HELP</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features -->
+<section class="py-6 section-bg" style="padding:5rem 0;">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-700 display-6">Intelligent Safety Features</h2>
+            <p class="text-muted">Complete protection powered by community and technology</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">🆘</div>
+                    <h5 class="fw-700">Smart SOS System</h5>
+                    <p class="text-muted">Trigger emergency via button, voice, or phone shake. Instantly alerts trusted contacts and nearby guardians.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">📍</div>
+                    <h5 class="fw-700">Live Location Tracking</h5>
+                    <p class="text-muted">Real-time GPS tracking via WebSockets. Share your live location with family and guardians during emergencies.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">🏘️</div>
+                    <h5 class="fw-700">3KM Guardian Network</h5>
+                    <p class="text-muted">Verified community guardians within 3KM radius respond to emergencies with priority based on distance and trust score.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">🗺️</div>
+                    <h5 class="fw-700">Safety Intelligence Map</h5>
+                    <p class="text-muted">Community-reported safety zones. Green, yellow, and red areas with safest route recommendations.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">👥</div>
+                    <h5 class="fw-700">Trusted Circle</h5>
+                    <p class="text-muted">Build your safety network with family and friends. They get instant SOS alerts with your live location.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">📋</div>
+                    <h5 class="fw-700">Incident Reports</h5>
+                    <p class="text-muted">Complete incident timeline with guardian response tracking, location history, and automated safety reports.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How it works -->
+<section style="padding:5rem 0;">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-700 display-6">How It Works</h2>
+        </div>
+        <div class="row g-4 align-items-center">
+            <div class="col-md-6">
+                <div class="d-flex flex-column gap-3">
+                    {% for step in "1234"|make_list %}
+                    <div class="d-flex align-items-start gap-3 p-3 bg-white rounded-4 shadow-sm">
+                        <div class="rounded-circle bg-danger text-white d-flex align-items-center justify-content-center fw-bold flex-shrink-0" style="width:40px;height:40px;">{{ step }}</div>
+                        <div>
+                            {% if step == "1" %}<strong>Press SOS Button</strong><p class="mb-0 text-muted small">One tap activates the entire emergency system</p>{% endif %}
+                            {% if step == "2" %}<strong>Location Captured</strong><p class="mb-0 text-muted small">GPS location stored and shared instantly</p>{% endif %}
+                            {% if step == "3" %}<strong>Guardians Alerted</strong><p class="mb-0 text-muted small">All verified guardians within 3KM receive emergency alert</p>{% endif %}
+                            {% if step == "4" %}<strong>Help Arrives</strong><p class="mb-0 text-muted small">Guardian accepts, moves to location, incident logged</p>{% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="col-md-6 text-center">
+                <div style="background:linear-gradient(135deg,#1a1a2e,#0f3460);border-radius:24px;padding:3rem;color:white;">
+                    <div style="font-size:4rem;">🛡️</div>
+                    <h4>Complete Safety Ecosystem</h4>
+                    <p class="text-white-50">Prevention → Detection → Response → Recovery</p>
+                    <a href="{% url 'register' %}" class="btn btn-danger mt-2 px-4">Start Now — It's Free</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section style="background:linear-gradient(135deg,#c0392b,#e74c3c);padding:5rem 0;color:white;text-align:center;">
+    <div class="container">
+        <h2 class="display-5 fw-800 mb-3">Join the Safety Network</h2>
+        <p class="lead mb-4 opacity-75">Protect yourself and your community today</p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{% url 'register' %}" class="btn btn-light btn-lg px-5 fw-600 text-danger">
+                <i class="bi bi-person-plus-fill me-2"></i>Register Now
+            </a>
+            <a href="{% url 'register' %}?role=guardian" class="btn btn-outline-light btn-lg px-5 fw-600">
+                <i class="bi bi-shield-fill me-2"></i>Become a Guardian
+            </a>
+        </div>
+    </div>
+</section>
+
+<footer class="bg-dark text-white py-4 text-center">
+    <small>🛡️ Women Safety Shield &copy; 2024 | Building Safer Communities Together</small>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

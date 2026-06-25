@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% block title %}My Emergencies - Women Safety Shield{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="page-header d-flex justify-content-between align-items-center">
+        <div>
+            <h4 class="fw-800 mb-1">🆘 My Emergencies</h4>
+            <p class="mb-0 opacity-75">History of all your SOS alerts</p>
+        </div>
+        <a href="{% url 'sos' %}" class="btn btn-light fw-600">
+            <i class="bi bi-plus-circle me-1"></i>New SOS
+        </a>
+    </div>
+
+    {% if emergencies %}
+    <div class="row g-3">
+        {% for emergency in emergencies %}
+        <div class="col-12">
+            <div class="card border-0 shadow-sm rounded-4 {% if emergency.status == 'ACTIVE' %}border-start border-danger border-4{% endif %}">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                                     style="width:50px;height:50px;background:{% if emergency.status == 'ACTIVE' %}#fee2e2{% elif emergency.status == 'CLOSED' %}#f3f4f6{% else %}#fef3c7{% endif %};">
+                                    {% if emergency.status == 'ACTIVE' %}🚨
+                                    {% elif emergency.status == 'CLOSED' %}✅
+                                    {% elif emergency.status == 'ACCEPTED' %}🛡️
+                                    {% else %}🆘{% endif %}
+                                </div>
+                                <div>
+                                    <h6 class="fw-700 mb-1">Emergency #{{ emergency.id }}</h6>
+                                    <small class="text-muted">
+                                        <i class="bi bi-clock me-1"></i>{{ emergency.created_at|date:"d M Y, H:i" }}
+                                        <span class="ms-2">
+                                            <i class="bi bi-lightning me-1"></i>{{ emergency.get_trigger_type_display }}
+                                        </span>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mt-2 mt-md-0">
+                            <span class="badge rounded-pill px-3 py-2
+                                {% if emergency.status == 'ACTIVE' %}bg-danger
+                                {% elif emergency.status == 'ACCEPTED' %}bg-warning text-dark
+                                {% elif emergency.status == 'HELP_REACHED' %}bg-success
+                                {% else %}bg-secondary{% endif %}">
+                                {{ emergency.get_status_display }}
+                            </span>
+                            {% if emergency.assigned_guardian %}
+                            <div class="mt-1"><small class="text-muted">🛡️ {{ emergency.assigned_guardian.full_name }}</small></div>
+                            {% endif %}
+                            {% if emergency.duration_minutes %}
+                            <div class="mt-1"><small class="text-muted">⏱️ {{ emergency.duration_minutes }} min</small></div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-3 mt-2 mt-md-0 d-flex gap-2 justify-content-md-end flex-wrap">
+                            <a href="{% url 'emergency_track' emergency.id %}" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-map me-1"></i>Track
+                            </a>
+                            <a href="{% url 'incident_report' emergency.id %}" class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-file-text me-1"></i>Report
+                            </a>
+                            {% if emergency.status == 'ACTIVE' %}
+                            <a href="{% url 'close_emergency' emergency.id %}" class="btn btn-outline-danger btn-sm"
+                               onclick="return confirm('Close this emergency?')">
+                                <i class="bi bi-x-circle me-1"></i>Close
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <div style="font-size:5rem;">✅</div>
+        <h5 class="text-muted mt-3">No emergencies recorded</h5>
+        <p class="text-muted">You're safe! Your emergency history will appear here.</p>
+        <a href="{% url 'sos' %}" class="btn btn-danger mt-2">
+            <i class="bi bi-shield-fill-check me-2"></i>Go to SOS Page
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

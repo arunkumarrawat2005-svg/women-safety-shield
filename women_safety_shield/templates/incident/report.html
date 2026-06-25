@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% block title %}Incident Report #{{ emergency.id }} - Women Safety Shield{% endblock %}
+
+{% block extra_css %}
+<style>
+@media print {
+    .no-print { display: none !important; }
+    .card { box-shadow: none !important; border: 1px solid #ddd !important; }
+}
+.report-header { background: linear-gradient(135deg, #c0392b, #e74c3c); color: white; border-radius: 16px 16px 0 0; padding: 2rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="no-print mb-3 d-flex gap-2">
+        <a href="{% url 'emergency_list' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Back
+        </a>
+        <button onclick="window.print()" class="btn btn-outline-primary">
+            <i class="bi bi-printer me-1"></i>Print Report
+        </button>
+        <a href="{% url 'emergency_track' emergency.id %}" class="btn btn-outline-danger">
+            <i class="bi bi-map me-1"></i>View Map
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <!-- Report Header -->
+        <div class="report-header">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div style="font-size:2rem;">🛡️</div>
+                    <h4 class="fw-800 mb-1">Women Safety Shield</h4>
+                    <h6 class="opacity-75">Official Incident Report</h6>
+                </div>
+                <div class="text-end">
+                    <div class="badge bg-light text-dark fs-6 mb-2">
+                        {% if report %}#{{ report.report_number }}{% else %}#WSS-{{ emergency.id }}{% endif %}
+                    </div>
+                    <div class="opacity-75 small">Generated: {% now "d M Y, H:i" %}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="row g-4">
+                <!-- Emergency Overview -->
+                <div class="col-md-6">
+                    <h5 class="fw-700 border-bottom pb-2 mb-3">🆘 Emergency Overview</h5>
+                    <table class="table table-sm table-borderless">
+                        <tr><td class="text-muted fw-600" width="40%">Emergency ID</td><td><strong>#{{ emergency.id }}</strong></td></tr>
+                        <tr><td class="text-muted fw-600">Victim</td><td>{{ emergency.victim.full_name }}</td></tr>
+                        <tr><td class="text-muted fw-600">Contact</td><td>{{ emergency.victim.phone|default:"—" }}</td></tr>
+                        <tr><td class="text-muted fw-600">Trigger Type</td><td>{{ emergency.get_trigger_type_display }}</td></tr>
+                        <tr><td class="text-muted fw-600">Status</td>
+                            <td><span class="badge {% if emergency.status == 'CLOSED' %}bg-secondary{% elif emergency.status == 'ACTIVE' %}bg-danger{% else %}bg-warning text-dark{% endif %}">{{ emergency.get_status_display }}</span></td>
+                        </tr>
+                        <tr><td class="text-muted fw-600">Started</td><td>{{ emergency.created_at|date:"d M Y, H:i:s" }}</td></tr>
+                        {% if emergency.closed_at %}
+                        <tr><td class="text-muted fw-600">Closed</td><td>{{ emergency.closed_at|date:"d M Y, H:i:s" }}</td></tr>
+                        <tr><td class="text-muted fw-600">Duration</td><td><strong>{{ emergency.duration_minutes }} minutes</strong></td></tr>
+                        {% endif %}
+                    </table>
+                </div>
+
+                <!-- Location & Guardian -->
+                <div class="col-md-6">
+                    <h5 class="fw-700 border-bottom pb-2 mb-3">📍 Location & Response</h5>
+                    <table class="table table-sm table-borderless">
+                        <tr><td class="text-muted fw-600" width="40%">Latitude</td><td>{{ emergency.latitude }}</td></tr>
+                        <tr><td class="text-muted fw-600">Longitude</td><td>{{ emergency.longitude }}</td></tr>
+                        {% if emergency.address %}
+                        <tr><td class="text-muted fw-600">Address</td><td>{{ emergency.address }}</td></tr>
+                        {% endif %}
+                        {% if emergency.assigned_guardian %}
+                        <tr><td class="text-muted fw-600">Guardian</td><td class="text-success fw-600">{{ emergency.assigned_guardian.full_name }}</td></tr>
+                        <tr><td class="text-muted fw-600">Guardian Phone</td><td>{{ emergency.assigned_guardian.phone|default:"—" }}</td></tr>
+                        {% else %}
+                        <tr><td class="text-muted fw-600">Guardian</td><td class="text-muted">No guardian assigned</td></tr>
+                        {% endif %}
+                        <tr><td class="text-muted fw-600">Location Points</td><td>{{ locations.count }} tracked</td></tr>
+                    </table>
+                    {% if emergency.description %}
+                    <div class="alert alert-light border mt-2 py-2">
+                        <small class="fw-600">Victim's Description:</small>
+                        <p class="mb-0 small">{{ emergency.description }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Incident Timeline -->
+            <h5 class="fw-700 border-bottom pb-2 mt-4 mb-3">⏱️ Complete Incident Timeline</h5>
+            {% if events %}
+            <div class="timeline">
+                {% for event in events %}
+                <div class="timeline-item">
+                    <div class="timeline-dot {% if event.event_name == 'SOS_CREATED' %}bg-danger{% elif event.event_name == 'EMERGENCY_CLOSED' %}bg-success{% elif 'GUARDIAN' in event.event_name %}bg-primary{% else %}bg-warning{% endif %}"></div>
+                    <div class="timeline-content">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <strong>{{ event.get_event_name_display }}</strong>
+                            <small class="text-muted">{{ event.timestamp|date:"d M Y, H:i:s" }}</small>
+                        </div>
+                        {% if event.latitude %}<small class="text-muted">📍 {{ event.latitude|floatformat:5 }}, {{ event.longitude|floatformat:5 }}</small>{% endif %}
+                        {% if event.description %}<p class="mb-0 small mt-1">{{ event.description }}</p>{% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-muted">No timeline events recorded.</p>
+            {% endif %}
+
+            <!-- Notified Contacts -->
+            <h5 class="fw-700 border-bottom pb-2 mt-4 mb-3">👥 Notified Contacts</h5>
+            {% if emergency.notified_contacts.all %}
+            <div class="row g-2">
+                {% for contact in emergency.notified_contacts.all %}
+                <div class="col-md-4">
+                    <div class="p-2 bg-light rounded-3 d-flex align-items-center gap-2">
+                        <div class="avatar-circle" style="width:32px;height:32px;font-size:0.8rem;background:#3498db;">
+                            {{ contact.first_name|first|default:contact.username|first }}
+                        </div>
+                        <div>
+                            <div class="fw-600 small">{{ contact.full_name }}</div>
+                            <div class="text-muted" style="font-size:0.72rem;">{{ contact.phone|default:contact.email }}</div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-muted small">No contacts were notified.</p>
+            {% endif %}
+
+            <!-- Footer -->
+            <div class="alert alert-light border mt-4 text-center">
+                <small class="text-muted">
+                    This is an automatically generated incident report by <strong>Women Safety Shield</strong>.<br>
+                    Report generated on {% now "d M Y at H:i" %} IST
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
