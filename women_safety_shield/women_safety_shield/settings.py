@@ -5,9 +5,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-women-safety-shield-secret-key-change-in-production-2024'
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-fallback-key')
 
 DEBUG = True
 
@@ -150,10 +151,10 @@ CHANNEL_LAYERS = {
 CORS_ALLOW_ALL_ORIGINS = True
 
 # Google Maps API Key
-GOOGLE_MAPS_API_KEY = 'YOUR_GOOGLE_MAPS_API_KEY'
+GOOGLE_MAPS_API_KEY = os.getenv('GOOGLE_MAPS_API_KEY', '')
 
 # Firebase FCM
-FCM_SERVER_KEY = 'AAAAx...your real key here...'
+FCM_SERVER_KEY = os.getenv('FCM_SERVER_KEY', '')
 # Emergency alert radius (meters)
 EMERGENCY_RADIUS_KM = 3
 
