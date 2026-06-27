@@ -5,6 +5,11 @@ from django.contrib import messages
 from django.views.decorators.http import require_http_methods
 from .models import User
 from .forms import RegisterForm, LoginForm, ProfileForm
+import json
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from accounts.utils import send_sos_to_all_contacts
+from django.http import HttpResponse
 
 
 def home_view(request):
@@ -91,3 +96,42 @@ def profile_view(request):
             messages.success(request, 'Profile updated successfully!')
             return redirect('profile')
     return render(request, 'accounts/profile.html', {'form': form})
+
+
+@csrf_exempt
+def save_fcm_token(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "Only POST allowed"}, status=405)
+
+    try:
+        # ✅ SAFE JSON PARSE
+        data = json.loads(request.body.decode("utf-8"))
+        token = data.get("token")
+
+        if not token:
+            return JsonResponse({"error": "Token missing"}, status=400)
+
+        # ✅ USER CHECK
+        if not request.user.is_authenticated:
+            return JsonResponse({"error": "User not logged in"}, status=401)
+
+        # ✅ SAVE TOKEN
+        request.user.fcm_token = token
+        request.user.save()
+
+        return JsonResponse({
+            "message": "Token saved successfully",
+            "status": "success"
+        })
+
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+    
+    
+from django.http import HttpResponse
+
+def sos_view(request):
+    return HttpResponse("SOS Page Working")

@@ -1,6 +1,9 @@
 import os
 from pathlib import Path
 from datetime import timedelta
+from dotenv import load_dotenv
+
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -150,11 +153,23 @@ CORS_ALLOW_ALL_ORIGINS = True
 GOOGLE_MAPS_API_KEY = 'YOUR_GOOGLE_MAPS_API_KEY'
 
 # Firebase FCM
-FCM_SERVER_KEY = 'YOUR_FCM_SERVER_KEY'
-
+FCM_SERVER_KEY = 'AAAAx...your real key here...'
 # Emergency alert radius (meters)
 EMERGENCY_RADIUS_KM = 3
 
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/'
+
+
+# WhatsApp Cloud API (Meta)
+WA_PHONE_NUMBER_ID = os.getenv("WA_PHONE_NUMBER_ID")
+WA_ACCESS_TOKEN = os.getenv("WA_ACCESS_TOKEN")
+
+
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+]
+
+

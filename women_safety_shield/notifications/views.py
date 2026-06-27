@@ -2,6 +2,9 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from .models import Notification
+import json
+
+
 
 @login_required
 def notification_list(request):
@@ -27,3 +30,17 @@ def notification_count(request):
     from .models import Notification
     count = Notification.objects.filter(recipient=request.user, is_read=False).count()
     return JR({'count': count})
+
+@login_required
+def save_token(request):
+
+    data=json.loads(request.body)
+
+    request.user.fcm_token=data["token"]
+
+    request.user.save()
+
+
+    return JsonResponse({
+        "status":"saved"
+    })

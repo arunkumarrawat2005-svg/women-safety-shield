@@ -165,5 +165,83 @@ async function fetchNotifCount() {
 fetchNotifCount();
 setInterval(fetchNotifCount, 30000);
 </script>
+
+
+<script type="module">
+
+console.log("🚀 FIREBASE SCRIPT STARTED");
+
+// 1. IMPORTS
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
+
+// 2. CONFIG FIRST (IMPORTANT)
+const firebaseConfig = {
+  apiKey: "AIzaSyDpVOcSegbWr5t1ikzwbwaqr9zkgxXmZrM",
+  authDomain: "woman-safety-shield.firebaseapp.com",
+  projectId: "woman-safety-shield",
+  messagingSenderId: "759536526665",
+  appId: "1:759536526665:web:c463891a1bc5a4eca06698"
+};
+
+// 3. INIT ONCE ONLY
+const app = initializeApp(firebaseConfig);
+const messaging = getMessaging(app);
+
+console.log("🔥 Firebase initialized");
+
+// 4. SERVICE WORKER
+navigator.serviceWorker.register("/firebase-messaging-sw.js")
+.then(reg => {
+  console.log("✅ SW registered:", reg);
+})
+.catch(err => {
+  console.error("❌ SW error:", err);
+});
+
+// 5. NOTIFICATION + TOKEN
+Notification.requestPermission()
+.then(permission => {
+
+  console.log("🔔 Permission:", permission);
+
+  if (permission !== "granted") {
+    throw new Error("Permission denied");
+  }
+
+  return getToken(messaging, {
+    vapidKey: "BPXe-INRhio2PHhwx6ttoL7ZTkQ6fQ820ATANMus-vrAPi6MwWfraCn5tczbBpd0eCEBXAGzjygcx9MkI17qW1k"
+  });
+
+})
+.then(token => {
+
+  if (!token) {
+    throw new Error("FCM token not generated");
+  }
+
+  console.log("🔥 FCM TOKEN:", token);
+
+  return fetch("/save-token/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ token })
+  });
+
+})
+.then(async res => {
+  const data = await res.json();
+  console.log("✅ BACKEND RESPONSE:", data);
+})
+.catch(err => {
+  console.error("❌ ERROR:", err);
+});
+
+</script>
+
+
+</script>
 </body>
 </html>
