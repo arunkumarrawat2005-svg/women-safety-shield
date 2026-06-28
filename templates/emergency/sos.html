@@ -47,7 +47,7 @@
 
                     <!-- Big SOS Button -->
                     <div class="d-flex justify-content-center mb-4">
-                        <button class="sos-main-btn" id="sosButton" onclick="triggerSOSWithLocation('button')" {% if active_emergency %}disabled{% endif %}>
+                        <button class="sos-main-btn" id="sosButton" id="sosButton" onmousedown="startHold()" onmouseup="cancelHold()" onmouseleave="cancelHold()" ontouchstart="startHold(event)" ontouchend="cancelHold()" {% if active_emergency %}disabled{% endif %}>
                             <span style="font-size:3.5rem;">🆘</span>
                             <span>SOS</span>
                             <small style="font-size:0.65rem;letter-spacing:2px;opacity:0.8;">PRESS FOR HELP</small>
@@ -200,6 +200,36 @@
 {% block extra_js %}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
+let holdTimer = null;
+let holdProgress = null;
+
+function startHold(e) {
+    if (e) e.preventDefault();
+    const btn = document.getElementById('sosButton');
+    btn.style.transform = 'scale(0.95)';
+    btn.style.background = 'radial-gradient(circle, #ff0000, #cc0000)';
+    
+    let progress = 0;
+    holdProgress = setInterval(() => {
+        progress += 50;
+        btn.style.boxShadow = `0 0 ${progress/10}px rgba(255,0,0,0.8)`;
+    }, 50);
+    
+    holdTimer = setTimeout(() => {
+        clearInterval(holdProgress);
+        triggerSOSWithLocation('button');
+    }, 2000);
+}
+
+function cancelHold() {
+    const btn = document.getElementById('sosButton');
+    btn.style.transform = '';
+    btn.style.background = '';
+    btn.style.boxShadow = '';
+    if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; }
+    if (holdProgress) { clearInterval(holdProgress); holdProgress = null; }
+}
+
 let currentTrigger = 'button';
 let sosMap = null;
 let userMarker = null;
@@ -274,3 +304,5 @@ function startVoiceSOS() {
 }
 </script>
 {% endblock %}
+
+
