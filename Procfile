@@ -1,1 +1,1 @@
-﻿web: python manage.py migrate && gunicorn women_safety_shield.wsgi --log-file -
+﻿web: PYTHONPATH=/app/women_safety_shield python manage.py migrate && PYTHONPATH=/app/women_safety_shield gunicorn women_safety_shield.wsgi --log-file -
