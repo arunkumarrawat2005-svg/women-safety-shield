@@ -1239,6 +1239,16 @@ function applyUserLocationRadar(lat, lng) {
     .then(data => {
       if (data && data.success && Array.isArray(data.helpers) && data.helpers.length > 0) {
         renderNearbyRespondersOnRadar(data.helpers, lat, lng);
+      } else {
+        dynamicRadarMarkers.forEach(m => {
+          if (m && m.setMap) m.setMap(null);
+          else if (m && m.remove) m.remove();
+        });
+        dynamicRadarMarkers = [];
+        const bannerText = document.getElementById('gpsStatusText');
+        if (bannerText) {
+          bannerText.innerHTML = `📍 Safety Radar Active (${lat.toFixed(4)}, ${lng.toFixed(4)}) &middot; No verified guardians currently inside 3 km. Nearest network guardians listed below.`;
+        }
       }
     })
     .catch(err => console.warn("Smart radar fetch notice:", err));
@@ -1250,7 +1260,6 @@ function applyUserLocationRadar(lat, lng) {
   const banner = document.getElementById('gpsStatusBanner');
   const bannerText = document.getElementById('gpsStatusText');
   if (banner && bannerText) {
-    bannerText.innerHTML = `📍 Safety Radar Active &middot; Centered at your GPS (${lat.toFixed(4)}, ${lng.toFixed(4)}) &middot; Showing verified community guardians within 3 KM protection ring`;
     banner.classList.remove('d-none');
   }
 
@@ -1302,7 +1311,7 @@ function renderNearbyRespondersOnRadar(helpers, userLat, userLng) {
           <span style="color:#16a34a; font-weight:600;"><i class="bi bi-check-circle-fill me-1"></i>Inside 3 KM Safety Circle</span>
         </div>
         <button type="button" class="btn btn-danger btn-sm w-100 fw-bold" style="font-size:11px; padding:6px;"
-                onclick="openEscortModalWithResident('${h.id.replace('res_', '')}', '${(h.name || h.title).replace(/'/g, "\\'")}', 'Current Neighborhood');">
+                onclick="openEscortModalWithResident('${h.resident_id || h.id.replace('res_', '')}', '${(h.name || h.title).replace(/'/g, "\\'")}', '${(h.area || 'Current Area').replace(/'/g, "\\'")}');">
           🚶‍♀️ Request Safe Escort
         </button>
       </div>

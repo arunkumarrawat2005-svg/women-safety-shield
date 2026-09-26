@@ -31,14 +31,25 @@ class Command(BaseCommand):
             user.save()
             self.stdout.write(self.style.SUCCESS(f"[OK] Existing admin account '{username}' updated and password synced."))
 
-        # Auto-seed verified community guardians / local residents if needed
+        # Ensure all existing real verified users have an active LocalResident profile
         try:
-            from local_residents.seed_data import seed_verified_residents
             from local_residents.models import LocalResident
-            if LocalResident.objects.filter(is_verified=True).count() < 6:
-                count = seed_verified_residents(admin_user=user)
-                self.stdout.write(self.style.SUCCESS(f"[OK] Seeded {count} verified local community guardians and responders."))
-            else:
-                self.stdout.write(self.style.SUCCESS(f"[OK] Verified local guardians network is already active."))
+            verified_users = User.objects.filter(is_verified=True).exclude(role='admin')
+            synced_count = 0
+            for vu in verified_users:
+                res, created = LocalResident.objects.get_or_create(
+                    user=vu,
+                    defaults={
+                        'local_resident_type': 'citizen' if vu.role == 'user' else (vu.role if vu.role in ['volunteer', 'security', 'ngo', 'citizen'] else 'citizen'),
+                        'city': vu.city or 'Delhi NCR',
+                        'area': vu.address or vu.city or 'Central Zone',
+                        'badge_title': 'Verified Citizen Guardian',
+                    }
+                )
+                res.is_verified = True
+                res.is_available = True
+                res.save()
+                synced_count += 1
+            self.stdout.write(self.style.SUCCESS(f"[OK] Synced {synced_count} real verified citizen profiles in database."))
         except Exception as e:
-            self.stdout.write(self.style.WARNING(f"[WARNING] Could not seed local residents: {e}"))
+            self.stdout.write(self.style.WARNING(f"[WARNING] Could not sync verified users: {e}"))

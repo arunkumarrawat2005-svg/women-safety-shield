@@ -268,39 +268,6 @@ def smart_sos_radar(request):
                     "status": "Available & On Standby"
                 })
 
-    # 2. If fewer than 5 verified responders exist within 3km of this location,
-    # supply accredited community guardians around the user's GPS coordinate
-    if len(helpers) < 5:
-        try:
-            from local_residents.seed_data import SEEDED_RESIDENTS
-            for idx, item in enumerate(SEEDED_RESIDENTS):
-                if len(helpers) >= 6:
-                    break
-                bearing = (idx * 45 + 15) * (math.pi / 180.0)
-                d_km = 0.35 + (idx % 4) * 0.45  # between 350m and 1.7km
-                delta_lat = (d_km / 111.0) * math.cos(bearing)
-                delta_lng = (d_km / (111.0 * math.cos(math.radians(lat)))) * math.sin(bearing)
-                h_lat = lat + delta_lat
-                h_lng = lng + delta_lng
-                dist_j = round(d_km, 2)
-                eta_min = max(1, int(round((dist_j / 4.5) * 60)))
-                helpers.append({
-                    "id": f"res_seeded_{idx+1}",
-                    "title": f"{item['first_name']} {item['last_name']} ({item['badge_title']})",
-                    "name": f"{item['first_name']} {item['last_name']}",
-                    "badge": item['badge_title'],
-                    "type": item['resident_type'],
-                    "lat": round(h_lat, 6),
-                    "lng": round(h_lng, 6),
-                    "distance_km": dist_j,
-                    "distance_text": f"{int(dist_j * 1000)} m" if dist_j < 1.0 else f"{dist_j:.1f} km",
-                    "eta_minutes": eta_min,
-                    "trust_score": item['trust_score'],
-                    "is_real": True,
-                    "status": "Available & On Standby"
-                })
-        except Exception:
-            pass
 
     helpers.sort(key=lambda x: x["distance_km"])
     nearest = helpers[0] if helpers else None

@@ -1704,7 +1704,7 @@
 </div>
 
 <!-- Hidden form for resident GPS sync -->
-{% if resident %}
+{% if user.is_authenticated %}
 <form id="syncGpsForm" method="POST" action="{% url 'resident_update_location' %}" style="display:none;">
   {% csrf_token %}
   <input type="hidden" name="latitude" id="syncLat" value="28.4703">

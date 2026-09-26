@@ -90,26 +90,50 @@ def toggle_availability(request):
 def update_location(request):
     next_url = request.POST.get('next') or request.GET.get('next') or request.META.get('HTTP_REFERER') or 'resident_profile'
     if request.method == 'POST':
-        resident = LocalResident.objects.filter(user=request.user).first()
-        if not resident:
-            messages.error(request, 'Local Resident profile not found.')
-            return redirect('resident_register')
-        resident.latitude = request.POST.get('latitude')
-        resident.longitude = request.POST.get('longitude')
-        resident.save()
-        messages.success(request, 'Your location has been updated.')
+        resident, _ = LocalResident.objects.get_or_create(
+            user=request.user,
+            defaults={
+                'city': request.user.city or 'Delhi NCR',
+                'area': request.user.address or request.user.city or 'Central Zone',
+                'badge_title': 'Verified Citizen Guardian',
+                'is_verified': bool(request.user.is_verified or request.user.badge_identity_verified),
+                'is_available': bool(request.user.is_verified or request.user.badge_identity_verified),
+            }
+        )
+        lat = request.POST.get('latitude')
+        lng = request.POST.get('longitude')
+        if lat and lng:
+            try:
+                resident.latitude = float(lat)
+                resident.longitude = float(lng)
+                resident.save(update_fields=['latitude', 'longitude'])
+                messages.success(request, f'Your live location was updated ({float(lat):.4f}, {float(lng):.4f}).')
+            except (ValueError, TypeError):
+                pass
         return redirect(next_url)
     return redirect(next_url)
 
 
 def resident_list(request):
-    # Ensure verified local community guardians exist in database
-    if LocalResident.objects.filter(is_verified=True).count() < 6:
-        try:
-            from .seed_data import seed_verified_residents
-            seed_verified_residents()
-        except Exception:
-            pass
+    # Ensure any real verified user in User model is synced to LocalResident
+    try:
+        from accounts.models import User
+        for vu in User.objects.filter(is_verified=True).exclude(role='admin'):
+            res, _ = LocalResident.objects.get_or_create(
+                user=vu,
+                defaults={
+                    'local_resident_type': 'citizen' if vu.role == 'user' else (vu.role if vu.role in ['volunteer', 'security', 'ngo', 'citizen'] else 'citizen'),
+                    'city': vu.city or 'Delhi NCR',
+                    'area': vu.address or vu.city or 'Central Zone',
+                    'badge_title': 'Verified Citizen Guardian',
+                }
+            )
+            if not res.is_verified:
+                res.is_verified = True
+                res.is_available = True
+                res.save()
+    except Exception:
+        pass
 
     residents_qs = LocalResident.objects.filter(is_verified=True).select_related('user')
 

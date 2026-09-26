@@ -67,6 +67,17 @@ def register_view(request):
         form = RegisterForm(request.POST, request.FILES)
         if form.is_valid():
             user = form.save()
+            if user.role in ['local_resident', 'volunteer', 'security', 'ngo', 'citizen']:
+                from local_residents.models import LocalResident
+                LocalResident.objects.get_or_create(
+                    user=user,
+                    defaults={
+                        'local_resident_type': 'citizen' if user.role == 'user' else (user.role if user.role in ['volunteer', 'security', 'ngo', 'citizen'] else 'citizen'),
+                        'city': user.city or 'Delhi NCR',
+                        'area': user.address or user.city or 'Central Zone',
+                        'badge_title': 'Community Guardian',
+                    }
+                )
             login(request, user)
             messages.success(
                 request,

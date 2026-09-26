@@ -238,9 +238,22 @@ def admin_verification_action(request, req_id):
             req.user.is_verified = True
             req.user.save(update_fields=['is_verified'])
 
-            # Sync local resident if exists
+            # Sync or create local resident profile for verified user
             from local_residents.models import LocalResident
-            LocalResident.objects.filter(user=req.user).update(is_verified=True, verified_at=timezone.now(), verified_by=request.user)
+            res, _ = LocalResident.objects.get_or_create(
+                user=req.user,
+                defaults={
+                    'local_resident_type': 'citizen' if req.user.role == 'user' else (req.user.role if req.user.role in ['volunteer', 'security', 'ngo', 'citizen'] else 'citizen'),
+                    'city': req.user.city or 'Delhi NCR',
+                    'area': req.user.address or req.user.city or 'Central Zone',
+                    'badge_title': 'Verified Citizen Guardian',
+                }
+            )
+            res.is_verified = True
+            res.is_available = True
+            res.verified_at = timezone.now()
+            res.verified_by = request.user
+            res.save()
 
             messages.success(request, f"User @{req.user.username} has been verified successfully.")
 
