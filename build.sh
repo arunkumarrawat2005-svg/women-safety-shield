@@ -14,3 +14,6 @@ python manage.py migrate
 
 # Automatically setup production admin superuser
 python manage.py setup_admin
+
+# Purge non-admin records leaving only admin superuser
+python manage.py cleanup_database
