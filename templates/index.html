@@ -63,7 +63,7 @@
           </a>
         </li>
 
-        {% if user.is_staff or user.is_superuser %}
+        {% if user.is_staff or user.is_superuser or user.role == 'admin' %}
         <!-- 5. Admin -->
         <li class="nav-item">
           <a class="nav-link" href="{% url 'admin_dashboard' %}">
@@ -93,6 +93,11 @@
             <li><a class="dropdown-item py-2" href="{% url 'trusted_contacts' %}"><i class="bi bi-people me-2"></i>Trusted Circle</a></li>
             {% if user.role == 'local_resident' or user.role == 'guardian' %}
             <li><a class="dropdown-item py-2" href="{% url 'resident_profile' %}"><i class="bi bi-shield-check me-2"></i>Resident Profile</a></li>
+            {% endif %}
+            {% if user.is_staff or user.is_superuser or user.role == 'admin' %}
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item py-2 text-danger fw-bold" href="{% url 'admin_dashboard' %}"><i class="bi bi-shield-lock me-2"></i>Admin Control Panel</a></li>
+            <li><a class="dropdown-item py-2 text-dark fw-bold" href="{% url 'admin_verification_dashboard' %}"><i class="bi bi-card-checklist me-2 text-warning"></i>Admin Verification Queue</a></li>
             {% endif %}
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item py-2 text-danger fw-bold" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>

@@ -3,6 +3,7 @@ from . import views
 from . import api_views
 
 urlpatterns = [
+    path('', views.admin_incident_records_list, name='incident_records_home'),
     # Feature 2: Police Handoff
     path('police-handoff/<int:sos_id>/', views.police_handoff_view, name='police_handoff'),
 

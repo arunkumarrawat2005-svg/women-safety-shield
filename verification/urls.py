@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    path('', views.verification_status, name='verification_home'),
     # Citizen Verification Flow
     path('status/', views.verification_status, name='verification_status'),
     path('submit/', views.verification_status, name='verification_submit'),

@@ -19,7 +19,7 @@ def admin_required(view_func):
     @login_required
     @functools.wraps(view_func)
     def _wrapped_view(request, *args, **kwargs):
-        if not (request.user.is_staff or request.user.role == 'admin'):
+        if not (request.user.is_staff or request.user.is_superuser or request.user.role == 'admin'):
             messages.error(request, 'Administrative credentials required to access the Admin Control Center.')
             return redirect('dashboard')
         return view_func(request, *args, **kwargs)

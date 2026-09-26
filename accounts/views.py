@@ -95,18 +95,31 @@ def register_view(request):
 @ensure_csrf_cookie
 def login_view(request):
     if request.user.is_authenticated:
+        if request.user.role == 'admin' or request.user.is_staff or request.user.is_superuser:
+            return redirect('admin_dashboard')
         return redirect('home')
     form = LoginForm()
     if request.method == 'POST':
         form = LoginForm(request.POST)
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(request, username=username, password=password)
+        username = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '')
+        
+        # Support login with either username or email
+        auth_username = username
+        user_by_email = User.objects.filter(email__iexact=username).first()
+        if user_by_email:
+            auth_username = user_by_email.username
+
+        user = authenticate(request, username=auth_username, password=password)
         if user:
             login(request, user)
             messages.success(request, f'Welcome back, {user.full_name}!')
-            next_url = request.GET.get('next', 'home')
-            return redirect(next_url)
+            next_url = request.GET.get('next')
+            if next_url:
+                return redirect(next_url)
+            if user.role == 'admin' or user.is_staff or user.is_superuser:
+                return redirect('admin_dashboard')
+            return redirect('home')
         else:
             messages.error(request, 'Invalid username or password.')
     return render(request, 'accounts/login.html', {'form': form})
@@ -263,4 +276,13 @@ self.addEventListener('fetch', (event) => {
 def terms_view(request):
     """Terms of Service, Privacy Policy and Emergency Safety Disclaimer."""
     return render(request, 'accounts/terms.html')
+
+
+def favicon_view(request):
+    """Serve a clean SVG favicon so browsers never get 404."""
+    svg_icon = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+        <path d="M50 5 L85 20 L85 55 C85 75 50 95 50 95 C50 95 15 75 15 55 L15 20 Z" fill="#b32438"/>
+        <path d="M42 50 L48 56 L62 40" stroke="#ffffff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </svg>"""
+    return HttpResponse(svg_icon, content_type='image/svg+xml')
 

@@ -88,7 +88,7 @@
           </a>
         </li>
 
-        {% if user.is_staff or user.is_superuser %}
+        {% if user.is_staff or user.is_superuser or user.role == 'admin' %}
         <!-- 7. Admin -->
         <li class="nav-item">
           <a class="nav-link" href="{% url 'admin_dashboard' %}">
@@ -132,7 +132,8 @@
             {% if user.role == 'police' or user.is_staff or user.is_superuser %}
             <li><a class="dropdown-item py-2 text-primary fw-bold" href="{% url 'police_portal' %}"><i class="bi bi-shield-shaded me-2"></i>Police &amp; Gov Portal</a></li>
             {% endif %}
-            {% if user.is_staff or user.role == 'admin' %}
+            {% if user.is_staff or user.is_superuser or user.role == 'admin' %}
+            <li><a class="dropdown-item py-2 text-danger fw-bold" href="{% url 'admin_dashboard' %}"><i class="bi bi-shield-lock me-2"></i>Admin Control Panel</a></li>
             <li><a class="dropdown-item py-2 text-dark fw-bold" href="{% url 'admin_verification_dashboard' %}"><i class="bi bi-card-checklist me-2 text-warning"></i>Admin Verification Queue</a></li>
             {% endif %}
             <li><hr class="dropdown-divider"></li>

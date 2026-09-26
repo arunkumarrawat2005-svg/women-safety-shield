@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    path('', views.trusted_contacts, name='community_home'),
     path('trusted-contacts/', views.trusted_contacts, name='trusted_contacts'),
     path('trusted-contacts/add/', views.add_trusted_contact, name='add_trusted_contact'),
     path('trusted-contacts/<int:pk>/remove/', views.remove_trusted_contact, name='remove_trusted_contact'),

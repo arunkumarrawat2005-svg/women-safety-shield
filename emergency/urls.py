@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    path('', views.sos_view, name='emergency_home'),
     path('sos/', views.sos_view, name='sos'),
     path('trigger/', views.trigger_sos, name='trigger_sos_alt'),
     path('sos/trigger/', views.trigger_sos, name='trigger_sos'),
