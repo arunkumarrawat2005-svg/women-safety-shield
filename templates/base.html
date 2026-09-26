@@ -322,6 +322,43 @@ function triggerMobileSosNav(e) {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="{% static 'js/main.js' %}"></script>
+{% if user.is_authenticated %}
+<script>
+// Universal background live GPS telemetry for authenticated users
+(function() {
+  function syncLiveGps(pos) {
+    if (!pos || !pos.coords) return;
+    const lat = pos.coords.latitude;
+    const lng = pos.coords.longitude;
+    const acc = pos.coords.accuracy || null;
+
+    window.currentLiveLat = lat;
+    window.currentLiveLng = lng;
+
+    const csrf = (function() {
+      return document.querySelector('[name=csrfmiddlewaretoken]')?.value ||
+             document.cookie.match(/csrftoken=([^;]+)/)?.[1] || '';
+    })();
+
+    fetch('/tracking/heartbeat/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrf
+      },
+      body: JSON.stringify({ latitude: lat, longitude: lng, accuracy: acc })
+    }).catch(function() {});
+  }
+
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(syncLiveGps, null, { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 });
+    setInterval(function() {
+      navigator.geolocation.getCurrentPosition(syncLiveGps, null, { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 });
+    }, 35000);
+  }
+})();
+</script>
+{% endif %}
 {% block extra_js %}{% endblock %}
 </body>
 </html>

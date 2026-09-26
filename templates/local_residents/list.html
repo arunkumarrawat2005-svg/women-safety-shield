@@ -1481,11 +1481,26 @@ function detectGPSPickup() {
 
 document.addEventListener('DOMContentLoaded', () => {
   initRadarMap();
-  {% if user_lat and user_lng %}
-  setTimeout(() => {
-    applyUserLocationRadar({{ user_lat }}, {{ user_lng }});
-  }, 600);
-  {% endif %}
+  
+  function triggerRadar(lat, lng) {
+    applyUserLocationRadar(lat, lng);
+  }
+
+  if (window.currentLiveLat && window.currentLiveLng) {
+    setTimeout(() => { triggerRadar(window.currentLiveLat, window.currentLiveLng); }, 300);
+  } else if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(pos => {
+      setTimeout(() => { triggerRadar(pos.coords.latitude, pos.coords.longitude); }, 300);
+    }, err => {
+      {% if user_lat and user_lng %}
+      setTimeout(() => { triggerRadar({{ user_lat }}, {{ user_lng }}); }, 500);
+      {% endif %}
+    }, { enableHighAccuracy: true, timeout: 8000 });
+  } else {
+    {% if user_lat and user_lng %}
+    setTimeout(() => { triggerRadar({{ user_lat }}, {{ user_lng }}); }, 500);
+    {% endif %}
+  }
 });
 </script>
 

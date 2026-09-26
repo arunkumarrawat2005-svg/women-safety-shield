@@ -115,27 +115,53 @@ def update_location(request):
 
 
 def resident_list(request):
-    # Ensure any real verified user in User model is synced to LocalResident
+    # Ensure any real verified user, registered local resident, or user's trusted contact is synced to LocalResident
     try:
         from accounts.models import User
-        for vu in User.objects.filter(is_verified=True).exclude(role='admin'):
-            res, _ = LocalResident.objects.get_or_create(
+        from tracking.models import Location
+        users_to_sync = User.objects.filter(
+            Q(is_verified=True) |
+            Q(role__in=['local_resident', 'guardian', 'volunteer', 'citizen', 'security', 'ngo'])
+        ).exclude(role='admin')
+
+        # Also sync current user's trusted contacts
+        if request.user.is_authenticated:
+            from community.models import TrustedContact
+            tc_user_ids = TrustedContact.objects.filter(user=request.user, is_active=True, contact__isnull=False).values_list('contact_id', flat=True)
+            users_to_sync = (users_to_sync | User.objects.filter(id__in=tc_user_ids)).distinct()
+
+        for vu in users_to_sync:
+            res, created = LocalResident.objects.get_or_create(
                 user=vu,
                 defaults={
                     'local_resident_type': 'citizen' if vu.role == 'user' else (vu.role if vu.role in ['volunteer', 'security', 'ngo', 'citizen'] else 'citizen'),
                     'city': vu.city or 'Delhi NCR',
                     'area': vu.address or vu.city or 'Central Zone',
                     'badge_title': 'Verified Citizen Guardian',
+                    'is_verified': True,
+                    'is_available': True,
                 }
             )
-            if not res.is_verified:
-                res.is_verified = True
-                res.is_available = True
-                res.save()
+            # Sync coordinates from Location if missing
+            if res.latitude is None or res.longitude is None:
+                loc = Location.objects.filter(user=vu).order_by('-timestamp').first()
+                if loc:
+                    res.latitude = loc.latitude
+                    res.longitude = loc.longitude
+            res.is_verified = True
+            res.is_available = True
+            res.save()
     except Exception:
         pass
 
-    residents_qs = LocalResident.objects.filter(is_verified=True).select_related('user')
+    residents_qs = LocalResident.objects.filter(
+        Q(is_verified=True) |
+        Q(is_available=True) |
+        Q(user__role__in=['local_resident', 'guardian', 'volunteer', 'citizen'])
+    ).select_related('user')
+
+    if request.user.is_authenticated:
+        residents_qs = residents_qs.exclude(user=request.user)
 
     # Parse GPS coordinates if supplied
     user_lat = None

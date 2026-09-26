@@ -236,24 +236,106 @@ def smart_sos_radar(request):
         return r * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
 
     helpers = []
+    seen_user_ids = set()
+    if request.user.is_authenticated:
+        seen_user_ids.add(request.user.id)
 
-    # 1. Query real verified residents from database
     from local_residents.models import LocalResident
-    real_residents = LocalResident.objects.filter(is_verified=True).select_related('user')
+    from tracking.models import Location
+    from django.db.models import Q
+
+    # 1. First, check user's Trusted Contacts (Priority Guardians)
+    if request.user.is_authenticated:
+        from community.models import TrustedContact
+        trusted_contacts = TrustedContact.objects.filter(user=request.user, is_active=True).select_related('contact')
+        for tc in trusted_contacts:
+            contact_user = tc.contact
+            if not contact_user or contact_user.id in seen_user_ids:
+                continue
+
+            # Look up live coordinate from LocalResident or latest Location
+            c_lat = None
+            c_lng = None
+            res_obj = getattr(contact_user, 'local_resident_profile', None)
+            if res_obj and res_obj.latitude is not None and res_obj.longitude is not None:
+                c_lat = res_obj.latitude
+                c_lng = res_obj.longitude
+            else:
+                loc = Location.objects.filter(user=contact_user).order_by('-timestamp').first()
+                if loc:
+                    c_lat = loc.latitude
+                    c_lng = loc.longitude
+
+            if c_lat is not None and c_lng is not None:
+                dist = calc_distance(lat, lng, c_lat, c_lng)
+                if dist <= radius_km:
+                    seen_user_ids.add(contact_user.id)
+                    jitter_lat = c_lat + random.uniform(-0.0002, 0.0002)
+                    jitter_lng = c_lng + random.uniform(-0.0002, 0.0002)
+                    dist_j = round(max(0.01, dist), 2)
+                    eta_min = max(1, int(round((dist_j / 4.5) * 60)))
+                    c_name = tc.display_name
+                    badge = f"Trusted Circle ({tc.get_relation_display()})"
+                    helpers.append({
+                        "id": f"tc_{contact_user.id}",
+                        "resident_id": res_obj.id if res_obj else contact_user.id,
+                        "title": f"{c_name} (Trusted Contact)",
+                        "name": c_name,
+                        "badge": badge,
+                        "type": "trusted_contact",
+                        "lat": round(jitter_lat, 6),
+                        "lng": round(jitter_lng, 6),
+                        "distance_km": dist_j,
+                        "distance_text": f"{int(dist_j * 1000)} m" if dist_j < 1.0 else f"{dist_j:.1f} km",
+                        "eta_minutes": eta_min,
+                        "trust_score": 10.0,
+                        "is_real": True,
+                        "is_trusted_contact": True,
+                        "status": "Trusted Contact • Live Online"
+                    })
+
+    # 2. Query real verified residents & community guardians from database
+    real_residents = LocalResident.objects.select_related('user').filter(
+        Q(is_verified=True) |
+        Q(is_available=True) |
+        Q(user__role__in=['local_resident', 'guardian', 'volunteer', 'citizen', 'security', 'ngo']) |
+        Q(user__is_verified=True)
+    )
+
     for res in real_residents:
-        if res.latitude is not None and res.longitude is not None:
-            dist = calc_distance(lat, lng, res.latitude, res.longitude)
+        if res.user.id in seen_user_ids:
+            continue
+
+        c_lat = res.latitude
+        c_lng = res.longitude
+
+        # If LocalResident coordinates missing, pull from live Location tracking log
+        if c_lat is None or c_lng is None:
+            loc = Location.objects.filter(user=res.user).order_by('-timestamp').first()
+            if loc:
+                c_lat = loc.latitude
+                c_lng = loc.longitude
+                res.latitude = loc.latitude
+                res.longitude = loc.longitude
+                res.is_available = True
+                try:
+                    res.save(update_fields=['latitude', 'longitude', 'is_available'])
+                except Exception:
+                    pass
+
+        if c_lat is not None and c_lng is not None:
+            dist = calc_distance(lat, lng, c_lat, c_lng)
             if dist <= radius_km:
-                # Privacy jitter (~30-50m) so exact home coordinates aren't revealed
-                jitter_lat = res.latitude + random.uniform(-0.0003, 0.0003)
-                jitter_lng = res.longitude + random.uniform(-0.0003, 0.0003)
-                dist_j = round(max(0.1, dist), 2)
+                seen_user_ids.add(res.user.id)
+                jitter_lat = c_lat + random.uniform(-0.0002, 0.0002)
+                jitter_lng = c_lng + random.uniform(-0.0002, 0.0002)
+                dist_j = round(max(0.01, dist), 2)
                 eta_min = max(1, int(round((dist_j / 4.5) * 60)))
                 badge = res.badge_title or "Verified Community Guardian"
-                role_type = res.get_local_resident_type_display()
                 user_name = res.user.full_name or res.user.username
                 helpers.append({
                     "id": f"res_{res.id}",
+                    "resident_id": res.id,
                     "title": f"{user_name} ({badge})",
                     "name": user_name,
                     "badge": badge,
@@ -265,11 +347,11 @@ def smart_sos_radar(request):
                     "eta_minutes": eta_min,
                     "trust_score": getattr(res, 'trust_score', 4.9),
                     "is_real": True,
+                    "is_trusted_contact": False,
                     "status": "Available & On Standby"
                 })
 
-
-    helpers.sort(key=lambda x: x["distance_km"])
+    helpers.sort(key=lambda x: (not x.get("is_trusted_contact", False), x["distance_km"]))
     nearest = helpers[0] if helpers else None
 
     return JsonResponse({

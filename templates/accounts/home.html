@@ -2036,6 +2036,22 @@ function triggerSamePageSOS(source = 'button') {
     const mapStage = document.getElementById('heroMapBackgroundStage');
     if (!heroSection) return;
 
+    // Pick up live GPS if available
+    if (window.currentLiveLat && window.currentLiveLng) {
+        currentLat = window.currentLiveLat;
+        currentLng = window.currentLiveLng;
+    } else if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(pos => {
+            currentLat = pos.coords.latitude;
+            currentLng = pos.coords.longitude;
+            window.currentLiveLat = currentLat;
+            window.currentLiveLng = currentLng;
+            if (heroNearbyLayerController && heroNearbyLayerController.setUserLocation) {
+                heroNearbyLayerController.setUserLocation(currentLat, currentLng);
+            }
+        }, null, { enableHighAccuracy: true, timeout: 6000 });
+    }
+
     // 1. In-place transition to Emergency Mode on the SAME home page
     if (normalView) normalView.style.display = 'none';
     if (mapStage) mapStage.style.display = 'block';
@@ -2062,18 +2078,23 @@ function triggerSamePageSOS(source = 'button') {
         heroSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } catch(e) {}
 
-    // 5. Periodic live refresh interval (fetches live verified responders every 15s)
+    // 5. Periodic live refresh interval (fetches live verified responders every 10s)
     clearInterval(heroRadarSimulationTimer);
     heroRadarSimulationTimer = setInterval(() => {
         if (heroNearbyLayerController && typeof heroNearbyLayerController.refresh === 'function') {
             heroNearbyLayerController.refresh();
         }
-    }, 15000);
+    }, 10000);
 }
 
 function initHomeHeroMap() {
     const mapEl = document.getElementById('homeHeroMap');
     if (!mapEl) return;
+
+    if (window.currentLiveLat && window.currentLiveLng) {
+        currentLat = window.currentLiveLat;
+        currentLng = window.currentLiveLng;
+    }
 
     function renderMap() {
         if (!homeHeroMap) {
@@ -2100,7 +2121,8 @@ function initHomeHeroMap() {
                         if (countEl) countEl.textContent = info.total;
                         if (nearestEl) {
                             if (info.nearest) {
-                                nearestEl.textContent = `Nearest Verified Guardian: ${info.nearest.distance_text} (~${info.nearest.eta_minutes} mins)`;
+                                const hName = info.nearest.helper?.name || info.nearest.helper?.title || 'Verified Guardian';
+                                nearestEl.innerHTML = `<span class="text-success fw-bold"><i class="bi bi-shield-fill-check me-1"></i>${hName}</span> &bull; <strong>${info.nearest.distance_text}</strong> (~${info.nearest.eta_minutes} mins)`;
                             } else {
                                 nearestEl.textContent = 'No community responders currently in 3 km • Emergency broadcast will alert 112 & your trusted circle';
                             }
