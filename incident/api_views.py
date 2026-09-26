@@ -1,8 +1,8 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from .models import IncidentEvent, IncidentReport
-from .serializers import IncidentEventSerializer, IncidentReportSerializer
+from .models import IncidentEvent
+from .serializers import IncidentEventSerializer
 from emergency.models import Emergency
 
 

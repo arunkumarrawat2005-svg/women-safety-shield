@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Women Safety Shield</string>
+    <string name="action_retry">Retry Connection</string>
+    <string name="offline_title">Offline Emergency Console</string>
+    <string name="offline_subtitle">No internet detected. Native hardware SOS &amp; emergency dialing remain 100% active.</string>
+    <string name="police_112">Call 112 (National Emergency)</string>
+    <string name="women_1091">Call 1091 (Women Helpline)</string>
+    <string name="distress_181">Call 181 (Women in Distress)</string>
+    <string name="shake_detected_toast">Hardware Shake Triggered! Emergency SOS initiated.</string>
+</resources>

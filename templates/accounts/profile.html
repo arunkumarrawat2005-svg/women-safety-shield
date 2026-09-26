@@ -1,34 +1,105 @@
 {% extends 'base.html' %}
-{% block title %}My Profile{% endblock %}
+{% block title %}My Profile — Women Safety Shield{% endblock %}
+
 {% block content %}
-<div class="container my-4" style="max-width:700px;">
-    <div class="page-header"><h4 class="fw-800 mb-1">👤 My Profile</h4><p class="mb-0 opacity-75">Manage your account details</p></div>
+<div class="container my-4" style="max-width:760px;">
+    
+    <!-- Profile & Trust Header -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
+        <div class="card-body p-4 bg-light">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                <div class="d-flex align-items-center gap-3">
+                    {% if user.profile_pic %}
+                    <img src="{{ user.profile_pic.url }}" class="rounded-circle shadow-sm" width="80" height="80" alt="Profile" style="object-fit:cover;">
+                    {% else %}
+                    <div class="avatar-circle shadow-sm" style="width:80px;height:80px;font-size:2.2rem;background:var(--crimson);color:#fff;display:flex;align-items:center;justify-content:center;border-radius:50%;">
+                        {{ user.first_name|first|default:user.username|first }}
+                    </div>
+                    {% endif %}
+                    <div>
+                        <h4 class="fw-bold mb-1 text-dark">{{ user.full_name }}</h4>
+                        <span class="text-muted small">@{{ user.username }} &bull; {{ user.get_role_display }}</span>
+                    </div>
+                </div>
+
+                <div>
+                    <a href="{% url 'verification_status' %}" class="btn btn-sm {% if user.badge_identity_verified %}btn-success{% else %}btn-danger{% endif %} rounded-pill px-3 fw-bold shadow-sm">
+                        {% if user.badge_identity_verified %}
+                        <i class="bi bi-patch-check-fill me-1"></i>Identity Verified
+                        {% else %}
+                        <i class="bi bi-shield-lock-fill me-1"></i>Verify Identity Now
+                        {% endif %}
+                    </a>
+                </div>
+            </div>
+
+            <!-- Trust Badges Section -->
+            <div class="mt-3 pt-3 border-top">
+                <small class="text-muted d-block fw-bold mb-2" style="font-size:0.75rem; letter-spacing:0.04em;">ACCOUNT TRUST BADGES</small>
+                <div class="d-flex gap-2 flex-wrap">
+                    {% if user.badge_identity_verified %}
+                    <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill fw-semibold">
+                        🛡️ Identity Verified
+                    </span>
+                    {% else %}
+                    <span class="badge bg-secondary-subtle text-secondary border px-3 py-2 rounded-pill">
+                        🛡️ Identity Pending Verification
+                    </span>
+                    {% endif %}
+
+                    {% if user.badge_community_verified %}
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill fw-semibold">
+                        ✓ Verified Community Member
+                    </span>
+                    {% endif %}
+
+                    {% if user.badge_secure_account %}
+                    <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle px-3 py-2 rounded-pill fw-semibold">
+                        ✓ Secure Account
+                    </span>
+                    {% endif %}
+
+                    {% if user.badge_trusted_contact %}
+                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 rounded-pill fw-semibold">
+                        ✓ Trusted Circle Active
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Card -->
     <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-white border-bottom py-3 px-4">
+            <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-pencil-square me-2 text-danger"></i>Manage Profile Details</h5>
+        </div>
         <div class="card-body p-4">
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="text-center mb-4">
-                    {% if user.profile_pic %}
-                    <img src="{{ user.profile_pic.url }}" class="rounded-circle" width="90" height="90" alt="Profile">
-                    {% else %}
-                    <div class="avatar-circle mx-auto" style="width:90px;height:90px;font-size:2.5rem;background:#e74c3c;">{{ user.first_name|first|default:user.username|first }}</div>
-                    {% endif %}
-                    <div class="mt-2"><input type="file" name="profile_pic" class="form-control form-control-sm" accept="image/*" style="max-width:250px;margin:auto;"></div>
+                    <label class="form-label small text-muted fw-semibold d-block">UPDATE PROFILE PICTURE</label>
+                    <input type="file" name="profile_pic" class="form-control form-control-sm" accept="image/*" style="max-width:280px;margin:auto;">
                 </div>
                 <div class="row g-3">
-                    <div class="col-6"><label class="form-label fw-600">First Name</label><input type="text" name="first_name" value="{{ form.first_name.value|default:user.first_name }}" class="form-control"></div>
-                    <div class="col-6"><label class="form-label fw-600">Last Name</label><input type="text" name="last_name" value="{{ form.last_name.value|default:user.last_name }}" class="form-control"></div>
-                    <div class="col-12"><label class="form-label fw-600">Email</label><input type="email" name="email" value="{{ user.email }}" class="form-control"></div>
-                    <div class="col-12"><label class="form-label fw-600">Phone</label><input type="text" name="phone" value="{{ user.phone }}" class="form-control"></div>
-                    <div class="col-12"><label class="form-label fw-600">Emergency Contact</label><input type="text" name="emergency_contact" value="{{ user.emergency_contact }}" class="form-control" placeholder="Backup contact number"></div>
-                    <div class="col-12"><label class="form-label fw-600">Bio</label><textarea name="bio" class="form-control" rows="3">{{ user.bio }}</textarea></div>
-                    <div class="col-12"><label class="form-label fw-600">Address</label><textarea name="address" class="form-control" rows="2">{{ user.address }}</textarea></div>
-                    <div class="col-6"><label class="form-label fw-600">City</label><input type="text" name="city" value="{{ user.city }}" class="form-control"></div>
-                    <div class="col-6"><label class="form-label fw-600">State</label><input type="text" name="state" value="{{ user.state }}" class="form-control"></div>
+                    <div class="col-6"><label class="form-label fw-semibold small">First Name</label><input type="text" name="first_name" value="{{ form.first_name.value|default:user.first_name }}" class="form-control"></div>
+                    <div class="col-6"><label class="form-label fw-semibold small">Last Name</label><input type="text" name="last_name" value="{{ form.last_name.value|default:user.last_name }}" class="form-control"></div>
+                    <div class="col-12"><label class="form-label fw-semibold small">Email Address</label><input type="email" name="email" value="{{ user.email }}" class="form-control"></div>
+                    <div class="col-12"><label class="form-label fw-semibold small">Mobile Phone (+91)</label><input type="text" name="phone" value="{{ user.phone }}" class="form-control"></div>
+                    <div class="col-12"><label class="form-label fw-semibold small">Emergency Contact Number</label><input type="text" name="emergency_contact" value="{{ user.emergency_contact }}" class="form-control" placeholder="Primary emergency contact mobile"></div>
+                    <div class="col-6"><label class="form-label fw-semibold small">Date of Birth</label><input type="date" name="date_of_birth" value="{{ user.date_of_birth|date:'Y-m-d' }}" class="form-control"></div>
+                    <div class="col-6"><label class="form-label fw-semibold small">City / Area</label><input type="text" name="city" value="{{ user.city }}" class="form-control"></div>
+                    <div class="col-12"><label class="form-label fw-semibold small">Bio / About Me</label><textarea name="bio" class="form-control" rows="2">{{ user.bio }}</textarea></div>
+                    <div class="col-12"><label class="form-label fw-semibold small">Address</label><textarea name="address" class="form-control" rows="2">{{ user.address }}</textarea></div>
                 </div>
-                <div class="d-grid mt-4"><button type="submit" class="btn btn-danger fw-600">Save Changes</button></div>
+                <div class="d-grid mt-4">
+                    <button type="submit" class="btn btn-danger py-2 fw-bold rounded-3 shadow-sm" style="background:var(--crimson); border-color:var(--crimson);">
+                        Save Profile Changes
+                    </button>
+                </div>
             </form>
         </div>
     </div>
+
 </div>
 {% endblock %}

@@ -1,0 +1,247 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}How It Works — Understand, Verify, Protect — Women Safety Shield{% endblock %}
+
+{% block extra_css %}
+<style>
+  .hero-onboarding {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    color: #ffffff;
+    padding: 4rem 1.5rem 3.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .step-card {
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    background: #ffffff;
+    padding: 2.2rem 1.8rem;
+    height: 100%;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    box-shadow: 0 4px 18px rgba(15, 23, 42, 0.05);
+  }
+  .step-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.1);
+  }
+  .step-icon-bubble {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .badge-pillar {
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+  }
+  .principle-box {
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+    border: 1px solid #fecaca;
+    border-radius: 16px;
+    padding: 1.5rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-onboarding text-center">
+  <div class="container" style="max-width:860px;">
+    <span class="badge rounded-pill bg-danger px-3 py-2 badge-pillar text-uppercase mb-3 shadow-sm">
+      <i class="bi bi-shield-check me-1"></i>Core Safety Philosophy
+    </span>
+    <h1 class="display-5 fw-bold mb-3 text-white" style="color: #ffffff !important; font-family:'Plus Jakarta Sans',sans-serif; letter-spacing:-0.03em;">
+      Understand &bull; Verify &bull; Protect
+    </h1>
+    <p class="lead text-white-50 mx-auto" style="max-width:680px; font-size:1.15rem; line-height:1.6;">
+      Women Safety Shield is a community-powered emergency response network built on three foundational pillars:
+      transparent awareness, verified human trust, and instantaneous multi-channel protection.
+    </p>
+    <div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
+      {% if not user.is_authenticated %}
+      <a href="{% url 'register' %}" class="btn btn-danger btn-lg rounded-pill px-4 fw-bold shadow">
+        <i class="bi bi-person-plus-fill me-2"></i>Create Free Account
+      </a>
+      <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg rounded-pill px-4 fw-semibold">
+        <i class="bi bi-box-arrow-in-right me-2"></i>Login
+      </a>
+      {% else %}
+      <a href="{% url 'verification_status' %}" class="btn btn-danger btn-lg rounded-pill px-4 fw-bold shadow">
+        <i class="bi bi-shield-lock-fill me-2"></i>Complete Identity Verification
+      </a>
+      <a href="{% url 'sos' %}" class="btn btn-warning btn-lg rounded-pill px-4 fw-bold shadow text-dark">
+        <i class="bi bi-broadcast me-2"></i>View SOS System
+      </a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="container my-5" style="max-width:1120px;">
+  
+  <!-- 4 Core Pillars Grid -->
+  <div class="text-center mb-5">
+    <span class="badge bg-secondary-subtle text-secondary px-3 py-1 rounded-pill fw-semibold mb-2" style="font-size:0.75rem;">THE 4 PILLARS</span>
+    <h2 class="fw-bold" style="color:var(--maroon); font-family:'Plus Jakarta Sans',sans-serif;">How Our Platform Protects You</h2>
+    <p class="text-muted" style="max-width:600px; margin:0 auto;">
+      A look at how each layer of the platform activates during daily travel and critical distress events.
+    </p>
+  </div>
+
+  <div class="row g-4 mb-5">
+    
+    <!-- Screen 1: Stay Protected -->
+    <div class="col-md-6 col-lg-3">
+      <div class="step-card">
+        <div class="step-icon-bubble" style="background:#fee2e2; border:1px solid #fecaca;">
+          🛡️
+        </div>
+        <span class="badge bg-danger-subtle text-danger px-2 py-1 rounded-pill small fw-bold mb-2">PILLAR 1</span>
+        <h4 class="fw-bold text-dark mb-2">Stay Protected</h4>
+        <p class="fst-italic text-danger fw-semibold small mb-2">"Your safety. Your people. Your connection."</p>
+        <p class="text-muted small" style="line-height:1.6;">
+          Connect seamlessly with your trusted contacts, verified local residents, and rapid emergency dispatch. You always have a pre-configured network ready to mobilize.
+        </p>
+      </div>
+    </div>
+
+    <!-- Screen 2: One Tap Emergency Assistance -->
+    <div class="col-md-6 col-lg-3">
+      <div class="step-card">
+        <div class="step-icon-bubble" style="background:#ffe4e6; border:1px solid #fecdd3;">
+          🆘
+        </div>
+        <span class="badge bg-danger-subtle text-danger px-2 py-1 rounded-pill small fw-bold mb-2">PILLAR 2</span>
+        <h4 class="fw-bold text-dark mb-2">One Tap SOS</h4>
+        <p class="fst-italic text-danger fw-semibold small mb-2">"One tap can connect you to help."</p>
+        <p class="text-muted small" style="line-height:1.6;">
+          Trigger SOS from the web app or mobile widget. Instantly dispatches live GPS coordinates via SMS, triggers phone alerts, and broadcasts to verified responders within 3 km.
+        </p>
+      </div>
+    </div>
+
+    <!-- Screen 3: Know Who Is Around You -->
+    <div class="col-md-6 col-lg-3">
+      <div class="step-card">
+        <div class="step-icon-bubble" style="background:#dbeafe; border:1px solid #bfdbfe;">
+          📍
+        </div>
+        <span class="badge bg-primary-subtle text-primary px-2 py-1 rounded-pill small fw-bold mb-2">PILLAR 3</span>
+        <h4 class="fw-bold text-dark mb-2">Live Radius Map</h4>
+        <p class="fst-italic text-primary fw-semibold small mb-2">"Help can be closer than you think."</p>
+        <p class="text-muted small" style="line-height:1.6;">
+          Visualize verified community members, institutional safe havens, well-lit corridors, and police patrol routes on Google Maps with real-time ETA calculation.
+        </p>
+      </div>
+    </div>
+
+    <!-- Screen 4: Verified & Trusted Community -->
+    <div class="col-md-6 col-lg-3">
+      <div class="step-card">
+        <div class="step-icon-bubble" style="background:#dcfce7; border:1px solid #bbf7d0;">
+          🤝
+        </div>
+        <span class="badge bg-success-subtle text-success px-2 py-1 rounded-pill small fw-bold mb-2">PILLAR 4</span>
+        <h4 class="fw-bold text-dark mb-2">Verified Trust</h4>
+        <p class="fst-italic text-success fw-semibold small mb-2">"Safety starts with trust."</p>
+        <p class="text-muted small" style="line-height:1.6;">
+          Every responder passes government ID checks and a 6-question civic safety assessment. Only verified individuals gain access to trusted responder channels.
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Trust Architecture Section -->
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5">
+    <div class="card-header bg-light border-0 py-3 px-4">
+      <h5 class="fw-bold mb-0 text-dark">
+        <i class="bi bi-patch-check-fill text-danger me-2"></i>Platform Trust Architecture
+      </h5>
+      <small class="text-muted">Badges reflect verified criteria — never algorithmic favoritism.</small>
+    </div>
+    <div class="card-body p-4">
+      <div class="row g-3">
+        <div class="col-md-6 col-lg-3">
+          <div class="p-3 rounded-3 border bg-light h-100">
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <span class="fs-4">🛡️</span>
+              <strong class="text-dark">Identity Verified</strong>
+            </div>
+            <p class="text-muted small mb-0">Awarded after human admin review of official government ID credentials and live selfie matching.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <div class="p-3 rounded-3 border bg-light h-100">
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <i class="bi bi-patch-check-fill text-success fs-4"></i>
+              <strong class="text-dark">Verified Member</strong>
+            </div>
+            <p class="text-muted small mb-0">Identity verified citizen active in the 3 km local resident rapid response network.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <div class="p-3 rounded-3 border bg-light h-100">
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <i class="bi bi-shield-lock-fill text-primary fs-4"></i>
+              <strong class="text-dark">Secure Account</strong>
+            </div>
+            <p class="text-muted small mb-0">Active account with confirmed phone number, verified email, and secure authentication.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <div class="p-3 rounded-3 border bg-light h-100">
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <i class="bi bi-person-check-fill text-danger fs-4"></i>
+              <strong class="text-dark">Trusted Contact</strong>
+            </div>
+            <p class="text-muted small mb-0">Explicitly designated and confirmed by a citizen as a primary emergency contact.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Citizen Safety & Awareness Assessment Explanation -->
+  <div class="principle-box mb-5">
+    <div class="d-flex align-items-start gap-3">
+      <div class="p-2 rounded-circle bg-white shadow-sm text-danger fs-3">
+        <i class="bi bi-clipboard2-check-fill"></i>
+      </div>
+      <div>
+        <h5 class="fw-bold mb-1 text-danger">6-Question Citizen Safety &amp; Awareness Assessment</h5>
+        <p class="text-dark small mb-2" style="line-height:1.6;">
+          During identity onboarding, users complete 6 standard Likert-scale statements measuring civic responsibility, 
+          willingness to assist safely, women's safety awareness, and emergency preparedness. 
+        </p>
+        <div class="p-3 bg-white rounded-3 border small text-muted">
+          <strong class="text-dark d-block mb-1"><i class="bi bi-info-circle-fill text-primary me-1"></i>Ethical AI Notice:</strong>
+          Our AI assessment serves strictly as an orientation signal for human administrators. It never attempts to diagnose mental health, morality, or criminality, nor does it make automated rejection decisions. Human administrators retain final authority.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom CTA -->
+  <div class="text-center py-4">
+    <h4 class="fw-bold text-dark mb-2">Ready to Join the Protection Network?</h4>
+    <p class="text-muted small mb-4">Start with a basic account, submit verification in 2 minutes, and stay protected.</p>
+    {% if not user.is_authenticated %}
+    <a href="{% url 'register' %}" class="btn btn-danger btn-lg rounded-pill px-5 fw-bold shadow">
+      Register &amp; Get Protected
+    </a>
+    {% else %}
+    <a href="{% url 'verification_status' %}" class="btn btn-danger btn-lg rounded-pill px-5 fw-bold shadow">
+      Check Verification Status
+    </a>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

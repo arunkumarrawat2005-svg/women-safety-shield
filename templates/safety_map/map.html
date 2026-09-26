@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %}Safety Map - Women Safety Shield{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
 #safetyMap { height: 520px; border-radius: 16px; }
 .report-form-card { position: sticky; top: 80px; }
@@ -12,13 +12,13 @@
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid my-4 px-4">
+<div class="container-fluid my-4 px-3 px-md-4">
     <div class="row g-4">
         <!-- Map -->
         <div class="col-lg-8">
-            <div class="page-header">
-                <h4 class="fw-800 mb-1">🗺️ Community Safety Map</h4>
-                <p class="mb-0 opacity-75">Community-powered safety intelligence — real-time incident reports</p>
+            <div class="page-header mb-3">
+                <h4 class="fw-800 mb-1" style="color:var(--maroon);">🗺️ Community Safety Map</h4>
+                <p class="text-muted small mb-0">Community-powered safety intelligence — real-time incident reports</p>
             </div>
 
             <div class="card border-0 shadow-sm rounded-4 mb-3">
@@ -29,6 +29,7 @@
                         <span><span class="legend-dot" style="background:#f39c12;"></span> <small>Medium Risk</small></span>
                         <span><span class="legend-dot" style="background:#e74c3c;"></span> <small>High Risk</small></span>
                         <span><span class="legend-dot" style="background:#3498db;"></span> <small>Your Location</small></span>
+                        <span><span class="legend-dot" style="background:#10b981;"></span> <small>Nearby Helper (3km Grid)</small></span>
                         <span><span class="legend-dot" style="background:#9b59b6;"></span> <small>Incident Report</small></span>
                     </div>
                     <div id="safetyMap"></div>
@@ -170,70 +171,111 @@
 <script id="reportsData" type="application/json">
 [{% for r in recent_reports %}{"lat":{{ r.latitude }},"lng":{{ r.longitude }},"category":"{{ r.get_category_display|escapejs }}","location":"{{ r.location_name|default:'Unknown'|escapejs }}","time":"{{ r.created_at|date:'d M H:i' }}"}{% if not forloop.last %},{% endif %}{% endfor %}]
 </script>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{% static 'js/google-maps-shield.js' %}?v=6.0"></script>
+<script src="{% static 'js/nearby-users-map.js' %}?v=6.0"></script>
+{% if GOOGLE_MAPS_API_KEY and GOOGLE_MAPS_API_KEY != 'your_real_google_maps_key' %}
+<script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places,geometry,marker&loading=async&callback=__initGoogleMapsShield"></script>
+{% endif %}
 <script>
-// Init map centered on India
-const map = L.map('safetyMap').setView([20.5937, 78.9629], 5);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors'
-}).addTo(map);
-
-// Get user location and center map
-navigator.geolocation.getCurrentPosition(function(pos) {
-    const lat = pos.coords.latitude;
-    const lng = pos.coords.longitude;
-    map.setView([lat, lng], 14);
-
-    // Blue user marker
-    L.marker([lat, lng], {
-        icon: L.divIcon({
-            html: '<div style="background:#3498db;width:18px;height:18px;border-radius:50%;border:3px solid white;box-shadow:0 0 10px rgba(52,152,219,0.8);"></div>',
-            iconSize:[18,18], iconAnchor:[9,9]
-        })
-    }).addTo(map).bindPopup('<b>📍 Your Location</b>');
-}, function() {});
-
-// Plot safety zones — data from JSON script tags (no template tags in JS)
-const zones = JSON.parse(document.getElementById('zonesData').textContent);
-
-zones.forEach(zone => {
-    const color = zone.status === 'safe' ? '#27ae60' : zone.status === 'medium' ? '#f39c12' : '#e74c3c';
-    L.circle([zone.lat, zone.lng], {
-        radius: zone.radius, color: color, fillColor: color, fillOpacity: 0.2, weight: 2
-    }).addTo(map).bindPopup(`<b>${zone.name}</b><br>Risk Score: ${zone.risk}/10<br>Status: ${zone.status}`);
-});
-
-// Plot reports
-const reports = JSON.parse(document.getElementById('reportsData').textContent);
-
-reports.forEach(r => {
-    const isSafe = r.category.toLowerCase().includes('safe');
-    const icon = L.divIcon({
-        html: `<div style="background:${isSafe?'#27ae60':'#9b59b6'};width:12px;height:12px;border-radius:50%;border:2px solid white;"></div>`,
-        iconSize:[12,12], iconAnchor:[6,6]
-    });
-    L.marker([r.lat, r.lng], {icon}).addTo(map)
-        .bindPopup(`<b>${r.category}</b><br>${r.location}<br><small>${r.time}</small>`);
-});
-
-// Click on map to select location for report
+let safetyMap = null;
 let reportMarker = null;
-map.on('click', function(e) {
-    const lat = e.latlng.lat.toFixed(6);
-    const lng = e.latlng.lng.toFixed(6);
-    document.getElementById('report_lat').value = lat;
-    document.getElementById('report_lng').value = lng;
-    document.getElementById('reportLocationDisplay').innerHTML = `<small class='text-success fw-600'>✅ Location: ${lat}, ${lng}</small>`;
-    document.getElementById('submitReportBtn').disabled = false;
 
-    if (reportMarker) map.removeLayer(reportMarker);
-    reportMarker = L.marker([lat, lng], {
-        icon: L.divIcon({
-            html: '<div style="background:#e74c3c;width:14px;height:14px;border-radius:50%;border:2px solid white;"></div>',
-            iconSize:[14,14], iconAnchor:[7,7]
-        })
-    }).addTo(map).bindPopup('📍 Selected Location').openPopup();
-});
+function initCommunitySafetyMap() {
+    const mapEl = document.getElementById('safetyMap');
+    if (!mapEl) return;
+
+    safetyMap = GoogleMapsShield.createMap(mapEl, {
+        center: { lat: 20.5937, lng: 78.9629 },
+        zoom: 5,
+        mapId: 'DEMO_MAP_ID'
+    });
+
+    // Get user location and attach consistent nearby users + 3km assistance zone
+    navigator.geolocation.getCurrentPosition(function(pos) {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        safetyMap.setCenter({ lat: lat, lng: lng });
+        safetyMap.setZoom(14);
+
+        if (window.GoogleMapsShield) {
+            window.GoogleMapsShield.attachNearbyUsersLayer(safetyMap, lat, lng, {
+                radiusKm: 3.0,
+                victimLabel: "Your Current Location"
+            });
+        }
+    }, function() {
+        // Fallback default coordinates
+        if (window.GoogleMapsShield) {
+            window.GoogleMapsShield.attachNearbyUsersLayer(safetyMap, 28.4703, 77.4939, {
+                radiusKm: 3.0,
+                victimLabel: "Default Location (NCR)"
+            });
+        }
+    });
+
+    // Plot safety zones — data from JSON script tags
+    try {
+        const zones = JSON.parse(document.getElementById('zonesData').textContent);
+        zones.forEach(zone => {
+            const color = zone.status === 'safe' ? '#27ae60' : zone.status === 'medium' ? '#f39c12' : '#e74c3c';
+            const circle = new google.maps.Circle({
+                map: safetyMap,
+                center: { lat: zone.lat, lng: zone.lng },
+                radius: zone.radius,
+                strokeColor: color,
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: color,
+                fillOpacity: 0.2
+            });
+            const info = new google.maps.InfoWindow({
+                content: `<b>${zone.name}</b><br>Risk Score: ${zone.risk}/10<br>Status: ${zone.status}`
+            });
+            circle.addListener('click', function(e) {
+                info.setPosition(e.latLng);
+                info.open(safetyMap);
+            });
+        });
+    } catch(e) { console.error('Zones parsing error:', e); }
+
+    // Plot reports
+    try {
+        const reports = JSON.parse(document.getElementById('reportsData').textContent);
+        reports.forEach(r => {
+            const isSafe = (r.category || '').toLowerCase().includes('safe');
+            const pinColor = isSafe ? '#27ae60' : '#9b59b6';
+            GoogleMapsShield.createCustomMarker(safetyMap, {
+                lat: r.lat,
+                lng: r.lng,
+                title: r.category,
+                color: pinColor,
+                scale: 7,
+                popupContent: `<b>${r.category}</b><br>${r.location}<br><small>${r.time}</small>`
+            });
+        });
+    } catch(e) { console.error('Reports parsing error:', e); }
+
+    // Click on map to select location for report
+    safetyMap.addListener('click', function(e) {
+        const lat = e.latLng.lat().toFixed(6);
+        const lng = e.latLng.lng().toFixed(6);
+        document.getElementById('report_lat').value = lat;
+        document.getElementById('report_lng').value = lng;
+        document.getElementById('reportLocationDisplay').innerHTML = `<small class='text-success fw-600'>✅ Location: ${lat}, ${lng}</small>`;
+        document.getElementById('submitReportBtn').disabled = false;
+
+        if (reportMarker) reportMarker.setMap(null);
+        reportMarker = GoogleMapsShield.createCustomMarker(safetyMap, {
+            lat: parseFloat(lat),
+            lng: parseFloat(lng),
+            color: '#e74c3c',
+            scale: 9,
+            title: 'Selected Location',
+            popupContent: '📍 Selected Location'
+        });
+        reportMarker.openPopup();
+    });
+}
 
 function useCurrentLocation() {
     navigator.geolocation.getCurrentPosition(function(pos) {
@@ -243,14 +285,28 @@ function useCurrentLocation() {
         document.getElementById('report_lng').value = lng;
         document.getElementById('reportLocationDisplay').innerHTML = `<small class='text-success fw-600'>✅ Current Location: ${lat}, ${lng}</small>`;
         document.getElementById('submitReportBtn').disabled = false;
-        map.setView([lat, lng], 16);
+        if (safetyMap) {
+            safetyMap.setCenter({ lat: parseFloat(lat), lng: parseFloat(lng) });
+            safetyMap.setZoom(16);
+        }
     }, function() {
         alert('Could not get your location. Please click on the map instead.');
     });
 }
 
 function flyTo(lat, lng) {
-    map.flyTo([lat, lng], 16, { animate: true, duration: 1.5 });
+    if (safetyMap) {
+        safetyMap.panTo({ lat: lat, lng: lng });
+        safetyMap.setZoom(16);
+    }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.GoogleMapsShield) {
+        window.GoogleMapsShield.load("{{ GOOGLE_MAPS_API_KEY|default:'' }}", initCommunitySafetyMap);
+    } else {
+        initCommunitySafetyMap();
+    }
+});
 </script>
 {% endblock %}

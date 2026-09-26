@@ -1,0 +1,1304 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}User Onboarding & Identity Verification — Women Safety Shield{% endblock %}
+
+{% block extra_css %}
+<style>
+  .stepper-header {
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+  }
+  /* 16Personalities-Style Spectrum Likert Scale */
+  .likert-card {
+    background: #ffffff;
+    border: 1.5px solid #edf2f7;
+    border-radius: 20px;
+    padding: 2rem 2rem 1.75rem;
+    margin-bottom: 1.75rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(15, 23, 42, 0.03);
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
+  }
+  .likert-card:hover {
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+    border-color: #cbd5e1;
+  }
+  .likert-card.has-selection {
+    border-color: #e2e8f0;
+    background: #ffffff;
+  }
+  .likert-spotlight {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(circle 320px at var(--mouse-x, -500px) var(--mouse-y, -500px), rgba(99, 102, 241, 0.04), transparent 75%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 1;
+  }
+  .likert-card:hover .likert-spotlight {
+    opacity: 1;
+  }
+  .likert-content-wrap {
+    position: relative;
+    z-index: 2;
+  }
+
+  .statement-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: #64748b;
+    background: #f1f5f9;
+    padding: 0.3rem 0.8rem;
+    border-radius: 999px;
+    display: inline-block;
+    margin-bottom: 0.85rem;
+  }
+  .statement-text {
+    font-size: 1.18rem;
+    font-weight: 700;
+    color: #1e293b;
+    line-height: 1.5;
+    margin-bottom: 1.75rem;
+  }
+
+  /* Spectrum Scale Layout */
+  .scale-track-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    padding: 0.5rem 0.25rem 0.25rem;
+    position: relative;
+  }
+  @media (max-width: 576px) {
+    .scale-track-wrap {
+      gap: 0.5rem;
+    }
+  }
+
+  .scale-end-label {
+    font-size: 0.86rem;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    user-select: none;
+    min-width: 72px;
+  }
+  .scale-label-disagree {
+    color: #33a474;
+    text-align: right;
+  }
+  .scale-label-agree {
+    color: #88619a;
+    text-align: left;
+  }
+  @media (max-width: 576px) {
+    .scale-end-label {
+      font-size: 0.7rem;
+      min-width: 52px;
+    }
+  }
+
+  .scale-nodes-track {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.35rem;
+    padding: 1.25rem 0;
+  }
+  @media (max-width: 576px) {
+    .scale-nodes-track {
+      gap: 0.6rem;
+    }
+  }
+
+  .scale-connector-line {
+    position: absolute;
+    top: 50%;
+    left: 20px;
+    right: 20px;
+    height: 2px;
+    background: #e2e8f0;
+    transform: translateY(-50%);
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  /* Scale Circle Button */
+  .scale-circle {
+    position: relative;
+    z-index: 2;
+    cursor: pointer;
+    margin: 0;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+  }
+  .scale-circle input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .circle-inner {
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    position: relative;
+  }
+
+  .circle-inner .check-icon {
+    opacity: 0;
+    transform: scale(0.3);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    color: #ffffff;
+    font-weight: 900;
+  }
+
+  /* Node 1: Strongly Disagree (52px Teal) */
+  .scale-circle-1 .circle-inner {
+    width: 52px;
+    height: 52px;
+    border: 2.5px solid #33a474;
+    background: #dcf5eb;
+  }
+  .scale-circle-1:hover .circle-inner {
+    transform: scale(1.15);
+    background: #bbf0dc;
+    box-shadow: 0 0 18px rgba(51, 164, 116, 0.35);
+  }
+  .scale-circle-1.selected .circle-inner {
+    background: #33a474;
+    border-color: #33a474;
+    transform: scale(1.08);
+    box-shadow: 0 4px 16px rgba(51, 164, 116, 0.45);
+  }
+
+  /* Node 2: Disagree (42px Teal) */
+  .scale-circle-2 .circle-inner {
+    width: 42px;
+    height: 42px;
+    border: 2px solid #33a474;
+    background: #ecfaf4;
+  }
+  .scale-circle-2:hover .circle-inner {
+    transform: scale(1.15);
+    background: #d4f4e7;
+    box-shadow: 0 0 14px rgba(51, 164, 116, 0.3);
+  }
+  .scale-circle-2.selected .circle-inner {
+    background: #33a474;
+    border-color: #33a474;
+    transform: scale(1.08);
+    box-shadow: 0 4px 14px rgba(51, 164, 116, 0.4);
+  }
+
+  /* Node 3: Neutral (30px Slate) */
+  .scale-circle-3 .circle-inner {
+    width: 30px;
+    height: 30px;
+    border: 2px solid #94a3b8;
+    background: #ffffff;
+  }
+  .scale-circle-3:hover .circle-inner {
+    transform: scale(1.18);
+    background: #f1f5f9;
+    border-color: #64748b;
+    box-shadow: 0 0 12px rgba(148, 163, 184, 0.35);
+  }
+  .scale-circle-3.selected .circle-inner {
+    background: #64748b;
+    border-color: #64748b;
+    transform: scale(1.12);
+    box-shadow: 0 4px 12px rgba(100, 116, 139, 0.35);
+  }
+
+  /* Node 4: Agree (42px Purple) */
+  .scale-circle-4 .circle-inner {
+    width: 42px;
+    height: 42px;
+    border: 2px solid #88619a;
+    background: #f7f1f9;
+  }
+  .scale-circle-4:hover .circle-inner {
+    transform: scale(1.15);
+    background: #ede0f2;
+    box-shadow: 0 0 14px rgba(136, 97, 154, 0.3);
+  }
+  .scale-circle-4.selected .circle-inner {
+    background: #88619a;
+    border-color: #88619a;
+    transform: scale(1.08);
+    box-shadow: 0 4px 14px rgba(136, 97, 154, 0.4);
+  }
+
+  /* Node 5: Strongly Agree (52px Purple) */
+  .scale-circle-5 .circle-inner {
+    width: 52px;
+    height: 52px;
+    border: 2.5px solid #88619a;
+    background: #efe2f5;
+  }
+  .scale-circle-5:hover .circle-inner {
+    transform: scale(1.15);
+    background: #e2ccee;
+    box-shadow: 0 0 18px rgba(136, 97, 154, 0.35);
+  }
+  .scale-circle-5.selected .circle-inner {
+    background: #88619a;
+    border-color: #88619a;
+    transform: scale(1.08);
+    box-shadow: 0 4px 16px rgba(136, 97, 154, 0.45);
+  }
+
+  .scale-circle.selected .circle-inner .check-icon {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .scale-circle-1.selected .check-icon, .scale-circle-5.selected .check-icon { font-size: 1.25rem; }
+  .scale-circle-2.selected .check-icon, .scale-circle-4.selected .check-icon { font-size: 1rem; }
+  .scale-circle-3.selected .check-icon { font-size: 0.85rem; }
+
+  /* Mobile responsiveness for scale circle dimensions */
+  @media (max-width: 576px) {
+    .scale-circle-1 .circle-inner, .scale-circle-5 .circle-inner { width: 42px; height: 42px; }
+    .scale-circle-2 .circle-inner, .scale-circle-4 .circle-inner { width: 34px; height: 34px; }
+    .scale-circle-3 .circle-inner { width: 26px; height: 26px; }
+    .statement-text { font-size: 1.02rem; margin-bottom: 1.25rem; }
+  }
+
+  /* Circle Hover Floating Tooltip */
+  .circle-tooltip {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    background: #0f172a;
+    color: #ffffff;
+    font-size: 0.74rem;
+    font-weight: 600;
+    white-space: nowrap;
+    padding: 3px 9px;
+    border-radius: 6px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.18s ease, transform 0.18s ease;
+    z-index: 10;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  }
+  .circle-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: #0f172a;
+  }
+  .scale-circle:hover .circle-tooltip {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* Stance Confirmation Pill */
+  .stance-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.9rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #64748b;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s ease;
+  }
+  .stance-pill.active-disagree {
+    background: #ecfaf4;
+    border-color: #33a474;
+    color: #047857;
+  }
+  .stance-pill.active-neutral {
+    background: #f1f5f9;
+    border-color: #94a3b8;
+    color: #334155;
+  }
+  .stance-pill.active-agree {
+    background: #f7f1f9;
+    border-color: #88619a;
+    color: #6b21a8;
+  }
+  .score-badge {
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+  .progress-bar-interactive {
+    height: 8px;
+    border-radius: 999px;
+    background: #e2e8f0;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #f97316 0%, #10b981 50%, var(--crimson) 100%);
+    transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes shakeAttention {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-6px); }
+    40%, 80% { transform: translateX(6px); }
+  }
+  .shake-attention {
+    animation: shakeAttention 0.45s ease-in-out;
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.25) !important;
+  }
+  .cursor-hint-badge {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #475569;
+    border-radius: 999px;
+    padding: 0.3rem 0.75rem;
+    font-size: 0.75rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  .audit-timeline-item {
+    border-left: 2px solid #e2e8f0;
+    padding-left: 1rem;
+    position: relative;
+    margin-bottom: 1rem;
+  }
+  .audit-timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -6px;
+    top: 4px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--crimson);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-4" style="max-width: 880px;">
+
+  <!-- Step Progress Header -->
+  <div class="stepper-header mb-4">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+      <div>
+        <span class="badge rounded-pill bg-danger-subtle text-danger px-3 py-1 fw-bold text-uppercase" style="letter-spacing:0.04em;">
+          <i class="bi bi-shield-lock-fill me-1"></i>Understand &bull; Verify &bull; Protect
+        </span>
+        <h4 class="fw-bold mt-2 mb-1" style="color:var(--maroon); font-family:'Plus Jakarta Sans',sans-serif;">
+          Citizen Identity Verification &amp; Safety Assessment
+        </h4>
+        <p class="text-muted small mb-0">
+          Establish authentic identity and responsible participation to access sensitive community responder features.
+        </p>
+      </div>
+      <div>
+        <a href="{% url 'home' %}" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+          <i class="bi bi-house me-1"></i>Explore as Guest
+        </a>
+      </div>
+    </div>
+
+    <!-- Stepper indicator -->
+    <div class="row g-2 mt-3 pt-3 border-top text-center small">
+      <div class="col-4">
+        <div class="p-2 rounded-3 bg-success-subtle border border-success-subtle text-success fw-bold">
+          <i class="bi bi-check-circle-fill me-1"></i>Step 1: Account
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="p-2 rounded-3 {% if verification %}bg-success-subtle border border-success-subtle text-success fw-bold{% else %}bg-primary-subtle border border-primary-subtle text-primary fw-bold{% endif %}">
+          <i class="bi bi-person-bounding-box me-1"></i>Step 2: Identity KYC
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="p-2 rounded-3 {% if assessment %}bg-success-subtle border border-success-subtle text-success fw-bold{% else %}bg-warning-subtle border border-warning-subtle text-dark fw-bold{% endif %}">
+          <i class="bi bi-clipboard2-check me-1"></i>Step 3: Safety Assessment
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CURRENT VERIFICATION STATUS CARD -->
+  <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
+    <div class="card-header border-0 py-3 px-4 bg-light d-flex justify-content-between align-items-center">
+      <h6 class="fw-bold mb-0 text-dark">
+        <i class="bi bi-person-badge-fill me-2 text-danger"></i>Verification &amp; Trust Status
+      </h6>
+      <span class="badge bg-white text-dark border px-2 py-1 small">
+        Applicant: @{{ user.username }} ({{ user.get_role_display }})
+      </span>
+    </div>
+
+    <div class="card-body p-4">
+      {% if verification %}
+        {% if verification.status == 'approved' %}
+        <!-- APPROVED / VERIFIED -->
+        <div class="p-4 bg-success-subtle border border-success-subtle rounded-3">
+          <div class="d-flex align-items-center gap-3">
+            <div class="rounded-circle bg-success text-white p-2 d-flex align-items-center justify-content-center" style="width:52px;height:52px;flex-shrink:0;">
+              <i class="bi bi-patch-check-fill fs-2"></i>
+            </div>
+            <div>
+              <h5 class="text-success fw-bold mb-1">🛡️ Identity Verified &bull; Verified Community Member</h5>
+              <p class="text-dark small mb-1">
+                Your government document credentials have been verified by authorized administrators. 
+                You now possess full access to the 3 KM emergency distress broadcast network and trusted community responder status.
+              </p>
+              <div class="small text-muted">
+                <i class="bi bi-clock-history me-1"></i>Approved on {{ verification.reviewed_at|date:"d M Y, H:i" }} by Staff Officer
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {% elif verification.status == 'under_review' %}
+        <!-- UNDER REVIEW -->
+        <div class="p-4 bg-primary-subtle border border-primary-subtle rounded-3">
+          <div class="d-flex align-items-center gap-3">
+            <div class="rounded-circle bg-primary text-white p-2 d-flex align-items-center justify-content-center" style="width:52px;height:52px;flex-shrink:0;">
+              <i class="bi bi-search fs-2"></i>
+            </div>
+            <div>
+              <h5 class="text-primary fw-bold mb-1">Under Human Review</h5>
+              <p class="text-dark small mb-0">
+                A human administrator is actively examining your documents and cross-matching credentials.
+                You will be notified once the review is completed.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {% elif verification.status == 'pending' %}
+        <!-- PENDING REVIEW -->
+        <div class="p-4 bg-warning-subtle border border-warning-subtle rounded-3">
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="rounded-circle bg-warning text-dark p-2 d-flex align-items-center justify-content-center" style="width:50px;height:50px;flex-shrink:0;">
+              <i class="bi bi-hourglass-split fs-3"></i>
+            </div>
+            <div>
+              <h5 class="text-dark fw-bold mb-1">Verification Pending</h5>
+              <p class="text-muted small mb-0">
+                Your credentials were submitted on {{ verification.created_at|date:"d M Y, H:i" }} and entered the admin verification queue.
+                Automated orientation signals have been generated for staff inspection.
+              </p>
+            </div>
+          </div>
+
+          {% if verification.ai_outcome %}
+          <div class="p-3 bg-white rounded-3 border small">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <span class="fw-bold text-muted" style="font-size:0.75rem;">AI ASSISTANT SIGNAL:</span>
+              {% if verification.ai_outcome == 'forward_for_approval' %}
+              <span class="badge bg-success-subtle text-success fw-bold px-2 py-1">
+                <i class="bi bi-check-circle me-1"></i>Forwarded for Approval (Confidence: {{ verification.ai_confidence|floatformat:2 }})
+              </span>
+              {% elif verification.ai_outcome == 'auto_reject' %}
+              <span class="badge bg-danger-subtle text-danger fw-bold px-2 py-1">
+                <i class="bi bi-shield-x me-1"></i>Flagged for Admin Inspection (Confidence: {{ verification.ai_confidence|floatformat:2 }})
+              </span>
+              {% else %}
+              <span class="badge bg-warning-subtle text-warning fw-bold px-2 py-1">
+                <i class="bi bi-search me-1"></i>Manual Review Recommended (Confidence: {{ verification.ai_confidence|floatformat:2 }})
+              </span>
+              {% endif %}
+            </div>
+            <p class="mb-0 text-muted fst-italic">"{{ verification.ai_reasoning }}"</p>
+          </div>
+          {% endif %}
+        </div>
+
+        {% elif verification.status == 'reverification_required' %}
+        <!-- REVERIFICATION REQUIRED -->
+        <div class="p-4 bg-warning-subtle border border-warning-subtle rounded-3">
+          <div class="d-flex align-items-center gap-3 mb-2">
+            <div class="rounded-circle bg-warning text-dark p-2 d-flex align-items-center justify-content-center" style="width:50px;height:50px;flex-shrink:0;">
+              <i class="bi bi-exclamation-triangle-fill fs-3"></i>
+            </div>
+            <div>
+              <h5 class="text-dark fw-bold mb-1">Re-verification Required</h5>
+              <p class="text-dark small mb-0">
+                {{ verification.reverification_notes|default:"Our administrative team requires clearer document photographs or updated identity information." }}
+              </p>
+            </div>
+          </div>
+          <small class="text-muted">Please update your documents and resubmit using the form below.</small>
+        </div>
+
+        {% elif verification.status == 'rejected' %}
+        <!-- REJECTED -->
+        <div class="p-4 bg-danger-subtle border border-danger-subtle rounded-3">
+          <div class="d-flex align-items-center gap-3">
+            <div class="rounded-circle bg-danger text-white p-2 d-flex align-items-center justify-content-center" style="width:50px;height:50px;flex-shrink:0;">
+              <i class="bi bi-x-circle-fill fs-3"></i>
+            </div>
+            <div>
+              <h5 class="text-danger fw-bold mb-1">Verification Rejected</h5>
+              <p class="text-dark small mb-0">
+                Reason: {{ verification.rejection_reason|default:verification.notes|default:"The submitted identity packet could not be validated against official criteria." }}
+              </p>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+      {% else %}
+        <div class="alert alert-info rounded-3 mb-0">
+          <i class="bi bi-info-circle-fill me-2"></i>
+          <strong>Welcome!</strong> You do not currently have an identity verification on file. 
+          Please complete Step 2 (Identity Document &amp; Live Selfie) and Step 3 (Safety Awareness Assessment) below to join the trusted network.
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- IF ASSESSMENT ALREADY COMPLETED: SHOW RESULTS SUMMARY CARD -->
+  {% if assessment %}
+  <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
+    <div class="card-header bg-white border-bottom py-3 px-4 d-flex justify-content-between align-items-center">
+      <h6 class="fw-bold mb-0 text-dark">
+        <i class="bi bi-clipboard2-pulse-fill text-danger me-2"></i>Safety &amp; Civic Orientation Results
+      </h6>
+      <span class="badge bg-success-subtle text-success px-2 py-1">6 Questions Evaluated</span>
+    </div>
+    <div class="card-body p-4">
+      <div class="row g-3 mb-4 text-center">
+        <div class="col-6 col-md">
+          <div class="p-3 bg-light rounded-3 border">
+            <small class="text-muted d-block" style="font-size:0.75rem;">OVERALL SAFETY</small>
+            <div class="score-badge text-danger">{{ assessment.safety_awareness_score|floatformat:0 }}%</div>
+          </div>
+        </div>
+        <div class="col-6 col-md">
+          <div class="p-3 bg-light rounded-3 border">
+            <small class="text-muted d-block" style="font-size:0.75rem;">COMMUNITY HELP</small>
+            <div class="score-badge text-primary">{{ assessment.community_help_score|floatformat:0 }}%</div>
+          </div>
+        </div>
+        <div class="col-6 col-md">
+          <div class="p-3 bg-light rounded-3 border">
+            <small class="text-muted d-block" style="font-size:0.75rem;">WOMEN'S SAFETY</small>
+            <div class="score-badge text-success">{{ assessment.womens_safety_score|floatformat:0 }}%</div>
+          </div>
+        </div>
+        <div class="col-6 col-md">
+          <div class="p-3 bg-light rounded-3 border">
+            <small class="text-muted d-block" style="font-size:0.75rem;">EMERGENCY RESP.</small>
+            <div class="score-badge text-warning">{{ assessment.emergency_response_score|floatformat:0 }}%</div>
+          </div>
+        </div>
+        <div class="col-6 col-md">
+          <div class="p-3 bg-light rounded-3 border">
+            <small class="text-muted d-block" style="font-size:0.75rem;">RESPONSIBLE BEH.</small>
+            <div class="score-badge text-info">{{ assessment.responsible_behavior_score|floatformat:0 }}%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-3 bg-light rounded-3 border small mb-3">
+        <strong class="text-dark d-block mb-1">AI-Assisted Assessment Summary:</strong>
+        <p class="mb-0 text-muted" style="white-space:pre-line;">{{ assessment.ai_summary }}</p>
+      </div>
+
+      <div class="alert alert-secondary py-2 px-3 rounded-3 small mb-0" style="font-size:0.78rem;">
+        <i class="bi bi-info-circle-fill me-1"></i>
+        <strong>Advisory Signal Notice:</strong> {{ assessment.ai_disclaimer }}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- VERIFICATION SUBMISSION & ASSESSMENT FORM -->
+  {% if not verification or verification.status != 'approved' %}
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+    <div class="card-header border-0 py-3 px-4 bg-white border-bottom">
+      <h5 class="fw-bold mb-1" style="color:var(--maroon);">
+        <i class="bi bi-shield-check text-danger me-2"></i>Step 2: Identity Verification (KYC)
+      </h5>
+      <small class="text-muted">
+        Upload genuine government-approved credentials. Encrypted &amp; hashed under strict data minimization guidelines.
+      </small>
+    </div>
+
+    <div class="card-body p-4">
+      <form method="post" enctype="multipart/form-data" id="verificationForm">
+        {% csrf_token %}
+
+        <!-- Document Type & Masked Number -->
+        <div class="row g-3 mb-4">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold small">Government-Approved Document Type *</label>
+            <select name="document_type" class="form-select" required>
+              <option value="aadhaar" {% if verification.document_type == 'aadhaar' %}selected{% endif %}>Aadhaar Card (UIDAI)</option>
+              <option value="pan" {% if verification.document_type == 'pan' %}selected{% endif %}>Permanent Account Number (PAN Card)</option>
+              <option value="voter_id" {% if verification.document_type == 'voter_id' %}selected{% endif %}>Voter Identity Card (EPIC)</option>
+              <option value="driving_license" {% if verification.document_type == 'driving_license' %}selected{% endif %}>Driving License</option>
+              <option value="passport" {% if verification.document_type == 'passport' %}selected{% endif %}>Indian Passport</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold small">Document Identification Number *</label>
+            <input type="text" name="document_number" class="form-control" placeholder="e.g. 12-digit Aadhaar / 10-char PAN" required value="{% if verification.document_number %}{{ verification.document_number }}{% elif verification.ocr_aadhaar_number %}{{ verification.ocr_aadhaar_number }}{% endif %}">
+            <div class="form-text" style="font-size:0.72rem;">Only last 4 digits stored unmasked for verification audits.</div>
+          </div>
+        </div>
+
+        <!-- Document Files (Card Uploads) -->
+        <div class="row g-3 mb-4">
+          <!-- 1. Document Image -->
+          <div class="col-md-6">
+            <div class="p-3 bg-light rounded-3 border h-100 text-center">
+              <i class="bi bi-card-heading text-danger fs-2 d-block mb-1"></i>
+              <strong class="d-block mb-1">1. Identity Document Photo *</strong>
+              <small class="text-muted d-block mb-2" style="font-size:0.75rem;">Clear front photo of the selected government card.</small>
+              <input type="file" name="aadhaar_image" class="form-control form-control-sm" accept="image/*,.pdf" {% if not verification %}required{% endif %}>
+              {% if verification.aadhaar_image %}
+              <small class="text-success mt-1 d-block"><i class="bi bi-check-circle me-1"></i>Current file uploaded</small>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- 2. Live Selfie -->
+          <div class="col-md-6">
+            <div class="p-3 bg-light rounded-3 border h-100 text-center">
+              <i class="bi bi-person-bounding-box text-success fs-2 d-block mb-1"></i>
+              <strong class="d-block mb-1">2. Live Selfie Photo *</strong>
+              <small class="text-muted d-block mb-2" style="font-size:0.75rem;">Clear front-facing photo taken in good lighting.</small>
+              <input type="file" name="selfie_image" class="form-control form-control-sm" accept="image/*" capture="user" {% if not verification %}required{% endif %}>
+              {% if verification.selfie_image %}
+              <small class="text-success mt-1 d-block"><i class="bi bi-check-circle me-1"></i>Current selfie uploaded</small>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Name & Date of Birth Cross-check -->
+        <div class="row g-3 mb-4">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold small">Full Name (As printed on document) *</label>
+            <input type="text" name="name" class="form-control" required value="{% if verification.ocr_name %}{{ verification.ocr_name }}{% else %}{{ user.full_name }}{% endif %}">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold small">Date of Birth (DOB) *</label>
+            <input type="date" name="dob" class="form-control" required value="{% if verification.ocr_dob %}{{ verification.ocr_dob }}{% elif user.date_of_birth %}{{ user.date_of_birth|date:'Y-m-d' }}{% endif %}">
+          </div>
+        </div>
+
+
+        <!-- STEP 3: 6 LIKERT SAFETY QUESTIONS -->
+        <div class="mt-4 pt-4 border-top">
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge rounded-pill bg-danger px-2 py-1 small">STEP 3</span>
+              <h5 class="fw-bold mb-0 text-dark">Citizen Safety &amp; Awareness Assessment</h5>
+            </div>
+            <span class="cursor-hint-badge">
+              <i class="bi bi-cursor-fill text-danger"></i> Move cursor across statements &amp; choose your response
+            </span>
+          </div>
+
+          <p class="text-muted small mb-3">
+            Please answer each of the 6 statements below regarding civic responsibility, emergency readiness, and women's safety.
+            <strong>No answers are chosen automatically</strong>—please make your own conscious choice for each statement.
+          </p>
+
+          <!-- Interactive Completion Progress Meter -->
+          <div class="card border-0 bg-light rounded-3 p-3 mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="small fw-semibold text-secondary">
+                <i class="bi bi-ui-checks me-1 text-danger"></i>Assessment Progress
+              </span>
+              <span class="badge rounded-pill bg-white text-dark border px-2 py-1 small fw-bold" id="assessmentProgressText">
+                0 of 6 answered (0%)
+              </span>
+            </div>
+            <div class="progress-bar-interactive">
+              <div class="progress-fill" id="assessmentProgressBar" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <!-- Q1 -->
+          <div class="likert-card {% if assessment.q1_responsibility %}has-selection{% endif %}" id="card_q1" data-q="q1">
+            <div class="likert-spotlight"></div>
+            <div class="likert-content-wrap text-center">
+              <span class="statement-badge">Statement 1 of 6</span>
+              <h5 class="statement-text">
+                "I believe everyone has a responsibility to help a person facing a genuine emergency."
+              </h5>
+
+              <div class="scale-track-wrap">
+                <span class="scale-end-label scale-label-disagree">DISAGREE</span>
+                <div class="scale-nodes-track">
+                  <div class="scale-connector-line"></div>
+
+                  <label class="scale-circle scale-circle-1 {% if assessment.q1_responsibility == 1 %}selected{% endif %}" data-q="q1" data-val="1">
+                    <input type="radio" name="q1" value="1" {% if assessment.q1_responsibility == 1 %}checked{% endif %}>
+                    <span class="circle-inner"><i class="bi bi-check-lg check-icon"></i></span>
+                    <span class="circle-tooltip">Strongly Disagree</span>
+                  </label>
+
+                  <label class="scale-circle scale-circle-2 {% if assessment.q1_responsibility == 2 %}selected{% endif %}" data-q="q1" data-val="2">
+                    <input type="radio" name="q1" value="2" {% if assessment.q1_responsibility == 2 %}checked{% endif %}>
+                    <span class="circle-inner"><i class="bi bi-check-lg check-icon"></i></span>
+                    <span class="circle-tooltip">Disagree</span>
+                  </label>
+
+                  <label class="scale-circle scale-circle-3 {% if assessment.q1_responsibility == 3 %}selected{% endif %}" data-q="q1" data-val="3">
+                    <input type="radio" name="q1" value="3" {% if assessment.q1_responsibility == 3 %}checked{% endif %}>
+                    <span class="circle-inner"><i class="bi bi-dash-lg check-icon"></i></span>
+                    <span class="circle-tooltip">Neutral</span>
+                  </label>
+
+                  <label class="scale-circle scale-circle-4 {% if assessment.q1_responsibility == 4 %}selected{% endif %}" data-q="q1" data-val="4">
+                    <input type="radio" name="q1" value="4" {% if assessment.q1_responsibility == 4 %}checked{% endif %}>
+                    <span class="circle-inner"><i class="bi bi-check-lg check-icon"></i></span>
+                    <span class="circle-tooltip">Agree</span>
+                  </label>
+
+                  <label class="scale-circle scale-circle-5 {% if assessment.q1_responsibility == 5 %}selected{% endif %}" data-q="q1" data-val="5">
+                    <input type="radio" name="q1" value="5" {% if assessment.q1_responsibility == 5 %}checked{% endif %}>
+                    <span class="circle-inner"><i class="bi bi-check-lg check-icon"></i></span>
+                    <span class="circle-tooltip">Strongly Agree</span>
+                  </label>
+                </div>
+                <span class="scale-end-label scale-label-agree">AGREE</span>
+              </div>
+
+              <div class="mt-3">
+                <span class="stance-pill" id="stance_q1">
+                  {% if assessment.q1_responsibility == 1 %}Selected: Strongly Disagree
+                  {% elif assessment.q1_responsibility == 2 %}Selected: Disagree
+                  {% elif assessment.q1_responsibility == 3 %}Selected: Neutral
+                  {% elif assessment.q1_responsibility == 4 %}Selected: Agree
+                  {% elif assessment.q1_responsibility == 5 %}Selected: Strongly Agree
+                  {% else %}Click a circle above to choose your stance{% endif %}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Q2 -->
+          <div class="likert-card {% if assessment.q2_willingness %}has-selection{% endif %}" id="card_q2" data-q="q2">
+            <div class="likert-spotlight"></div>
+            <div class="likert-content-wrap text-center">
+              <span class="statement-badge">Statement 2 of 6</span>
+              <h5 class="statement-text">
+                "I would be willing to help someone in an emergency situation when it is safe for me to do so."
+              </h5>
+
+              <div class="scale-track-wrap">
+                <span class="scale-end-label scale-label-disagree">DISAGREE</span>
+                <div class="scale-nodes-track">
+                  <div class="scale-connector-line"></div>
+
+                  <label class="scale-circle scale-circle-1 {% if assessment.q2_willingness == 1 %}selected{% endif %}" data-q="q2" data-val="1">
+                    <input type="radio" name="q2" value="1" {% if assessment.q2_willingness == 1 %}checked{% endif %}>
+                    <span class="circle-inner"><i class="bi bi-check-lg check-icon"></i></span>
+                    <span class="circle-tooltip">Strongly Disagree</span>
+                  </label>
+
+                  <label class="scale-circle scale-circle-2 {% if assessment.q2_willingness == 2 %}selected{% endif %}" data-q="q2" data-val="2">
+                    <input type="radio" name="q2" value="2" {% if assessment.q2_willingness == 2 %}checked{% endif %}>
+                    <span class="circle-inner"><i class="bi bi-check-lg check-icon"></i></span>
+                    <span class="circle-tooltip">Disagree</span>
+                  </label>
+
+                  <label class="scale-circle scale-circle-3 {% if assessment.q2_willingness == 3 %}selected{% endif %}" data-q="q2" data-val="3">
+                    <input type="radio" name="q2" value="3" {% if assessment.q2_willingness == 3 %}checked{% endif %}>
+                    <span class="circle-inner"><i class="bi bi-dash-lg check-icon"></i></span>
+                    <span class="circle-tooltip">Neutral</span>
+                  </label>
+
+                  <label class="scale-circle scale-circle-4 {% if assessment.q2_willingness == 4 %}selected{% endif %}" data-q="q2" data-val="4">
+                    <input type="radio" name="q2" value="4" {% if assessment.q2_willingness == 4 %}checked{% endif %}>
+                    <span class="circle-inner"><i class="bi bi-check-lg check-icon"></i></span>
+                    <span class="circle-tooltip">Agree</span>
+                  </label>
+
+                  <label class="scale-circle scale-circle-5 {% if assessment.q2_willingness == 5 %}selected{% endif %}" data-q="q2" data-val="5">
+                    <input type="radio" name="q2" value="5" {% if assessment.q2_willingness == 5 %}checked{% endif %}>
+                    <span class="circle-inner"><i class="bi bi-check-lg check-icon"></i></span>
+                    <span class="circle-tooltip">Strongly Agree</span>
+                  </label>
+                </div>
+                <span class="scale-end-label scale-label-agree">AGREE</span>
+              </div>
+
+              <div class="mt-3">
+                <span class="stance-pill" id="stance_q2">
+                  {% if assessment.q2_willingness == 1 %}Selected: Strongly Disagree
+                  {% elif assessment.q2_willingness == 2 %}Selected: Disagree
+                  {% elif assessment.q2_willingness == 3 %}Selected: Neutral
+                  {% elif assessment.q2_willingness == 4 %}Selected: Agree
+                  {% elif assessment.q2_willingness == 5 %}Selected: Strongly Agree
+                  {% else %}Click a circle above to choose your stance{% endif %}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Q3 -->
+          <div class="likert-card {% if assessment.q3_shared_safety %}has-selection{% endif %}" id="card_q3" data-q="q3">
+            <div class="likert-spotlight"></div>
+            <div class="likert-content-wrap text-center">
+              <span class="statement-badge">Statement 3 of 6</span>
+              <h5 class="statement-text">
+                "Women's safety should be treated as a shared responsibility of the entire community."
+              </h5>
+
+              <div class="scale-track-wrap">
+                <span class="scale-end-label scale-label-disagree">DISAGREE</span>
+                <div class="scale-nodes-track">
+                  <div class="scale-connector-line"></div>
+
+                  <label class="scale-circle scale-circle-1 {% if assessment.q3_shared_safety == 1 %}selected{% endif %}" data-q="q3" data-val="1">
+                    <input type="radio" name="q3" value="1" {% if assessment.q3_shared_safety == 1 %}checked{% endif %}>
+                    <span class="circle-inner"><i class="bi bi-check-lg check-icon"></i></span>
+                    <span class="circle-tooltip">Strongly Disagree</span>
+                  </label>
+
+                  <label class="scale-circle scale-circle-2 {% if assessment.q3_shared_safety == 2 %}selected{% endif %}" data-q="q3" data-val="2">
+                    <input type="radio" name="q3" value="2" {% if assessment.q3_shared_safety == 2 %}checked{% endif %}>
+                    <span class="circle-inner"><i class="bi bi-check-lg check-icon"></i></span>
+                    <span class="circle-tooltip">Disagree</span>
+                  </label>
+
+                  <label class="scale-circle scale-circle-3 {% if assessment.q3_shared_safety == 3 %}selected{% endif %}" data-q="q3" data-val="3">
+                    <input type="radio" name="q3" value="3" {% if assessment.q3_shared_safety == 3 %}checked{% endif %}>
+                    <span class="circle-inner"><i class="bi bi-dash-lg check-icon"></i></span>
+                    <span class="circle-tooltip">Neutral</span>
+                  </label>
+
+                  <label class="scale-circle scale-circle-4 {% if assessment.q3_shared_safety == 4 %}selected{% endif %}" data-q="q3" data-val="4">
+                    <input type="radio" name="q3" value="4" {% if assessment.q3_shared_safety == 4 %}checked{% endif %}>
+                    <span class="circle-inner"><i class="bi bi-check-lg check-icon"></i></span>
+                    <span class="circle-tooltip">Agree</span>
+                  </label>
+
+                  <label class="scale-circle scale-circle-5 {% if assessment.q3_shared_safety == 5 %}selected{% endif %}" data-q="q3" data-val="5">
+                    <input type="radio" name="q3" value="5" {% if assessment.q3_shared_safety == 5 %}checked{% endif %}>
+                    <span class="circle-inner"><i class="bi bi-check-lg check-icon"></i></span>
+                    <span class="circle-tooltip">Strongly Agree</span>
+                  </label>
+                </div>
+                <span class="scale-end-label scale-label-agree">AGREE</span>
+              </div>
+
+              <div class="mt-3">
+                <span class="stance-pill" id="stance_q3">
+                  {% if assessment.q3_shared_safety == 1 %}Selected: Strongly Disagree
+                  {% elif assessment.q3_shared_safety == 2 %}Selected: Disagree
+                  {% elif assessment.q3_shared_safety == 3 %}Selected: Neutral
+                  {% elif assessment.q3_shared_safety == 4 %}Selected: Agree
+                  {% elif assessment.q3_shared_safety == 5 %}Selected: Strongly Agree
+                  {% else %}Click a circle above to choose your stance{% endif %}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Q4 -->
+          <div class="likert-card {% if assessment.q4_consent_boundaries %}has-selection{% endif %}" id="card_q4" data-q="q4">
+            <div class="likert-spotlight"></div>
+            <div class="likert-content-wrap text-center">
+              <span class="statement-badge">Statement 4 of 6</span>
+              <h5 class="statement-text">
+                "I believe respecting personal boundaries and consent is essential for creating a safe environment."
+              </h5>
+
+              <div class="scale-track-wrap">
+                <span class="scale-end-label scale-label-disagree">DISAGREE</span>
+                <div class="scale-nodes-track">
+                  <div class="scale-connector-line"></div>
+
+                  <label class="scale-circle scale-circle-1 {% if assessment.q4_consent_boundaries == 1 %}selected{% endif %}" data-q="q4" data-val="1">
+                    <input type="radio" name="q4" value="1" {% if assessment.q4_consent_boundaries == 1 %}checked{% endif %}>
+                    <span class="circle-inner"><i class="bi bi-check-lg check-icon"></i></span>
+                    <span class="circle-tooltip">Strongly Disagree</span>
+                  </label>
+
+                  <label class="scale-circle scale-circle-2 {% if assessment.q4_consent_boundaries == 2 %}selected{% endif %}" data-q="q4" data-val="2">
+                    <input type="radio" name="q4" value="2" {% if assessment.q4_consent_boundaries == 2 %}checked{% endif %}>
+                    <span class="circle-inner"><i class="bi bi-check-lg check-icon"></i></span>
+                    <span class="circle-tooltip">Disagree</span>
+                  </label>
+
+                  <label class="scale-circle scale-circle-3 {% if assessment.q4_consent_boundaries == 3 %}selected{% endif %}" data-q="q4" data-val="3">
+                    <input type="radio" name="q4" value="3" {% if assessment.q4_consent_boundaries == 3 %}checked{% endif %}>
+                    <span class="circle-inner"><i class="bi bi-dash-lg check-icon"></i></span>
+                    <span class="circle-tooltip">Neutral</span>
+                  </label>
+
+                  <label class="scale-circle scale-circle-4 {% if assessment.q4_consent_boundaries == 4 %}selected{% endif %}" data-q="q4" data-val="4">
+                    <input type="radio" name="q4" value="4" {% if assessment.q4_consent_boundaries == 4 %}checked{% endif %}>
+                    <span class="circle-inner"><i class="bi bi-check-lg check-icon"></i></span>
+                    <span class="circle-tooltip">Agree</span>
+                  </label>
+
+                  <label class="scale-circle scale-circle-5 {% if assessment.q4_consent_boundaries == 5 %}selected{% endif %}" data-q="q4" data-val="5">
+                    <input type="radio" name="q4" value="5" {% if assessment.q4_consent_boundaries == 5 %}checked{% endif %}>
+                    <span class="circle-inner"><i class="bi bi-check-lg check-icon"></i></span>
+                    <span class="circle-tooltip">Strongly Agree</span>
+                  </label>
+                </div>
+                <span class="scale-end-label scale-label-agree">AGREE</span>
+              </div>
+
+              <div class="mt-3">
+                <span class="stance-pill" id="stance_q4">
+                  {% if assessment.q4_consent_boundaries == 1 %}Selected: Strongly Disagree
+                  {% elif assessment.q4_consent_boundaries == 2 %}Selected: Disagree
+                  {% elif assessment.q4_consent_boundaries == 3 %}Selected: Neutral
+                  {% elif assessment.q4_consent_boundaries == 4 %}Selected: Agree
+                  {% elif assessment.q4_consent_boundaries == 5 %}Selected: Strongly Agree
+                  {% else %}Click a circle above to choose your stance{% endif %}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Q5 -->
+          <div class="likert-card {% if assessment.q5_incident_reporting %}has-selection{% endif %}" id="card_q5" data-q="q5">
+            <div class="likert-spotlight"></div>
+            <div class="likert-content-wrap text-center">
+              <span class="statement-badge">Statement 5 of 6</span>
+              <h5 class="statement-text">
+                "I would report or seek appropriate help if I witnessed a serious safety incident."
+              </h5>
+
+              <div class="scale-track-wrap">
+                <span class="scale-end-label scale-label-disagree">DISAGREE</span>
+                <div class="scale-nodes-track">
+                  <div class="scale-connector-line"></div>
+
+                  <label class="scale-circle scale-circle-1 {% if assessment.q5_incident_reporting == 1 %}selected{% endif %}" data-q="q5" data-val="1">
+                    <input type="radio" name="q5" value="1" {% if assessment.q5_incident_reporting == 1 %}checked{% endif %}>
+                    <span class="circle-inner"><i class="bi bi-check-lg check-icon"></i></span>
+                    <span class="circle-tooltip">Strongly Disagree</span>
+                  </label>
+
+                  <label class="scale-circle scale-circle-2 {% if assessment.q5_incident_reporting == 2 %}selected{% endif %}" data-q="q5" data-val="2">
+                    <input type="radio" name="q5" value="2" {% if assessment.q5_incident_reporting == 2 %}checked{% endif %}>
+                    <span class="circle-inner"><i class="bi bi-check-lg check-icon"></i></span>
+                    <span class="circle-tooltip">Disagree</span>
+                  </label>
+
+                  <label class="scale-circle scale-circle-3 {% if assessment.q5_incident_reporting == 3 %}selected{% endif %}" data-q="q5" data-val="3">
+                    <input type="radio" name="q5" value="3" {% if assessment.q5_incident_reporting == 3 %}checked{% endif %}>
+                    <span class="circle-inner"><i class="bi bi-dash-lg check-icon"></i></span>
+                    <span class="circle-tooltip">Neutral</span>
+                  </label>
+
+                  <label class="scale-circle scale-circle-4 {% if assessment.q5_incident_reporting == 4 %}selected{% endif %}" data-q="q5" data-val="4">
+                    <input type="radio" name="q5" value="4" {% if assessment.q5_incident_reporting == 4 %}checked{% endif %}>
+                    <span class="circle-inner"><i class="bi bi-check-lg check-icon"></i></span>
+                    <span class="circle-tooltip">Agree</span>
+                  </label>
+
+                  <label class="scale-circle scale-circle-5 {% if assessment.q5_incident_reporting == 5 %}selected{% endif %}" data-q="q5" data-val="5">
+                    <input type="radio" name="q5" value="5" {% if assessment.q5_incident_reporting == 5 %}checked{% endif %}>
+                    <span class="circle-inner"><i class="bi bi-check-lg check-icon"></i></span>
+                    <span class="circle-tooltip">Strongly Agree</span>
+                  </label>
+                </div>
+                <span class="scale-end-label scale-label-agree">AGREE</span>
+              </div>
+
+              <div class="mt-3">
+                <span class="stance-pill" id="stance_q5">
+                  {% if assessment.q5_incident_reporting == 1 %}Selected: Strongly Disagree
+                  {% elif assessment.q5_incident_reporting == 2 %}Selected: Disagree
+                  {% elif assessment.q5_incident_reporting == 3 %}Selected: Neutral
+                  {% elif assessment.q5_incident_reporting == 4 %}Selected: Agree
+                  {% elif assessment.q5_incident_reporting == 5 %}Selected: Strongly Agree
+                  {% else %}Click a circle above to choose your stance{% endif %}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Q6 -->
+          <div class="likert-card {% if assessment.q6_emergency_confidence %}has-selection{% endif %}" id="card_q6" data-q="q6">
+            <div class="likert-spotlight"></div>
+            <div class="likert-content-wrap text-center">
+              <span class="statement-badge">Statement 6 of 6</span>
+              <h5 class="statement-text">
+                "I feel confident that I know what to do when someone around me needs emergency assistance."
+              </h5>
+
+              <div class="scale-track-wrap">
+                <span class="scale-end-label scale-label-disagree">DISAGREE</span>
+                <div class="scale-nodes-track">
+                  <div class="scale-connector-line"></div>
+
+                  <label class="scale-circle scale-circle-1 {% if assessment.q6_emergency_confidence == 1 %}selected{% endif %}" data-q="q6" data-val="1">
+                    <input type="radio" name="q6" value="1" {% if assessment.q6_emergency_confidence == 1 %}checked{% endif %}>
+                    <span class="circle-inner"><i class="bi bi-check-lg check-icon"></i></span>
+                    <span class="circle-tooltip">Strongly Disagree</span>
+                  </label>
+
+                  <label class="scale-circle scale-circle-2 {% if assessment.q6_emergency_confidence == 2 %}selected{% endif %}" data-q="q6" data-val="2">
+                    <input type="radio" name="q6" value="2" {% if assessment.q6_emergency_confidence == 2 %}checked{% endif %}>
+                    <span class="circle-inner"><i class="bi bi-check-lg check-icon"></i></span>
+                    <span class="circle-tooltip">Disagree</span>
+                  </label>
+
+                  <label class="scale-circle scale-circle-3 {% if assessment.q6_emergency_confidence == 3 %}selected{% endif %}" data-q="q6" data-val="3">
+                    <input type="radio" name="q6" value="3" {% if assessment.q6_emergency_confidence == 3 %}checked{% endif %}>
+                    <span class="circle-inner"><i class="bi bi-dash-lg check-icon"></i></span>
+                    <span class="circle-tooltip">Neutral</span>
+                  </label>
+
+                  <label class="scale-circle scale-circle-4 {% if assessment.q6_emergency_confidence == 4 %}selected{% endif %}" data-q="q6" data-val="4">
+                    <input type="radio" name="q6" value="4" {% if assessment.q6_emergency_confidence == 4 %}checked{% endif %}>
+                    <span class="circle-inner"><i class="bi bi-check-lg check-icon"></i></span>
+                    <span class="circle-tooltip">Agree</span>
+                  </label>
+
+                  <label class="scale-circle scale-circle-5 {% if assessment.q6_emergency_confidence == 5 %}selected{% endif %}" data-q="q6" data-val="5">
+                    <input type="radio" name="q6" value="5" {% if assessment.q6_emergency_confidence == 5 %}checked{% endif %}>
+                    <span class="circle-inner"><i class="bi bi-check-lg check-icon"></i></span>
+                    <span class="circle-tooltip">Strongly Agree</span>
+                  </label>
+                </div>
+                <span class="scale-end-label scale-label-agree">AGREE</span>
+              </div>
+
+              <div class="mt-3">
+                <span class="stance-pill" id="stance_q6">
+                  {% if assessment.q6_emergency_confidence == 1 %}Selected: Strongly Disagree
+                  {% elif assessment.q6_emergency_confidence == 2 %}Selected: Disagree
+                  {% elif assessment.q6_emergency_confidence == 3 %}Selected: Neutral
+                  {% elif assessment.q6_emergency_confidence == 4 %}Selected: Agree
+                  {% elif assessment.q6_emergency_confidence == 5 %}Selected: Strongly Agree
+                  {% else %}Click a circle above to choose your stance{% endif %}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Privacy & Statutory Disclaimers -->
+        <div class="p-3 bg-light rounded-3 border mb-3 small">
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" name="consent_data_processing" id="consentCheck" checked required>
+            <label class="form-check-label text-dark fw-semibold" for="consentCheck">
+              I consent to the secure verification and processing of my identity credentials for emergency response and community safety purposes.
+            </label>
+          </div>
+          <p class="text-muted mb-0" style="font-size:0.75rem;">
+            <strong>Statutory Transparency Notice:</strong> Women Safety Shield securely inspects credentials with human administrative oversight. 
+            We do not claim official DigiLocker or UIDAI direct database authorization unless an authenticated government portal connection is active.
+          </p>
+        </div>
+
+        <button type="submit" class="btn btn-danger w-100 py-3 fw-bold rounded-3 shadow-sm" style="background:var(--crimson);border-color:var(--crimson);">
+          <i class="bi bi-shield-check me-2"></i>Submit Verification Packet for Admin Review
+        </button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- AUDIT LOG TRAIL (TRANSPARENCY) -->
+  {% if audit_logs %}
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+    <div class="card-header bg-light border-0 py-3 px-4">
+      <h6 class="fw-bold mb-0 text-dark">
+        <i class="bi bi-journal-text me-2 text-danger"></i>Verification Activity &amp; Audit Trail
+      </h6>
+    </div>
+    <div class="card-body p-4">
+      <div class="ps-2">
+        {% for log in audit_logs %}
+        <div class="audit-timeline-item">
+          <div class="d-flex justify-content-between">
+            <strong class="text-dark small text-uppercase">{{ log.action|cut:"_" }}</strong>
+            <span class="text-muted small">{{ log.timestamp|date:"d M Y, H:i" }}</span>
+          </div>
+          <p class="text-muted small mb-0">{{ log.reason|default:"Action performed on verification record." }}</p>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Cursor tracking radial spotlight for Likert Cards
+  const cards = document.querySelectorAll('.likert-card');
+  cards.forEach(function(card) {
+    card.addEventListener('mousemove', function(e) {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      card.style.setProperty('--mouse-x', x + 'px');
+      card.style.setProperty('--mouse-y', y + 'px');
+    });
+    card.addEventListener('mouseleave', function() {
+      card.style.setProperty('--mouse-x', '-500px');
+      card.style.setProperty('--mouse-y', '-500px');
+    });
+  });
+
+  // Dynamic micro-spring cursor interaction on scale circles
+  const scaleCircles = document.querySelectorAll('.scale-circle');
+  scaleCircles.forEach(function(btn) {
+    btn.addEventListener('mousemove', function(e) {
+      const rect = btn.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      const tiltX = (((y - centerY) / centerY) * -10).toFixed(2);
+      const tiltY = (((x - centerX) / centerX) * 10).toFixed(2);
+      btn.style.transform = 'perspective(280px) rotateX(' + tiltX + 'deg) rotateY(' + tiltY + 'deg) scale(1.08)';
+    });
+    btn.addEventListener('mouseleave', function() {
+      btn.style.transform = '';
+    });
+  });
+
+  const stanceLabels = {
+    '1': 'Selected: Strongly Disagree',
+    '2': 'Selected: Disagree',
+    '3': 'Selected: Neutral',
+    '4': 'Selected: Agree',
+    '5': 'Selected: Strongly Agree'
+  };
+
+  function updateProgress() {
+    const totalQuestions = 6;
+    let answeredCount = 0;
+    for (let i = 1; i <= totalQuestions; i++) {
+      const checked = document.querySelector('input[name="q' + i + '"]:checked');
+      const card = document.getElementById('card_q' + i);
+      const stance = document.getElementById('stance_q' + i);
+      if (checked) {
+        answeredCount++;
+        if (card) card.classList.add('has-selection');
+        if (stance) {
+          stance.textContent = stanceLabels[checked.value] || 'Selected';
+          stance.className = 'stance-pill';
+          if (checked.value === '1' || checked.value === '2') {
+            stance.classList.add('active-disagree');
+          } else if (checked.value === '3') {
+            stance.classList.add('active-neutral');
+          } else if (checked.value === '4' || checked.value === '5') {
+            stance.classList.add('active-agree');
+          }
+        }
+      } else {
+        if (card) card.classList.remove('has-selection');
+        if (stance) {
+          stance.textContent = 'Click a circle above to choose your stance';
+          stance.className = 'stance-pill';
+        }
+      }
+    }
+
+    const pct = Math.round((answeredCount / totalQuestions) * 100);
+    const progressBar = document.getElementById('assessmentProgressBar');
+    const progressText = document.getElementById('assessmentProgressText');
+    if (progressBar) progressBar.style.width = pct + '%';
+    if (progressText) {
+      progressText.textContent = answeredCount + ' of ' + totalQuestions + ' answered (' + pct + '%)';
+      if (answeredCount === totalQuestions) {
+        progressText.className = 'badge rounded-pill bg-success text-white px-2 py-1 small fw-bold';
+      } else {
+        progressText.className = 'badge rounded-pill bg-white text-dark border px-2 py-1 small fw-bold';
+      }
+    }
+  }
+
+  // Handle circle click & active state toggling
+  scaleCircles.forEach(function(opt) {
+    opt.addEventListener('click', function(e) {
+      const radio = opt.querySelector('input[type="radio"]');
+      if (radio) {
+        radio.checked = true;
+      }
+      const card = opt.closest('.likert-card');
+      if (card) {
+        card.querySelectorAll('.scale-circle').forEach(function(sib) {
+          sib.classList.remove('selected');
+        });
+        card.classList.remove('shake-attention');
+      }
+      opt.classList.add('selected');
+      updateProgress();
+    });
+  });
+
+  // Run initial progress check on load (in case user had existing saved assessment)
+  updateProgress();
+
+  // Validate all 6 questions before submit
+  const form = document.getElementById('verificationForm');
+  if (form) {
+    form.addEventListener('submit', function(e) {
+      let firstUnansweredCard = null;
+      let unansweredCount = 0;
+      for (let i = 1; i <= 6; i++) {
+        const checked = document.querySelector('input[name="q' + i + '"]:checked');
+        const card = document.getElementById('card_q' + i);
+        if (!checked) {
+          unansweredCount++;
+          if (card) {
+            card.classList.add('shake-attention');
+            if (!firstUnansweredCard) {
+              firstUnansweredCard = card;
+            }
+          }
+        }
+      }
+      if (firstUnansweredCard) {
+        e.preventDefault();
+        firstUnansweredCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const existingAlert = document.getElementById('assessmentAlert');
+        if (existingAlert) existingAlert.remove();
+        
+        const toast = document.createElement('div');
+        toast.id = 'assessmentAlert';
+        toast.className = 'alert alert-warning alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-4 shadow-lg border-2 z-3';
+        toast.style.zIndex = '9999';
+        toast.innerHTML = '<div class="d-flex align-items-center gap-2"><i class="bi bi-exclamation-circle-fill text-warning fs-4"></i><div><strong>Incomplete Safety Assessment</strong><br><small>Please provide your response to all 6 statements (' + unansweredCount + ' remaining). No answers are pre-selected by default.</small></div></div><button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
+        document.body.appendChild(toast);
+        setTimeout(function() {
+          if (toast && toast.parentNode) toast.remove();
+        }, 5000);
+      }
+    });
+  }
+});
+</script>
+{% endblock %}

@@ -1,4 +1,6 @@
 import os
 from django.core.wsgi import get_wsgi_application
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'women_safety_shield.settings')
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'women_safety_shield.women_safety_shield.settings')
 application = get_wsgi_application()
+app = application  # Vercel looks for 'app' or 'application'

@@ -2,17 +2,37 @@ import os
 from pathlib import Path
 from datetime import timedelta
 from dotenv import load_dotenv
-
-load_dotenv()
-
+from django.core.exceptions import ImproperlyConfigured
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
+load_dotenv(BASE_DIR / '.env')
 
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-fallback-key')
+# Security: DEBUG mode defaults to False unless explicitly set
+DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 't')
 
-DEBUG = True
+# Security: SECRET_KEY validation
+SECRET_KEY = os.getenv('SECRET_KEY')
+if not SECRET_KEY:
+    if DEBUG:
+        SECRET_KEY = 'django-insecure-women-safety-shield-dev-local-key'
+    else:
+        raise ImproperlyConfigured("SECRET_KEY environment variable is required in production.")
+elif not DEBUG and SECRET_KEY.startswith('django-insecure-'):
+    raise ImproperlyConfigured("Insecure default SECRET_KEY detected. Provide a cryptographically secure key for production.")
 
-ALLOWED_HOSTS = ['*']
+# Security: ALLOWED_HOSTS configuration
+allowed_hosts_env = os.getenv('ALLOWED_HOSTS')
+if DEBUG:
+    ALLOWED_HOSTS = ['*']
+elif allowed_hosts_env:
+    ALLOWED_HOSTS = [h.strip() for h in allowed_hosts_env.split(',') if h.strip()]
+else:
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]']
+
+# Permit testserver when in debug mode for test client runner convenience
+if DEBUG and 'testserver' not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append('testserver')
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -26,17 +46,22 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',
     'channels',
-    # Local apps
+    # Core & extended apps
     'accounts',
     'emergency',
     'tracking',
     'community',
-    'guardians',
+    'local_residents',
     'incident',
     'safety_map',
     'organization',
     'notifications',
     'admin_panel',
+    # New apps per Master Docs
+    'verification',
+    'gov_alerts',
+    'safe_routes',
+    'incident_records',
 ]
 
 MIDDLEWARE = [
@@ -51,7 +76,14 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'women_safety_shield.urls'
+ROOT_URLCONF = 'women_safety_shield.women_safety_shield.urls'
+
+# Context processor to inject global config into all templates
+def global_settings_processor(request):
+    return {
+        'WEBSOCKET_HOST': os.getenv('WEBSOCKET_HOST', ''),
+        'GOOGLE_MAPS_API_KEY': os.getenv('GOOGLE_MAPS_API_KEY', ''),
+    }
 
 TEMPLATES = [
     {
@@ -64,33 +96,41 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'women_safety_shield.women_safety_shield.settings.global_settings_processor',
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'women_safety_shield.wsgi.application'
-ASGI_APPLICATION = 'women_safety_shield.asgi.application'
+WSGI_APPLICATION = 'women_safety_shield.women_safety_shield.wsgi.application'
+ASGI_APPLICATION = 'women_safety_shield.women_safety_shield.asgi.application'
 
-# Database - SQLite for demo (use PostgreSQL + PostGIS in production)
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Database Configuration (Postgres for Vercel/Fly production, SQLite for local dev)
+DATABASE_URL = os.getenv('DATABASE_URL')
+if DATABASE_URL:
+    try:
+        import dj_database_url
+        DATABASES = {
+            'default': dj_database_url.config(
+                default=DATABASE_URL,
+                conn_max_age=600,
+                conn_health_checks=True,
+            )
+        }
+    except ImportError:
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': BASE_DIR / 'db.sqlite3',
+            }
+        }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
-
-# For Production with PostGIS:
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-#         'NAME': 'women_safety_db',
-#         'USER': 'postgres',
-#         'PASSWORD': 'your_password',
-#         'HOST': 'localhost',
-#         'PORT': '5432',
-#     }
-# }
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
@@ -113,7 +153,6 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
 AUTH_USER_MODEL = 'accounts.User'
 
 # JWT Settings
@@ -135,48 +174,105 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,
 }
 
-# Channels
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+# Django Channels / ASGI WebSocket Configuration
+REDIS_URL = os.getenv('REDIS_URL')
+if REDIS_URL:
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels_redis.core.RedisChannelLayer',
+            'CONFIG': {
+                'hosts': [REDIS_URL],
+            },
+        }
     }
-}
+else:
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels.layers.InMemoryChannelLayer',
+        }
+    }
 
-# For production use Redis:
-# CHANNEL_LAYERS = {
-#     'default': {
-#         'BACKEND': 'channels_redis.core.RedisChannelLayer',
-#         'CONFIG': {'hosts': [('127.0.0.1', 6379)]},
-#     }
-# }
+# CORS Configuration
+cors_default = 'True' if DEBUG else 'False'
+CORS_ALLOW_ALL_ORIGINS = os.getenv('CORS_ALLOW_ALL', cors_default).lower() in ('true', '1', 't')
+cors_origins_env = os.getenv('CORS_ALLOWED_ORIGINS', '')
+if cors_origins_env:
+    CORS_ALLOWED_ORIGINS = [orig.strip() for orig in cors_origins_env.split(',') if orig.strip()]
 
-CORS_ALLOW_ALL_ORIGINS = True
-CSRF_TRUSTED_ORIGINS = ['https://women-safety-shield.up.railway.app']
+csrf_env = os.getenv('CSRF_TRUSTED_ORIGINS', '')
+if csrf_env:
+    CSRF_TRUSTED_ORIGINS = [orig.strip() for orig in csrf_env.split(',') if orig.strip()]
+else:
+    CSRF_TRUSTED_ORIGINS = [
+        'http://localhost:8000',
+        'http://127.0.0.1:8000',
+        'https://*.vercel.app',
+        'https://*.fly.dev'
+    ]
 
-# Google Maps API Key
+# External Service Credentials
 GOOGLE_MAPS_API_KEY = os.getenv('GOOGLE_MAPS_API_KEY', '')
-
-# Firebase FCM
 FCM_SERVER_KEY = os.getenv('FCM_SERVER_KEY', '')
-# Emergency alert radius (meters)
 EMERGENCY_RADIUS_KM = 3
+
+TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID', '')
+TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN', '')
+TWILIO_PHONE_NUMBER = os.getenv('TWILIO_PHONE_NUMBER', '')
+
+WEBSOCKET_HOST = os.getenv('WEBSOCKET_HOST', '')
 
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/'
-
-
-# WhatsApp Cloud API (Meta)
-WA_PHONE_NUMBER_ID = os.getenv("WA_PHONE_NUMBER_ID")
-WA_ACCESS_TOKEN = os.getenv("WA_ACCESS_TOKEN")
-
 
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 ]
 
+# Production Security Headers & Cookie Protection
+if not DEBUG:
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = 'DENY'
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = os.getenv('SECURE_SSL_REDIRECT', 'True').lower() in ('true', '1', 't')
+    SECURE_HSTS_SECONDS = int(os.getenv('SECURE_HSTS_SECONDS', '31536000'))
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-
-
+# Structured Logging Configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '[{asctime}] {levelname} [{name}:{lineno}] {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': os.getenv('LOG_LEVEL', 'INFO'),
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+            'propagate': False,
+        },
+    },
+}
 

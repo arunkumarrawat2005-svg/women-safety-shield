@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% block title %}Join Local Resident Network - Women Safety Shield{% endblock %}
+
+{% block content %}
+<div class="container my-4" style="max-width: 780px;">
+    <!-- Step Progress Indicator -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4 p-3 bg-white">
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-danger rounded-circle p-2 px-3 fw-bold fs-6">1</span>
+                <div>
+                    <strong class="d-block text-dark small">Step 1: Community Application</strong>
+                    <small class="text-danger fw-semibold">Current Step &middot; Role &amp; Area</small>
+                </div>
+            </div>
+            <div class="text-muted"><i class="bi bi-arrow-right fs-5"></i></div>
+            <div class="d-flex align-items-center gap-2 opacity-75">
+                <span class="badge bg-light text-muted border rounded-circle p-2 px-3 fw-bold fs-6">2</span>
+                <div>
+                    <strong class="d-block text-dark small">Step 2: Identity Verification</strong>
+                    <small class="text-muted">Aadhaar / PAN &amp; Safety Assessment</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header Banner -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4" style="background: linear-gradient(135deg, #ffffff 0%, #fff7f8 100%); border-left: 6px solid var(--crimson) !important;">
+        <div class="card-body p-4 text-center">
+            <div style="font-size:2.5rem; margin-bottom: 0.5rem;">🛡️</div>
+            <h4 class="fw-800 mb-1" style="color:var(--maroon); font-family:'Plus Jakarta Sans',sans-serif;">
+                Join the Local Resident Network
+            </h4>
+            <p class="text-muted mb-0 small mx-auto" style="max-width: 540px;">
+                Help protect women in your neighborhood by becoming an accredited local community responder.
+            </p>
+        </div>
+    </div>
+
+    <!-- Core Principle Policy Alert -->
+    <div class="alert alert-warning border-0 rounded-4 shadow-sm p-3 mb-4 d-flex align-items-start gap-3">
+        <i class="bi bi-shield-lock-fill fs-4 text-warning"></i>
+        <div class="small">
+            <strong class="text-dark d-block mb-1">Women Safety Shield Verification Policy:</strong>
+            <span class="text-muted">
+                <strong>Anyone can seek help</strong> on this platform, but <strong>only verified users can provide community assistance</strong>. Submitting this form registers your guardian intent and will immediately redirect you to complete <strong>Government Identity Verification &amp; Safety Assessment</strong>.
+            </span>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body p-4 p-md-5">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label fw-bold small text-dark">Resident Responder Type <span class="text-danger">*</span></label>
+                    <select name="local_resident_type" class="form-select rounded-3 py-2" required>
+                        <option value="volunteer" selected>🤝 Volunteer (Community Member / Resident)</option>
+                        <option value="security">🔒 Security Staff (Campus / Society / Private Security)</option>
+                        <option value="ngo">🏢 NGO Member (Women Welfare Advocate)</option>
+                        <option value="citizen">👤 Verified Citizen (Local Shopkeeper / Resident Pillar)</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold small text-dark">Organization / Society Name <small class="text-muted fw-normal">(Optional)</small></label>
+                    <input type="text" name="organization_name" class="form-control rounded-3 py-2" placeholder="e.g. DU Safety Wing, Sector 62 RWA, Shopkeeper Association">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold small text-dark">Description &amp; Availability Bio <span class="text-danger">*</span></label>
+                    <textarea name="description" class="form-control rounded-3" rows="3" required
+                        placeholder="Describe your general availability, neighborhood area, and skills (e.g. night watch, first aid)..."></textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold small text-dark">Supporting Verification Document <small class="text-muted fw-normal">(Optional front/masked ID)</small></label>
+                    <input type="file" name="verification_document" class="form-control rounded-3" accept=".pdf,.jpg,.jpeg,.png">
+                    <div class="form-text small">You can upload a document now or provide your official Government ID in Step 2.</div>
+                </div>
+
+                <button type="submit" class="btn btn-danger w-100 py-3 fw-bold rounded-3 shadow-sm hover-lift fs-6">
+                    <i class="bi bi-arrow-right-circle-fill me-2"></i>Submit &amp; Proceed to Verification Process
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

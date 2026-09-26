@@ -1,0 +1,549 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Government & Police Access Portal — Women Safety Shield{% endblock %}
+
+{% block extra_css %}
+<style>
+  .portal-header {
+    background: linear-gradient(135deg, #0b1120 0%, #1e1b4b 55%, #4a0e17 100%) !important;
+    color: #ffffff !important;
+    border-radius: 16px;
+    padding: 2.2rem 2.4rem;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 10px 30px rgba(11, 17, 32, 0.25);
+    position: relative;
+    overflow: hidden;
+  }
+  .portal-header h3 {
+    color: #ffffff !important;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+  }
+  .portal-header p {
+    color: rgba(255, 255, 255, 0.82) !important;
+  }
+  .data-min-badge {
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    padding: 0.3rem 0.75rem;
+    border-radius: 20px;
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(6px);
+  }
+  .stat-card-link {
+    text-decoration: none !important;
+    display: block;
+    height: 100%;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .stat-card-link:hover {
+    transform: translateY(-4px);
+  }
+  .stat-card-police {
+    border: 1px solid var(--line, #e2e8f0);
+    border-radius: 14px;
+    padding: 1.15rem 0.85rem;
+    background: #ffffff;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    cursor: pointer;
+  }
+  .stat-card-link:hover .stat-card-police {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  }
+  .stat-card-police.active-stat {
+    border-color: #C41E3D !important;
+    box-shadow: 0 0 0 3px rgba(196, 30, 61, 0.25), 0 8px 20px rgba(0, 0, 0, 0.08) !important;
+    transform: translateY(-2px);
+  }
+  .stat-indicator-pill {
+    font-size: 0.65rem;
+    letter-spacing: 0.03em;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 20px;
+    margin-top: 6px;
+    display: inline-block;
+    transition: background 0.2s;
+  }
+  .btn-trusted-submit {
+    background: linear-gradient(135deg, #7A1F2B 0%, #C41E3D 100%) !important;
+    color: #ffffff !important;
+    border: none !important;
+    font-weight: 700;
+    box-shadow: 0 4px 14px rgba(196, 30, 61, 0.28);
+    transition: all 0.25s ease;
+  }
+  .btn-trusted-submit:hover {
+    background: linear-gradient(135deg, #631722 0%, #a81732 100%) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 7px 20px rgba(196, 30, 61, 0.38);
+    color: #ffffff !important;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3 px-xl-4 py-4" style="max-width: 1200px;">
+
+  <!-- Portal Header with Strict RBAC Banner -->
+  <div class="portal-header mb-4 shadow-sm">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+      <div>
+        <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+          <span class="badge bg-primary px-3 py-1 rounded-pill text-uppercase fw-bold" style="font-size:0.75rem;">
+            <i class="bi bi-shield-shaded me-1"></i>Official Law Enforcement &amp; Emergency Portal
+          </span>
+          <span class="data-min-badge">
+            <i class="bi bi-lock-fill me-1"></i>RBAC &amp; Data Minimization Active
+          </span>
+        </div>
+        <h3 class="fw-bold mb-1">
+          Government &amp; Police Verification Portal
+        </h3>
+        <p class="small mb-0">
+          Authorized inquiry console for emergency responders and law enforcement. Every query is cryptographically logged to the statutory audit trail.
+        </p>
+      </div>
+
+      <div class="text-md-end text-start mt-2 mt-md-0">
+        <div class="d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.16); backdrop-filter: blur(8px);">
+          <span class="d-inline-block rounded-circle bg-success" style="width: 8px; height: 8px; box-shadow: 0 0 8px #22c55e;"></span>
+          <span class="text-white small fw-bold">Officer: @{{ user.username|cut:"@" }}</span>
+          <span class="badge rounded-pill bg-light text-dark fw-bold px-2 py-1" style="font-size:0.65rem;">{{ user.role|upper }}</span>
+        </div>
+        <div class="mt-1">
+          <small class="text-white-50" style="font-size:0.75rem;">
+            <i class="bi bi-terminal me-1"></i>Terminal Session: {{ request.META.REMOTE_ADDR|default:"127.0.0.1" }}
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Operational Statistics Overview (Every Card is a Functional Hyperlink) -->
+  <div class="row g-3 mb-4">
+    <!-- 1. Total Registered -->
+    <div class="col-6 col-md-4 col-lg-2">
+      <a href="{% url 'police_portal' %}?view=all" class="stat-card-link" title="Click to view all registered citizens and responders">
+        <div class="stat-card-police text-center {% if view_all == 'all' %}active-stat{% endif %}">
+          <small class="text-muted fw-bold d-block" style="font-size:0.72rem; letter-spacing:0.04em;">TOTAL REGISTERED</small>
+          <h4 class="fw-bold text-dark my-1">{{ stats.total_registered }}</h4>
+          <span class="text-muted" style="font-size:0.68rem;">Citizens &amp; Responders</span>
+          <span class="stat-indicator-pill bg-light text-secondary border">View All &rarr;</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- 2. Verified Citizens -->
+    <div class="col-6 col-md-4 col-lg-2">
+      <a href="{% url 'police_portal' %}?status=verified" class="stat-card-link" title="Click to filter verified citizens">
+        <div class="stat-card-police text-center bg-success-subtle border-success-subtle {% if status_filter == 'verified' %}active-stat{% endif %}">
+          <small class="text-success fw-bold d-block" style="font-size:0.72rem; letter-spacing:0.04em;">VERIFIED CITIZENS</small>
+          <h4 class="fw-bold text-success my-1">{{ stats.verified_citizens }}</h4>
+          <span class="text-muted" style="font-size:0.68rem;">Gov ID Confirmed</span>
+          <span class="stat-indicator-pill bg-success text-white">Filter &rarr;</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- 3. Pending Review -->
+    <div class="col-6 col-md-4 col-lg-2">
+      <a href="{% url 'police_portal' %}?status=pending" class="stat-card-link" title="Click to filter pending verification reviews">
+        <div class="stat-card-police text-center bg-warning-subtle border-warning-subtle {% if status_filter == 'pending' %}active-stat{% endif %}">
+          <small class="text-warning-emphasis fw-bold d-block" style="font-size:0.72rem; letter-spacing:0.04em;">PENDING REVIEW</small>
+          <h4 class="fw-bold text-warning-emphasis my-1">{{ stats.pending_verifications }}</h4>
+          <span class="text-muted" style="font-size:0.68rem;">In Admin Queue</span>
+          <span class="stat-indicator-pill bg-warning text-dark fw-bold">Review &rarr;</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- 4. Rejected Queue -->
+    <div class="col-6 col-md-4 col-lg-2">
+      <a href="{% url 'police_portal' %}?status=rejected" class="stat-card-link" title="Click to filter rejected ID verifications">
+        <div class="stat-card-police text-center bg-danger-subtle border-danger-subtle {% if status_filter == 'rejected' %}active-stat{% endif %}">
+          <small class="text-danger fw-bold d-block" style="font-size:0.72rem; letter-spacing:0.04em;">REJECTED QUEUE</small>
+          <h4 class="fw-bold text-danger my-1">{{ stats.rejected_verifications }}</h4>
+          <span class="text-muted" style="font-size:0.68rem;">Non-compliant IDs</span>
+          <span class="stat-indicator-pill bg-danger text-white">Inspect &rarr;</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- 5. Active Distress Live SOS -->
+    <div class="col-6 col-md-4 col-lg-2">
+      <a href="{% url 'emergency_list' %}?status=ACTIVE" class="stat-card-link" title="Click to view live active distress calls">
+        <div class="stat-card-police text-center text-white" style="background: linear-gradient(135deg, #b91c1c 0%, #dc2626 100%); border-color: #b91c1c;">
+          <small class="text-white-50 fw-bold d-block" style="font-size:0.72rem; letter-spacing:0.04em;">ACTIVE DISTRESS</small>
+          <h4 class="fw-bold text-white my-1">
+            <span class="spinner-grow spinner-grow-sm text-warning me-1" style="width:0.7rem;height:0.7rem;" role="status"></span>{{ stats.active_emergencies }}
+          </h4>
+          <span class="text-white-50" style="font-size:0.68rem;">Current Live SOS</span>
+          <span class="stat-indicator-pill bg-white text-danger fw-bold">Live Radar &rarr;</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- 6. Incident Logs -->
+    <div class="col-6 col-md-4 col-lg-2">
+      <a href="{% url 'emergency_list' %}" class="stat-card-link" title="Click to view all incident dispatch logs">
+        <div class="stat-card-police text-center">
+          <small class="text-muted fw-bold d-block" style="font-size:0.72rem; letter-spacing:0.04em;">INCIDENT LOGS</small>
+          <h4 class="fw-bold text-dark my-1">{{ stats.total_emergencies }}</h4>
+          <span class="text-muted" style="font-size:0.68rem;">Audit Archive</span>
+          <span class="stat-indicator-pill bg-light text-danger border fw-bold">View Records &rarr;</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Citizen Verification Search (RBAC Controlled) -->
+  <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
+    <div class="card-header bg-white border-bottom py-3 px-4">
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+          <h5 class="fw-bold mb-1 text-dark" style="font-family:'Plus Jakarta Sans',sans-serif;">
+            <i class="bi bi-search me-2 text-danger"></i>Authorized Citizen &amp; Responder Inquiry
+          </h5>
+          <p class="text-muted small mb-0">
+            Search registered users by permitted identifiers: User ID, Name, Mobile Number, or Status. A formal inquiry reason is required for full record lookup.
+          </p>
+        </div>
+        {% if query or status_filter or view_all %}
+        <a href="{% url 'police_portal' %}" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+          <i class="bi bi-arrow-counterclockwise me-1"></i>Reset Filters
+        </a>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="card-body p-4">
+      <form method="get" class="row g-3">
+        <div class="col-md-5">
+          <label class="form-label small fw-semibold text-muted">SEARCH IDENTIFIER (NAME / MOBILE / USER ID)</label>
+          <div class="input-group">
+            <span class="input-group-text bg-light"><i class="bi bi-person-bounding-box"></i></span>
+            <input type="text" name="q" class="form-control" placeholder="e.g. 9876543210, Priya, or ID 12" value="{{ query }}">
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label small fw-semibold text-muted">VERIFICATION STATUS FILTER</label>
+          <select name="status" class="form-select">
+            <option value="">All Verification States</option>
+            <option value="verified" {% if status_filter == 'verified' %}selected{% endif %}>Verified Only</option>
+            <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending Only</option>
+            <option value="rejected" {% if status_filter == 'rejected' %}selected{% endif %}>Rejected Only</option>
+          </select>
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label small fw-semibold text-muted">OFFICIAL INQUIRY PURPOSE (LOGGED) *</label>
+          <input type="text" name="purpose" class="form-control" placeholder="e.g. Case #2026/PCR-112 Verification" required value="{{ request.GET.purpose|default:'Official Emergency Response & Dispatch Check' }}">
+        </div>
+
+        <div class="col-12 text-end">
+          <button type="submit" class="btn btn-trusted-submit px-4 py-2 fw-bold rounded-pill shadow-sm">
+            <i class="bi bi-search me-2"></i>Execute Authorized Search
+          </button>
+        </div>
+      </form>
+
+      <!-- Search Results -->
+      {% if users_list %}
+      <div class="mt-4 pt-3 border-top">
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+          <h6 class="fw-bold mb-0 text-dark">
+            Inquiry Results ({{ users_list|length }} Record{{ users_list|length|pluralize }} found)
+            {% if status_filter %}
+              <span class="badge bg-danger-subtle text-danger ms-2 fw-bold text-uppercase">{{ status_filter }}</span>
+            {% elif view_all %}
+              <span class="badge bg-secondary-subtle text-dark ms-2 fw-bold">ALL USERS</span>
+            {% endif %}
+          </h6>
+          <span class="badge bg-secondary-subtle text-secondary small">Data Minimized View</span>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0 small">
+            <thead class="table-light">
+              <tr>
+                <th>USER ID</th>
+                <th>FULL NAME &amp; HANDLE</th>
+                <th>ROLE</th>
+                <th>VERIFICATION STATUS</th>
+                <th>REGISTERED MOBILE</th>
+                <th>EMERGENCY CONTACT</th>
+                <th>ACTIONS</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for u in users_list %}
+              <tr>
+                <td class="font-monospace fw-bold">
+                  <a href="?user_id={{ u.id }}&q={{ query }}&status={{ status_filter }}&view={{ view_all }}&purpose={{ request.GET.purpose|default:'Operational Inspection' }}" 
+                     class="text-decoration-none text-primary" title="Inspect user #{{ u.id }}">
+                    #{{ u.id }}
+                  </a>
+                </td>
+                <td>
+                  <a href="?user_id={{ u.id }}&q={{ query }}&status={{ status_filter }}&view={{ view_all }}&purpose={{ request.GET.purpose|default:'Operational Inspection' }}" 
+                     class="text-decoration-none text-dark d-block">
+                    <strong class="d-block">{{ u.full_name }}</strong>
+                    <span class="text-muted" style="font-size:0.75rem;">@{{ u.username|cut:"@" }}</span>
+                  </a>
+                </td>
+                <td>
+                  <span class="badge bg-light text-dark border">{{ u.get_role_display }}</span>
+                </td>
+                <td>
+                  {% if u.is_verified %}
+                  <a href="?status=verified" class="badge bg-success-subtle text-success fw-bold text-decoration-none" title="Filter verified users">
+                    🛡️ Identity Verified
+                  </a>
+                  {% else %}
+                  <a href="?status=pending" class="badge bg-warning-subtle text-warning-emphasis text-decoration-none" title="Filter pending users">
+                    Unverified / Pending
+                  </a>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if u.phone %}
+                  <a href="tel:+91{{ u.phone }}" class="text-decoration-none text-dark fw-semibold" title="Direct Dial">
+                    <i class="bi bi-telephone-fill text-danger me-1"></i>+91 {{ u.phone }}
+                  </a>
+                  {% else %}
+                  <span class="text-muted">Unlisted</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if u.emergency_contact %}
+                  <a href="tel:{{ u.emergency_contact }}" class="text-decoration-none text-danger fw-semibold" title="Emergency Dial">
+                    <i class="bi bi-shield-fill-exclamation me-1"></i>{{ u.emergency_contact }}
+                  </a>
+                  {% else %}
+                  <span class="text-muted">None listed</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <a href="?user_id={{ u.id }}&q={{ query }}&status={{ status_filter }}&view={{ view_all }}&purpose={{ request.GET.purpose|default:'Operational Inspection' }}" 
+                     class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-semibold">
+                    <i class="bi bi-file-earmark-person me-1"></i>Inspect Details
+                  </a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {% elif query or status_filter or view_all %}
+      <div class="alert alert-warning mt-4 mb-0 rounded-3 small">
+        <i class="bi bi-info-circle me-1"></i>No citizens matching <strong>"{% if query %}{{ query }}{% elif status_filter %}{{ status_filter|title }}{% else %}All{% endif %}"</strong> were found in the registry.
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+
+  <!-- INSPECTED USER PROFILE (DATA MINIMIZED) -->
+  {% if selected_user %}
+  <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden" style="border: 2px solid var(--crimson) !important;">
+    <div class="card-header text-white py-3 px-4 d-flex justify-content-between align-items-center" style="background: linear-gradient(135deg, var(--maroon, #7A1F2B) 0%, var(--crimson, #C41E3D) 100%);">
+      <h5 class="fw-bold mb-0 text-white" style="font-family:'Plus Jakarta Sans',sans-serif;">
+        <i class="bi bi-person-check-fill me-2"></i>Official Citizen File: {{ selected_user.full_name }} (#{{ selected_user.id }})
+      </h5>
+      <div class="d-flex align-items-center gap-2">
+        <span class="badge bg-white text-danger fw-bold px-3 py-2 rounded-pill">
+          {% if selected_user.is_verified %}VERIFIED CITIZEN{% else %}UNVERIFIED CITIZEN{% endif %}
+        </span>
+        <a href="?q={{ query }}&status={{ status_filter }}&view={{ view_all }}" class="btn btn-sm btn-light py-1 px-2 rounded-circle" title="Close citizen file">
+          <i class="bi bi-x-lg text-dark"></i>
+        </a>
+      </div>
+    </div>
+
+    <div class="card-body p-4">
+      <div class="row g-4">
+        <!-- Col 1: Basic Identifiers -->
+        <div class="col-md-6">
+          <h6 class="fw-bold text-dark border-bottom pb-2">Operational Identity Attributes</h6>
+          <table class="table table-sm table-borderless small mb-0">
+            <tr>
+              <td class="text-muted" style="width:140px;">System User ID:</td>
+              <td class="fw-bold font-monospace">#{{ selected_user.id }}</td>
+            </tr>
+            <tr>
+              <td class="text-muted">Username:</td>
+              <td class="fw-semibold">@{{ selected_user.username|cut:"@" }}</td>
+            </tr>
+            <tr>
+              <td class="text-muted">Full Legal Name:</td>
+              <td class="fw-semibold">{{ selected_user.full_name }}</td>
+            </tr>
+            <tr>
+              <td class="text-muted">Registered Phone:</td>
+              <td>
+                {% if selected_user.phone %}
+                <a href="tel:+91{{ selected_user.phone }}" class="text-decoration-none fw-semibold text-danger">
+                  <i class="bi bi-telephone-fill me-1"></i>+91 {{ selected_user.phone }}
+                </a>
+                {% else %}
+                <span class="text-muted">Unlisted</span>
+                {% endif %}
+              </td>
+            </tr>
+            <tr>
+              <td class="text-muted">Email:</td>
+              <td>
+                {% if selected_user.email %}
+                <a href="mailto:{{ selected_user.email }}" class="text-decoration-none text-primary">
+                  <i class="bi bi-envelope-fill me-1"></i>{{ selected_user.email }}
+                </a>
+                {% else %}
+                <span class="text-muted">None listed</span>
+                {% endif %}
+              </td>
+            </tr>
+            <tr>
+              <td class="text-muted">City / Area:</td>
+              <td>{{ selected_user.city|default:"Delhi NCR" }}, {{ selected_user.state }}</td>
+            </tr>
+            <tr>
+              <td class="text-muted">Emergency Contact:</td>
+              <td>
+                {% if selected_user.emergency_contact %}
+                <a href="tel:{{ selected_user.emergency_contact }}" class="text-decoration-none fw-bold text-danger">
+                  <i class="bi bi-shield-fill-exclamation me-1"></i>{{ selected_user.emergency_contact }}
+                </a>
+                {% else %}
+                <span class="text-muted">None listed</span>
+                {% endif %}
+              </td>
+            </tr>
+            <tr>
+              <td class="text-muted">Registration Date:</td>
+              <td>{{ selected_user.date_joined|date:"d M Y, H:i" }}</td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- Col 2: Verification Credentials & Data Minimization Shield -->
+        <div class="col-md-6">
+          <h6 class="fw-bold text-dark border-bottom pb-2">Identity Verification &amp; Trust Credentials</h6>
+          
+          {% with ver=selected_user.verification_requests.first %}
+          {% if ver %}
+          <div class="p-3 bg-light rounded-3 border mb-3 small">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="text-muted">DOCUMENT TYPE:</span>
+              <strong class="text-dark">{{ ver.get_document_type_display }}</strong>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="text-muted">MASKED IDENTIFIER:</span>
+              <span class="badge bg-secondary font-monospace">{{ ver.masked_document_number }}</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="text-muted">STATUS:</span>
+              <span class="badge {% if ver.status == 'approved' %}bg-success{% else %}bg-warning text-dark{% endif %} text-uppercase">
+                {{ ver.get_status_display }}
+              </span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="text-muted">VERIFIED BY:</span>
+              <span>{{ ver.reviewed_by.username|default:"Administrative Verification Officer" }}</span>
+            </div>
+            {% if user.is_staff or user.is_superuser %}
+            <div class="mt-3 pt-2 border-top">
+              <a href="{% url 'admin_verification_dashboard' %}?selected_id={{ ver.id }}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                <i class="bi bi-shield-lock me-1"></i>Open Full Admin Dossier
+              </a>
+            </div>
+            {% endif %}
+          </div>
+          {% else %}
+          <div class="alert alert-secondary py-2 small mb-3">
+            <i class="bi bi-info-circle me-1"></i>No government identity document application on file for this user.
+          </div>
+          {% endif %}
+          {% endwith %}
+
+          <!-- Data Minimization Notice -->
+          <div class="p-3 rounded-3 border bg-white small">
+            <strong class="text-dark d-block mb-1">
+              <i class="bi bi-shield-fill-check text-success me-1"></i>Data Minimization Protection
+            </strong>
+            <p class="text-muted mb-0" style="font-size:0.75rem; line-height:1.5;">
+              In accordance with citizen privacy and constitutional data protection principles, 
+              raw biometrics and document photographs are shielded from routine inquiries and are accessible 
+              strictly under active court subpoena or formal emergency warrant protocols.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Officer Access Audit Trail (Transparency & Accountability) -->
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+    <div class="card-header bg-light border-0 py-3 px-4">
+      <h6 class="fw-bold mb-0 text-dark">
+        <i class="bi bi-clock-history text-danger me-2"></i>Officer Inquiry Audit Trail (Logged Sessions)
+      </h6>
+    </div>
+    <div class="card-body p-4">
+      <div class="table-responsive">
+        <table class="table table-sm table-hover align-middle mb-0 small" style="font-size:0.78rem;">
+          <thead class="table-light">
+            <tr>
+              <th>TIMESTAMP</th>
+              <th>OFFICER ID</th>
+              <th>QUERY / TARGET</th>
+              <th>PURPOSE / JUSTIFICATION</th>
+              <th>SCOPE</th>
+              <th>IP ADDRESS</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for log in officer_logs %}
+            <tr>
+              <td class="text-muted">{{ log.timestamp|date:"d M Y, H:i:s" }}</td>
+              <td class="fw-bold">@{{ log.officer.username|cut:"@" }}</td>
+              <td>
+                {% if log.target_user %}
+                <a href="?user_id={{ log.target_user.id }}" class="text-decoration-none fw-semibold text-primary" title="Inspect user profile">
+                  User #{{ log.target_user.id }} ({{ log.target_user.username|cut:"@" }})
+                </a>
+                {% else %}
+                {{ log.search_query|truncatechars:40 }}
+                {% endif %}
+              </td>
+              <td><span class="text-dark">{{ log.access_purpose }}</span></td>
+              <td><span class="badge bg-light text-dark border">{{ log.data_scope }}</span></td>
+              <td class="font-monospace text-muted">{{ log.ip_address|default:"127.0.0.1" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="6" class="text-center text-muted py-3">No inquiry logs recorded in this session.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

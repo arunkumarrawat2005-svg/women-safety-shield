@@ -1,4 +1,4 @@
-from .models import SafetyZone, SafetyReport
+from .models import SafetyReport
 
 
 def get_area_risk_score(lat, lng, radius_km=0.5):

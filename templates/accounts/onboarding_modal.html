@@ -1,0 +1,229 @@
+<!-- First-Time Onboarding Experience Modal: "See How It Works" -->
+<div class="modal fade" id="onboardingModal" tabindex="-1" aria-labelledby="onboardingModalLabel" aria-hidden="true" data-bs-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden" style="background:#ffffff;">
+      
+      <!-- Modal Top Bar -->
+      <div class="d-flex justify-content-between align-items-center px-4 pt-3 pb-2 border-bottom bg-light">
+        <div class="d-flex align-items-center gap-2">
+          <span class="badge rounded-pill bg-danger-subtle text-danger fw-bold px-3 py-1" style="font-size:0.75rem; letter-spacing:0.04em;">
+            <i class="bi bi-shield-check me-1"></i>UNDERSTAND → VERIFY → PROTECT
+          </span>
+          <span class="text-muted small d-none d-sm-inline">Platform Tour</span>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="markOnboardingComplete()"></button>
+      </div>
+
+      <!-- Modal Body / Carousel -->
+      <div class="modal-body p-0">
+        <div id="onboardingCarousel" class="carousel slide" data-bs-touch="true" data-bs-interval="false">
+          
+          <!-- Stepper Dots -->
+          <div class="carousel-indicators mb-2" style="bottom:12px;">
+            <button type="button" data-bs-target="#onboardingCarousel" data-bs-slide-to="0" class="active rounded-circle" style="width:10px;height:10px;margin:0 4px;background-color:var(--crimson);" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#onboardingCarousel" data-bs-slide-to="1" class="rounded-circle" style="width:10px;height:10px;margin:0 4px;background-color:var(--crimson);" aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#onboardingCarousel" data-bs-slide-to="2" class="rounded-circle" style="width:10px;height:10px;margin:0 4px;background-color:var(--crimson);" aria-label="Slide 3"></button>
+            <button type="button" data-bs-target="#onboardingCarousel" data-bs-slide-to="3" class="rounded-circle" style="width:10px;height:10px;margin:0 4px;background-color:var(--crimson);" aria-label="Slide 4"></button>
+          </div>
+
+          <div class="carousel-inner">
+            
+            <!-- SCREEN 1: Stay Protected -->
+            <div class="carousel-item active p-4 p-md-5 text-center">
+              <div class="mx-auto mb-4 d-flex align-items-center justify-content-center rounded-circle" 
+                   style="width:96px; height:96px; background:linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); border:2px solid #fecaca; box-shadow:0 8px 24px rgba(220,38,38,0.15);">
+                <span style="font-size:3.2rem;">🛡️</span>
+              </div>
+              <span class="badge bg-danger-subtle text-danger px-3 py-1 rounded-pill fw-semibold mb-2" style="font-size:0.75rem;">SCREEN 1 OF 4</span>
+              <h3 class="fw-bold mb-2" style="color:var(--maroon); font-family:'Plus Jakarta Sans',sans-serif;">Stay Protected</h3>
+              <blockquote class="blockquote my-2">
+                <p class="fst-italic fw-semibold text-danger fs-5 mb-1">"Your safety. Your people. Your connection."</p>
+              </blockquote>
+              <p class="text-muted mx-auto" style="max-width:540px; font-size:0.95rem; line-height:1.6;">
+                Women Safety Shield connects you with your trusted inner circle, vetted local community responders, 
+                and rapid emergency services. Whether you are traveling late or exploring unfamiliar routes, 
+                you never have to walk alone.
+              </p>
+              <div class="d-flex justify-content-center gap-2 mt-3 text-muted small">
+                <span><i class="bi bi-check-circle-fill text-success me-1"></i>Trusted Circle</span>
+                <span>•</span>
+                <span><i class="bi bi-check-circle-fill text-success me-1"></i>3km Community Reach</span>
+                <span>•</span>
+                <span><i class="bi bi-check-circle-fill text-success me-1"></i>112 Police Link</span>
+              </div>
+            </div>
+
+            <!-- SCREEN 2: One Tap Emergency Assistance -->
+            <div class="carousel-item p-4 p-md-5 text-center">
+              <div class="mx-auto mb-4 d-flex align-items-center justify-content-center rounded-circle" 
+                   style="width:96px; height:96px; background:linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%); border:2px solid #fecdd3; box-shadow:0 8px 24px rgba(225,29,72,0.18);">
+                <span style="font-size:3.2rem;">🆘</span>
+              </div>
+              <span class="badge bg-danger-subtle text-danger px-3 py-1 rounded-pill fw-semibold mb-2" style="font-size:0.75rem;">SCREEN 2 OF 4</span>
+              <h3 class="fw-bold mb-2" style="color:var(--maroon); font-family:'Plus Jakarta Sans',sans-serif;">One Tap Emergency Assistance</h3>
+              <blockquote class="blockquote my-2">
+                <p class="fst-italic fw-semibold text-danger fs-5 mb-1">"One tap can connect you to help."</p>
+              </blockquote>
+              <p class="text-muted mx-auto" style="max-width:540px; font-size:0.95rem; line-height:1.6;">
+                Activating SOS broadcasts your live GPS coordinates, continuous breadcrumbs, and emergency beacon simultaneously:
+                alerting guardians via SMS, notifying verified local residents within 3 KM, and alerting emergency services in parallel.
+              </p>
+              <div class="p-3 bg-light rounded-3 d-inline-flex align-items-center gap-3 border mt-2">
+                <span class="badge bg-danger p-2 fs-6 rounded-circle"><i class="bi bi-broadcast"></i></span>
+                <span class="small text-start text-dark fw-semibold">Instant Multi-Channel Dispatch: <strong>SMS + Voice Call + Live Map Tracking</strong></span>
+              </div>
+            </div>
+
+            <!-- SCREEN 3: Know Who Is Around You -->
+            <div class="carousel-item p-4 p-md-5 text-center">
+              <div class="mx-auto mb-4 d-flex align-items-center justify-content-center rounded-circle" 
+                   style="width:96px; height:96px; background:linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border:2px solid #bfdbfe; box-shadow:0 8px 24px rgba(37,99,235,0.15);">
+                <span style="font-size:3.2rem;">📍</span>
+              </div>
+              <span class="badge bg-primary-subtle text-primary px-3 py-1 rounded-pill fw-semibold mb-2" style="font-size:0.75rem;">SCREEN 3 OF 4</span>
+              <h3 class="fw-bold mb-2" style="color:var(--navy); font-family:'Plus Jakarta Sans',sans-serif;">Know Who Is Around You</h3>
+              <blockquote class="blockquote my-2">
+                <p class="fst-italic fw-semibold text-primary fs-5 mb-1">"Help can be closer than you think."</p>
+              </blockquote>
+              <p class="text-muted mx-auto" style="max-width:540px; font-size:0.95rem; line-height:1.6;">
+                During an emergency or night journey, nearby verified community members, institutional safe havens,
+                and active police PCR patrol beats are visualized on the interactive Google Map in real time.
+              </p>
+              <div class="d-flex justify-content-center gap-3 mt-3 flex-wrap">
+                <span class="badge bg-success-subtle text-success px-2 py-1"><i class="bi bi-geo-alt-fill me-1"></i>3 KM Responder Radius</span>
+                <span class="badge bg-primary-subtle text-primary px-2 py-1"><i class="bi bi-building me-1"></i>Verified Safe Havens</span>
+                <span class="badge bg-dark-subtle text-dark px-2 py-1"><i class="bi bi-shield-shaded me-1"></i>Police PCR Patrol</span>
+              </div>
+            </div>
+
+            <!-- SCREEN 4: Verified & Trusted Community -->
+            <div class="carousel-item p-4 p-md-5 text-center">
+              <div class="mx-auto mb-4 d-flex align-items-center justify-content-center rounded-circle" 
+                   style="width:96px; height:96px; background:linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border:2px solid #bbf7d0; box-shadow:0 8px 24px rgba(22,163,74,0.15);">
+                <span style="font-size:3.2rem;">🤝</span>
+              </div>
+              <span class="badge bg-success-subtle text-success px-3 py-1 rounded-pill fw-semibold mb-2" style="font-size:0.75rem;">SCREEN 4 OF 4</span>
+              <h3 class="fw-bold mb-2" style="color:#14532d; font-family:'Plus Jakarta Sans',sans-serif;">Verified &amp; Trusted Community</h3>
+              <blockquote class="blockquote my-2">
+                <p class="fst-italic fw-semibold text-success fs-5 mb-1">"Safety starts with trust."</p>
+              </blockquote>
+              <p class="text-muted mx-auto" style="max-width:540px; font-size:0.95rem; line-height:1.6;">
+                Every participant undergoes an identity-verification process and safety awareness assessment 
+                before becoming a trusted responder. Trust is earned through identity verification, 
+                responsible community standards, and strict privacy protection.
+              </p>
+              <div class="d-flex justify-content-center gap-2 mt-3 flex-wrap">
+                <span class="badge bg-light text-dark border px-2 py-1">🛡️ Identity Verified</span>
+                <span class="badge bg-light text-dark border px-2 py-1">✓ Verified Community Member</span>
+                <span class="badge bg-light text-dark border px-2 py-1">✓ Secure Account</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer Controls -->
+      <div class="modal-footer d-flex justify-content-between align-items-center bg-light px-4 py-3 border-top">
+        <div>
+          <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal" onclick="markOnboardingComplete()">
+            Skip / Explore as Guest
+          </button>
+        </div>
+
+        <div class="d-flex gap-2 align-items-center">
+          <button type="button" class="btn btn-sm btn-light border rounded-pill px-3" onclick="prevOnboardingSlide()">
+            <i class="bi bi-chevron-left me-1"></i>Back
+          </button>
+          <button type="button" class="btn btn-sm btn-danger rounded-pill px-3 fw-bold" id="onboardingNextBtn" onclick="nextOnboardingSlide()">
+            Next<i class="bi bi-chevron-right ms-1"></i>
+          </button>
+          
+          <!-- Final Action Buttons (Hidden on slides 1-3, shown on slide 4) -->
+          <div id="onboardingFinalActions" class="d-none gap-2">
+            <a href="{% url 'login' %}" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-bold" onclick="markOnboardingComplete()">
+              <i class="bi bi-box-arrow-in-right me-1"></i>Login
+            </a>
+            <a href="{% url 'register' %}" class="btn btn-sm btn-danger rounded-pill px-3 fw-bold shadow-sm" onclick="markOnboardingComplete()">
+              <i class="bi bi-person-plus-fill me-1"></i>Register
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+function openOnboardingModal() {
+  const modalEl = document.getElementById('onboardingModal');
+  if (modalEl && typeof bootstrap !== 'undefined') {
+    const modal = new bootstrap.Modal(modalEl);
+    modal.show();
+  }
+}
+
+function markOnboardingComplete() {
+  localStorage.setItem('w_shield_onboarded_v2', 'true');
+}
+
+function nextOnboardingSlide() {
+  const carouselEl = document.getElementById('onboardingCarousel');
+  if (carouselEl && typeof bootstrap !== 'undefined') {
+    const c = bootstrap.Carousel.getOrCreateInstance(carouselEl);
+    c.next();
+  }
+}
+
+function prevOnboardingSlide() {
+  const carouselEl = document.getElementById('onboardingCarousel');
+  if (carouselEl && typeof bootstrap !== 'undefined') {
+    const c = bootstrap.Carousel.getOrCreateInstance(carouselEl);
+    c.prev();
+  }
+}
+
+// Auto-trigger on first-time visit, logged out, or force parameter
+document.addEventListener('DOMContentLoaded', function() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const isLoggedOut = urlParams.has('logged_out');
+  if (isLoggedOut) {
+    try { localStorage.removeItem('w_shield_onboarded_v2'); } catch(e){}
+  }
+
+  const hasSeen = localStorage.getItem('w_shield_onboarded_v2');
+  const isAuth = {% if user.is_authenticated %}true{% else %}false{% endif %};
+  const isHomePage = window.location.pathname === '/' || window.location.pathname === '';
+  const forceTour = urlParams.has('tour') || urlParams.has('onboarding') || isLoggedOut;
+  
+  if ((!hasSeen && !isAuth && isHomePage) || forceTour) {
+    setTimeout(function() {
+      openOnboardingModal();
+    }, 600);
+  }
+
+  // Update button states on slide transition
+  const carouselEl = document.getElementById('onboardingCarousel');
+  if (carouselEl) {
+    carouselEl.addEventListener('slid.bs.carousel', function (e) {
+      const isLast = e.to === 3;
+      const nextBtn = document.getElementById('onboardingNextBtn');
+      const finalActions = document.getElementById('onboardingFinalActions');
+      if (isLast) {
+        if (nextBtn) nextBtn.classList.add('d-none');
+        if (finalActions) {
+          finalActions.classList.remove('d-none');
+          finalActions.classList.add('d-flex');
+        }
+      } else {
+        if (nextBtn) nextBtn.classList.remove('d-none');
+        if (finalActions) {
+          finalActions.classList.add('d-none');
+          finalActions.classList.remove('d-flex');
+        }
+      }
+    });
+  }
+});
+</script>

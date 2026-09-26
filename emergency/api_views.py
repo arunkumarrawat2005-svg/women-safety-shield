@@ -1,4 +1,4 @@
-from rest_framework import generics, status
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -23,7 +23,7 @@ class CreateEmergencyAPIView(APIView):
             return Response({
                 'success': True,
                 'emergency': EmergencySerializer(emergency).data,
-                'message': 'SOS activated. Help is on the way!'
+                'message': 'SOS activated across Local Resident, Organization, and Official response networks!'
             }, status=status.HTTP_201_CREATED)
         return Response({'success': False, 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -43,9 +43,9 @@ class AcceptEmergencyAPIView(APIView):
         try:
             emergency = Emergency.objects.get(pk=pk, status='ACTIVE')
             EmergencyService.accept_emergency(emergency, request.user)
-            return Response({'success': True, 'message': 'Emergency accepted'})
+            return Response({'success': True, 'message': 'Emergency accepted by responder'})
         except Emergency.DoesNotExist:
-            return Response({'success': False, 'message': 'Emergency not found'}, status=404)
+            return Response({'success': False, 'message': 'Active emergency not found'}, status=404)
 
 
 class CloseEmergencyAPIView(APIView):

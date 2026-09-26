@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Terms of Service &amp; Safety Disclaimers - Women Safety Shield{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9 col-md-10">
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+                <div class="mb-4 border-bottom pb-3">
+                    <span class="badge bg-danger-subtle text-danger rounded-pill px-3 py-1 fw-bold mb-2">Legal, Consent &amp; Safety Compliance</span>
+                    <h1 class="h2 fw-bold" style="color:var(--maroon);">Terms of Service &amp; Safety Policy</h1>
+                    <p class="text-muted small mb-0">Last Updated: September 2026 &bull; Women Safety Shield Platform</p>
+                </div>
+
+                <div class="alert alert-danger border-0 rounded-3 p-3 mb-4">
+                    <div class="d-flex align-items-start gap-2">
+                        <i class="bi bi-shield-exclamation fs-4 flex-shrink-0 text-danger"></i>
+                        <div class="small">
+                            <strong>CRITICAL EMERGENCY NOTICE:</strong>
+                            Women Safety Shield is an auxiliary peer-to-peer community safety and trusted contact alerting network. It is <strong>NOT</strong> an official government replacement for dialing national emergency services. In any life-threatening crisis, always call <strong>Police 112</strong> or <strong>Women Helpline 1091</strong> directly.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="terms-content">
+                    <h4 class="fw-bold fs-5 mt-4" style="color:var(--maroon);">1. Location &amp; Telemetry Data Consent</h4>
+                    <p class="text-muted small">
+                        By registering and using Women Safety Shield, you explicitly consent to the collection and transmission of your geolocation coordinates during an SOS distress event. Coordinates are shared strictly with your designated Trusted Circle, verified local community responders, and platform security administrators for emergency assistance.
+                    </p>
+
+                    <h4 class="fw-bold fs-5 mt-4" style="color:var(--maroon);">2. Community Responder Verification &amp; Code of Conduct</h4>
+                    <p class="text-muted small">
+                        Citizens registering as Local Residents or Community Helpers undergo identity verification (Aadhaar / Official ID and address validation). Helpers agree to act responsibly, preserve victim dignity, and render immediate bystander aid without intimidation or exploitation. Platform abuse or false claims will lead to immediate account termination and reporting to cyber authorities.
+                    </p>
+
+                    <h4 class="fw-bold fs-5 mt-4" style="color:var(--maroon);">3. Emergency Dispatch &amp; Notification Escrow</h4>
+                    <p class="text-muted small">
+                        When SOS is triggered, the platform attempts parallel delivery via web push notifications, in-app radar broadcasts, and telecom SMS/call escalation (subject to carrier availability). Network latency or mobile device settings may impact transmission speeds. Users acknowledge that maintaining battery and cellular reception is essential for live tracking.
+                    </p>
+
+                    <h4 class="fw-bold fs-5 mt-4" style="color:var(--maroon);">4. Privacy, Cryptography &amp; Audit Logs</h4>
+                    <p class="text-muted small">
+                        All distress events, coordinates, and responder acknowledgments generate server-side tamper-proof Incident Records with cryptographic SHA-256 signatures. These logs are preserved to support legal reporting, FIR assistance, and police investigation upon victim authorization.
+                    </p>
+
+                    <h4 class="fw-bold fs-5 mt-4" style="color:var(--maroon);">5. Safe Routes &amp; Navigation Advisory</h4>
+                    <p class="text-muted small">
+                        Safety scores and lighting assessments are aggregated from crowd-sourced reports, open-street-map metadata, and verified responder density. They are intended as informational indicators. Always remain alert and use primary commercial roads during late-night transit.
+                    </p>
+                </div>
+
+                <div class="mt-5 pt-4 border-top d-flex justify-content-between align-items-center flex-wrap gap-3">
+                    <a href="{% url 'home' %}" class="btn btn-outline-secondary rounded-pill px-4 py-2 fw-semibold">
+                        <i class="bi bi-arrow-left me-1"></i>Back to Home
+                    </a>
+                    <a href="{% url 'register' %}" class="btn btn-danger rounded-pill px-4 py-2 fw-bold">
+                        Agree &amp; Continue Registration <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,4 +1,4 @@
-﻿# Python
+# Python
 __pycache__/
 *.pyc
 *.pyo
@@ -8,6 +8,8 @@ __pycache__/
 
 # Database
 db.sqlite3
+*.sqlite3*
+*.backup
 
 # Environment variables
 .env

@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Resolve Emergency #{{ emergency.id }} - Women Safety Shield{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden text-center p-4">
+                <div class="rounded-circle bg-success-subtle text-success mx-auto d-flex align-items-center justify-content-center mb-3" style="width:72px;height:72px;">
+                    <i class="bi bi-shield-check fs-1"></i>
+                </div>
+                
+                <h3 class="fw-bold mb-2" style="color:var(--maroon);">Are you in a safe place?</h3>
+                <p class="text-muted small mb-4">
+                    Closing Emergency <strong>#{{ emergency.id }}</strong> will notify all responding community volunteers and cancel active live tracking alerts. Please only resolve if you are fully secure.
+                </p>
+
+                <div class="alert alert-warning border-0 small text-start mb-4">
+                    <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>
+                    If you are still in immediate danger, <strong>do not close</strong> this alert. Call <a href="tel:112" class="fw-bold text-danger">Police (112)</a> or keep your live tracker open.
+                </div>
+
+                <div class="d-flex gap-3 justify-content-center">
+                    <a href="{% url 'emergency_track' pk=emergency.id %}" class="btn btn-outline-secondary px-4 py-2 rounded-pill fw-semibold">
+                        <i class="bi bi-arrow-left me-1"></i>Return to Live Tracker
+                    </a>
+                    <form method="post" action="{% url 'close_emergency' pk=emergency.id %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger px-4 py-2 rounded-pill fw-bold shadow-sm">
+                            <i class="bi bi-check-circle-fill me-1"></i>Yes, I Am Safe (Close Alert)
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,46 +1,69 @@
-from .models import Notification
+import os
+import logging
 import requests
-import json
+from django.conf import settings
+from .models import Notification
+
+logger = logging.getLogger(__name__)
+
 
 def send_fcm_push(fcm_token, title, body, data=None):
     """Send real push notification via FCM."""
-    if not fcm_token:
+    if not fcm_token or not getattr(settings, 'FCM_SERVER_KEY', None):
         return
-    
-    from django.conf import settings
+
     payload = {
-        "message": {
-            "token": fcm_token,
-            "notification": {
-                "title": title,
-                "body": body
-            },
-            "data": {k: str(v) for k, v in (data or {}).items()}
-        }
+        "to": fcm_token,
+        "notification": {"title": title, "body": body},
+        "data": {k: str(v) for k, v in (data or {}).items()}
     }
     headers = {
         "Authorization": f"key={settings.FCM_SERVER_KEY}",
         "Content-Type": "application/json"
     }
-    requests.post(
-        "https://fcm.googleapis.com/fcm/send",
-        headers={"Authorization": f"key={settings.FCM_SERVER_KEY}", "Content-Type": "application/json"},
-        json={
-            "to": fcm_token,
-            "notification": {"title": title, "body": body},
-            "data": {k: str(v) for k, v in (data or {}).items()}
-        }
-    )
+    try:
+        requests.post("https://fcm.googleapis.com/fcm/send", headers=headers, json=payload, timeout=5)
+    except Exception as e:
+        logger.error(f"FCM Push error: {e}")
+
+
+def trigger_twilio_call_or_sms(phone_number, message_text):
+    """Twilio voice call / SMS escalation for unacknowledged alerts."""
+    account_sid = os.getenv('TWILIO_ACCOUNT_SID')
+    auth_token = os.getenv('TWILIO_AUTH_TOKEN')
+    twilio_num = os.getenv('TWILIO_PHONE_NUMBER')
+
+    if not (account_sid and auth_token and twilio_num and phone_number):
+        safe_msg = message_text.encode('ascii', errors='replace').decode('ascii')
+        logger.info(f"[Simulation] Twilio escalation to {phone_number}: {safe_msg}")
+        return False
+
+    try:
+        from twilio.rest import Client
+        client = Client(account_sid, auth_token)
+        # Send SMS first or voice call
+        msg = client.messages.create(
+            body=message_text,
+            from_=twilio_num,
+            to=phone_number
+        )
+        logger.info(f"Twilio message sent: {msg.sid}")
+        return True
+    except Exception as e:
+        logger.error(f"Twilio error: {e}")
+        return False
+
 
 class NotificationService:
     @staticmethod
     def send_sos_alert_to_contact(contact, emergency):
         Notification.objects.create(
-            recipient=contact, title='🆘 SOS ALERT',
+            recipient=contact,
+            title='🆘 SOS ALERT',
             message=f'{emergency.victim.full_name} has triggered SOS! Location: ({emergency.latitude:.4f}, {emergency.longitude:.4f})',
-            notif_type='sos', data={'emergency_id': emergency.id, 'lat': emergency.latitude, 'lng': emergency.longitude}
+            notif_type='sos',
+            data={'emergency_id': emergency.id, 'lat': emergency.latitude, 'lng': emergency.longitude}
         )
-        # Send real push notification
         send_fcm_push(
             fcm_token=getattr(contact, 'fcm_token', None),
             title='🆘 SOS ALERT',
@@ -49,25 +72,57 @@ class NotificationService:
         )
 
     @staticmethod
-    def send_sos_alert_to_guardian(guardian_user, emergency):
+    def send_sos_alert_to_resident(resident_user, emergency):
         Notification.objects.create(
-            recipient=guardian_user, title='🆘 Emergency Nearby - Please Help',
+            recipient=resident_user,
+            title='🆘 Emergency Nearby - Local Resident Alert',
             message=f'A woman needs help near you! Emergency #{emergency.id}. Please respond immediately.',
-            notif_type='sos', data={'emergency_id': emergency.id, 'lat': emergency.latitude, 'lng': emergency.longitude}
+            notif_type='sos',
+            data={'emergency_id': emergency.id, 'lat': emergency.latitude, 'lng': emergency.longitude}
         )
-        # Send real push notification
         send_fcm_push(
-            fcm_token=getattr(guardian_user, 'fcm_token', None),
+            fcm_token=getattr(resident_user, 'fcm_token', None),
             title='🆘 Emergency Nearby!',
             body=f'A woman needs help near you! Emergency #{emergency.id}. Please respond immediately.',
             data={'emergency_id': emergency.id, 'lat': emergency.latitude, 'lng': emergency.longitude}
         )
 
+    # Backwards compatibility alias
+    send_sos_alert_to_guardian = send_sos_alert_to_resident
+
+    @staticmethod
+    def send_sos_alert_to_org_volunteer(volunteer_user, org, emergency):
+        Notification.objects.create(
+            recipient=volunteer_user,
+            title=f'🆘 Organization Emergency Alert - {org.name}',
+            message=f'Emergency #{emergency.id} requires designated responder assistance near {org.name}.',
+            notif_type='sos',
+            data={'emergency_id': emergency.id, 'org_id': org.id, 'lat': emergency.latitude, 'lng': emergency.longitude}
+        )
+        send_fcm_push(
+            fcm_token=getattr(volunteer_user, 'fcm_token', None),
+            title=f'🆘 SOS Alert ({org.name})',
+            body=f'Emergency #{emergency.id} requires immediate response.',
+            data={'emergency_id': emergency.id, 'org_id': org.id, 'lat': emergency.latitude, 'lng': emergency.longitude}
+        )
+
+    @staticmethod
+    def escalate_to_call(user, emergency):
+        """Escalates via Twilio voice/SMS if alert remains unacknowledged."""
+        if user.phone:
+            trigger_twilio_call_or_sms(
+                user.phone,
+                f"URGENT: Emergency #{emergency.id} near your location requires immediate response. Open Women Safety Shield app to accept."
+            )
+
     @staticmethod
     def send_emergency_update(user, emergency, message):
         Notification.objects.create(
-            recipient=user, title='Emergency Update', message=message,
-            notif_type='emergency_update', data={'emergency_id': emergency.id}
+            recipient=user,
+            title='Emergency Update',
+            message=message,
+            notif_type='emergency_update',
+            data={'emergency_id': emergency.id}
         )
         send_fcm_push(
             fcm_token=getattr(user, 'fcm_token', None),

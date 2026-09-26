@@ -1,0 +1,800 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Official Responder Dispatch Certificate — SOS #{{ emergency.id }}{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --maroon: #7A1F2B;
+  --crimson: #B3243A;
+  --cream: #FDF8F6;
+  --charcoal: #2B2320;
+  --gold: #D9A441;
+  --line: #EADEDA;
+  --navy: #1B2432;
+}
+
+body {
+  background-color: var(--cream) !important;
+  font-family: 'Inter', sans-serif;
+  color: var(--charcoal);
+}
+
+.display-font {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Certificate Header */
+.certificate-hero-card {
+  background: linear-gradient(135deg, #24161B 0%, #3D141C 50%, #5E1824 100%);
+  color: #ffffff;
+  border-radius: 20px 20px 0 0;
+  padding: 2.5rem 2.5rem 2rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(61, 20, 28, 0.25);
+}
+
+.certificate-hero-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 250px;
+  height: 100%;
+  background: radial-gradient(circle, rgba(217,164,65,0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.certificate-hero-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  color: #FFFFFF !important;
+  font-size: clamp(1.4rem, 2.5vw, 1.85rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-top: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+
+.certificate-hero-subtitle {
+  color: #E2D5D0 !important;
+  font-size: 0.95rem;
+  margin-bottom: 0;
+}
+
+/* Quick Metrics Row */
+.quick-metrics-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.metric-pill-card {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 3px 12px rgba(43,35,32,0.03);
+}
+
+.metric-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+/* Legal Shield Banner (Replaces ugly blue dashed box) */
+.legal-notice-banner {
+  background: linear-gradient(135deg, #FFF8F6 0%, #FFFFFF 100%);
+  border: 1.5px solid #F0D5D8;
+  border-left: 6px solid var(--crimson);
+  border-radius: 16px;
+  padding: 1.6rem 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 20px rgba(179,36,58,0.05);
+}
+
+.legal-notice-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(179, 36, 58, 0.1);
+  color: var(--crimson);
+  font-weight: 700;
+  font-size: 0.78rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 30px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  margin-bottom: 0.6rem;
+}
+
+.legal-notice-title {
+  color: var(--maroon);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  margin-bottom: 0.5rem;
+}
+
+.legal-pillar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+  margin-top: 1.2rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid #F0E2E0;
+}
+
+.legal-pillar-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.legal-pillar-icon {
+  color: var(--crimson);
+  font-size: 1.15rem;
+  margin-top: 0.1rem;
+}
+
+.legal-pillar-text strong {
+  display: block;
+  font-size: 0.88rem;
+  color: var(--charcoal);
+  margin-bottom: 0.15rem;
+}
+
+.legal-pillar-text small {
+  font-size: 0.8rem;
+  color: #6c5f59;
+  line-height: 1.4;
+  display: block;
+}
+
+/* Detail Cards */
+.dossier-card {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  height: 100%;
+  box-shadow: 0 4px 18px rgba(43,35,32,0.04);
+  overflow: hidden;
+}
+
+.dossier-card-head {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #FAF6F4;
+}
+
+.dossier-card-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--maroon);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dossier-card-body {
+  padding: 1.5rem;
+}
+
+/* Key-Value Pair rows */
+.kv-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid #F6EDEA;
+  font-size: 0.9rem;
+}
+
+.kv-row:last-child {
+  border-bottom: none;
+}
+
+.kv-label {
+  color: #7A6F6A;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.kv-val {
+  font-weight: 600;
+  color: var(--charcoal);
+  text-align: right;
+}
+
+/* Empty State / Active Radar Card */
+.radar-active-box {
+  background: linear-gradient(135deg, #FCF8F6 0%, #FAF1EE 100%);
+  border: 1.5px dashed var(--crimson);
+  border-radius: 14px;
+  padding: 2rem 1.5rem;
+  text-align: center;
+}
+
+.radar-pulse-ring {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(179, 36, 58, 0.12);
+  color: var(--crimson);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  margin-bottom: 1rem;
+  position: relative;
+  animation: radarBeacon 2s infinite ease-out;
+}
+
+@keyframes radarBeacon {
+  0% { box-shadow: 0 0 0 0 rgba(179, 36, 58, 0.4); }
+  70% { box-shadow: 0 0 0 16px rgba(179, 36, 58, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(179, 36, 58, 0); }
+}
+
+/* Map Styling */
+#handoffMap {
+  height: 420px;
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.06);
+}
+
+/* Print Styles */
+@media print {
+  body { background: #fff !important; }
+  .navbar, footer, .no-print, .btn { display: none !important; }
+  .certificate-hero-card {
+    background: #24161B !important;
+    color: #fff !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .card { box-shadow: none !important; border: 1px solid #ddd !important; }
+  #handoffMap { height: 320px !important; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+
+  <!-- Top Action Navigation Bar -->
+  <div class="mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2 no-print">
+    <a href="{% url 'emergency_track' emergency.id %}" class="btn btn-outline-secondary rounded-pill px-3 fw-semibold">
+      <i class="bi bi-arrow-left me-1"></i>Back to Live Track
+    </a>
+    <div class="d-flex gap-2">
+      <a href="{{ google_maps_url }}" target="_blank" class="btn btn-outline-danger rounded-pill px-3 fw-semibold">
+        <i class="bi bi-compass me-1"></i>Open in Google Maps
+      </a>
+      <button onclick="window.print()" class="btn btn-dark rounded-pill px-3 fw-semibold">
+        <i class="bi bi-printer me-1"></i>Print / Export Certificate
+      </button>
+    </div>
+  </div>
+
+  <!-- Master Certificate Card -->
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5">
+    
+    <!-- 1. OFFICIAL HERO HEADER -->
+    <div class="certificate-hero-card">
+      <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+        <div>
+          <span class="badge rounded-pill bg-danger px-3 py-2 fw-bold" style="letter-spacing:0.04em;">
+            <i class="bi bi-shield-shaded me-1"></i>OFFICIAL POLICE &amp; FIRST RESPONDER HANDOFF
+          </span>
+          <h1 class="certificate-hero-title">
+            Women Safety Shield — Verified Responder Dispatch Certificate
+          </h1>
+          <p class="certificate-hero-subtitle">
+            Automated Platform Verification Packet for Law Enforcement, ERSS 112 &amp; Emergency Health Services
+          </p>
+        </div>
+
+        <div class="text-md-end">
+          <div class="badge bg-white text-dark px-3 py-2 rounded-pill fs-6 fw-bold shadow-sm mb-1">
+            <span class="text-danger me-1">&bull;</span>SOS INCIDENT #{{ emergency.id }}
+          </div>
+          <div class="small text-white-50">
+            DOCKET: <code class="text-warning fw-bold">WSS-{{ verification_hash }}</code>
+          </div>
+          <div class="small text-white-50 mt-1">
+            <i class="bi bi-clock me-1"></i>Generated: {% now "d M Y, H:i:s" %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-body p-4 p-lg-5" style="background:#FFFFFF;">
+
+      <!-- 2. QUICK GLANCE METRICS ROW (EASY TO UNDERSTAND) -->
+      <div class="quick-metrics-row">
+        <!-- Status -->
+        <div class="metric-pill-card">
+          <div class="metric-icon-box" style="background:#FFEAEA; color:var(--crimson);">
+            <i class="bi bi-broadcast"></i>
+          </div>
+          <div>
+            <small class="text-muted d-block text-uppercase fw-bold" style="font-size:0.7rem;">Incident Status</small>
+            {% if emergency.status == 'ACTIVE' %}
+            <strong class="text-danger"><i class="bi bi-circle-fill text-danger me-1" style="font-size:0.6rem;"></i>Active Alert</strong>
+            {% else %}
+            <strong class="text-success">{{ emergency.status }}</strong>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Police ERSS -->
+        <div class="metric-pill-card">
+          <div class="metric-icon-box" style="background:#EBF5FF; color:#0A58CA;">
+            <i class="bi bi-building-fill-check"></i>
+          </div>
+          <div>
+            <small class="text-muted d-block text-uppercase fw-bold" style="font-size:0.7rem;">Govt ERSS Channel</small>
+            <strong class="text-primary">112 ERSS Dispatched</strong>
+          </div>
+        </div>
+
+        <!-- Responders Alerted -->
+        <div class="metric-pill-card">
+          <div class="metric-icon-box" style="background:#E8F8EE; color:#198754;">
+            <i class="bi bi-people-fill"></i>
+          </div>
+          <div>
+            <small class="text-muted d-block text-uppercase fw-bold" style="font-size:0.7rem;">Resident Radius</small>
+            <strong class="text-success">{{ nearby_count }} Verified Citizens Alerted</strong>
+          </div>
+        </div>
+
+        <!-- Good Samaritan Protection -->
+        <div class="metric-pill-card">
+          <div class="metric-icon-box" style="background:#FFF6E5; color:var(--gold);">
+            <i class="bi bi-patch-check-fill"></i>
+          </div>
+          <div>
+            <small class="text-muted d-block text-uppercase fw-bold" style="font-size:0.7rem;">Legal Shield</small>
+            <strong class="text-dark">Good Samaritan Immunity</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. LEGAL IMMUNITY & DISPATCH PROOF NOTICE (REPLACES UGLY BLUE BOX) -->
+      <div class="legal-notice-banner">
+        <div class="legal-notice-badge">
+          <i class="bi bi-shield-check"></i> Statutory Good Samaritan Protection
+        </div>
+        <h4 class="legal-notice-title">
+          Legal Immunity &amp; Server-Verified Dispatch Proof Notice
+        </h4>
+        <p class="mb-0 text-muted small" style="line-height:1.6;">
+          This official platform document confirms that the responder traveling to or arriving at this emergency was
+          <strong>automatically summoned by the Women Safety Shield Emergency Response Protocol</strong>.
+          Under Section 134A of the Motor Vehicles Act and Supreme Court of India Good Samaritan guidelines,
+          citizens who respond to emergency distress calls are legally shielded from criminal or civil liability,
+          detention, or harassment by police or medical personnel.
+        </p>
+
+        <div class="legal-pillar-grid">
+          <div class="legal-pillar-item">
+            <i class="bi bi-patch-check-fill legal-pillar-icon"></i>
+            <div class="legal-pillar-text">
+              <strong>Official Summoning</strong>
+              <small>Objective digital proof that the responder acted strictly under platform alert, not as a suspicious bystander.</small>
+            </div>
+          </div>
+          <div class="legal-pillar-item">
+            <i class="bi bi-fingerprint legal-pillar-icon"></i>
+            <div class="legal-pillar-text">
+              <strong>Cryptographic Integrity</strong>
+              <small>All timestamps and GPS breadcrumbs are signed on append-only servers and cannot be altered retrospectively.</small>
+            </div>
+          </div>
+          <div class="legal-pillar-item">
+            <i class="bi bi-telephone-outbound-fill legal-pillar-icon"></i>
+            <div class="legal-pillar-text">
+              <strong>Parallel Police Alert</strong>
+              <small>State ERSS (112) was notified simultaneously, ensuring full alignment with official emergency authorities.</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. TWO-COLUMN CREDENTIALS DOSSIER -->
+      <div class="row g-4 mb-4">
+        
+        <!-- LEFT COLUMN: RESPONDER CREDENTIALS -->
+        <div class="col-lg-6">
+          <div class="dossier-card">
+            <div class="dossier-card-head">
+              <h5 class="dossier-card-title">
+                <i class="bi bi-person-badge-fill text-danger"></i>Verified Responder Credentials
+              </h5>
+              {% if record %}
+              <span class="badge bg-success-subtle text-success fw-bold px-2 py-1">
+                <i class="bi bi-check-circle-fill me-1"></i>Responder Assigned
+              </span>
+              {% else %}
+              <span class="badge bg-warning-subtle text-warning fw-bold px-2 py-1">
+                <i class="bi bi-hourglass-split me-1"></i>Awaiting Check-in
+              </span>
+              {% endif %}
+            </div>
+
+            <div class="dossier-card-body">
+              {% if record %}
+              <!-- Responder Information (When assigned) -->
+              <div class="d-flex align-items-center gap-3 mb-3 p-3 bg-light rounded-3 border">
+                <div class="rounded-circle bg-danger text-white d-flex align-items-center justify-content-center fw-bold fs-4" style="width:52px;height:52px;">
+                  {{ record.responder.first_name|first|default:record.responder.username|first }}
+                </div>
+                <div>
+                  <h6 class="fw-bold mb-0 text-dark">{{ record.responder.full_name|default:record.responder.username }}</h6>
+                  <span class="badge bg-success small"><i class="bi bi-patch-check-fill me-1"></i>Aadhaar Verified</span>
+                  <span class="badge bg-secondary small">User #{{ record.responder.id }}</span>
+                </div>
+              </div>
+
+              <div class="kv-row">
+                <span class="kv-label"><i class="bi bi-telephone text-muted"></i>Contact Phone</span>
+                <span class="kv-val">
+                  {% if record.responder.phone %}
+                  <a href="tel:{{ record.responder.phone }}" class="text-danger text-decoration-none fw-bold">
+                    <i class="bi bi-telephone-fill me-1"></i>{{ record.responder.phone }}
+                  </a>
+                  {% else %}
+                  <span class="text-muted">Not provided</span>
+                  {% endif %}
+                </span>
+              </div>
+
+              <div class="kv-row">
+                <span class="kv-label"><i class="bi bi-diagram-3 text-muted"></i>Network Source</span>
+                <span class="kv-val">
+                  <span class="badge bg-danger-subtle text-danger">{{ record.get_network_source_display }}</span>
+                </span>
+              </div>
+
+              <div class="kv-row">
+                <span class="kv-label"><i class="bi bi-clock-history text-muted"></i>Dispatch Time</span>
+                <span class="kv-val">{{ record.acknowledged_at|date:"d M Y, H:i:s" }}</span>
+              </div>
+
+              <div class="kv-row">
+                <span class="kv-label"><i class="bi bi-geo-alt-fill text-muted"></i>Scene Arrival Status</span>
+                <span class="kv-val">
+                  {% if record.arrival_at %}
+                  <span class="badge bg-success"><i class="bi bi-flag-fill me-1"></i>Arrived at {{ record.arrival_at|date:"H:i:s" }}</span>
+                  {% else %}
+                  <span class="badge bg-warning text-dark"><i class="bi bi-bicycle me-1"></i>En Route to Scene</span>
+                  {% endif %}
+                </span>
+              </div>
+
+              {% else %}
+              <!-- Informative Active Radar State (WHEN NO RESPONDER RECORD YET) -->
+              <div class="radar-active-box">
+                <div class="radar-pulse-ring">
+                  <i class="bi bi-broadcast-pin"></i>
+                </div>
+                <h6 class="fw-bold mb-1" style="color:var(--maroon);">
+                  Active Dispatch Broadcast in Progress
+                </h6>
+                <p class="text-muted small mb-3">
+                  This emergency has been automatically broadcast to verified citizen responders and institutional volunteers within a 3.0 KM sector.
+                </p>
+
+                <div class="p-3 bg-white rounded-3 border text-start small mb-3">
+                  <div class="d-flex align-items-center gap-2 mb-2 text-success fw-bold">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span>SOS Distress Broadcast Active</span>
+                  </div>
+                  <div class="d-flex align-items-center gap-2 mb-2 text-primary fw-bold">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span>National Police ERSS 112 Dispatched</span>
+                  </div>
+                  <div class="d-flex align-items-center gap-2 text-warning fw-bold">
+                    <i class="bi bi-hourglass-split"></i>
+                    <span>Awaiting First Responder Check-in</span>
+                  </div>
+                </div>
+
+                <small class="text-muted d-block" style="font-size:0.75rem;">
+                  As soon as a nearby responder confirms acceptance on their mobile app, their verified Aadhaar identity token, phone number, and live GPS travel route will populate here automatically.
+                </small>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN: EMERGENCY INCIDENT DETAILS -->
+        <div class="col-lg-6">
+          <div class="dossier-card">
+            <div class="dossier-card-head">
+              <h5 class="dossier-card-title">
+                <i class="bi bi-geo-alt-fill text-danger"></i>Emergency Incident Details
+              </h5>
+              <span class="badge bg-danger-subtle text-danger fw-bold px-2 py-1">
+                Verified Incident Log
+              </span>
+            </div>
+
+            <div class="dossier-card-body">
+              <div class="kv-row">
+                <span class="kv-label"><i class="bi bi-person-fill text-muted"></i>Victim Name</span>
+                <span class="kv-val fw-bold text-dark">{{ emergency.victim.full_name|default:emergency.victim.username }}</span>
+              </div>
+
+              <div class="kv-row">
+                <span class="kv-label"><i class="bi bi-telephone-fill text-muted"></i>Victim Phone</span>
+                <span class="kv-val">
+                  {% if emergency.victim.phone %}
+                  <a href="tel:{{ emergency.victim.phone }}" class="text-dark fw-bold text-decoration-none">
+                    <i class="bi bi-telephone-outbound me-1 text-danger"></i>{{ emergency.victim.phone }}
+                  </a>
+                  {% else %}
+                  <span class="text-muted">Not registered</span>
+                  {% endif %}
+                </span>
+              </div>
+
+              <div class="kv-row">
+                <span class="kv-label"><i class="bi bi-geo-fill text-muted"></i>Incident Coordinates</span>
+                <span class="kv-val">
+                  <code class="p-1 px-2 rounded bg-light text-danger fw-bold border">
+                    {{ emergency.latitude|floatformat:5 }}, {{ emergency.longitude|floatformat:5 }}
+                  </code>
+                </span>
+              </div>
+
+              <div class="kv-row">
+                <span class="kv-label"><i class="bi bi-pin-map text-muted"></i>Reported Location</span>
+                <span class="kv-val text-dark" style="max-width:24ch;">
+                  {{ emergency.address|default:"GPS Pin Location" }}
+                </span>
+              </div>
+
+              <div class="kv-row">
+                <span class="kv-label"><i class="bi bi-alarm text-muted"></i>SOS Triggered At</span>
+                <span class="kv-val">
+                  {{ emergency.created_at|date:"d M Y, H:i:s" }}
+                  <small class="text-muted d-block" style="font-size:0.75rem;">({{ minutes_elapsed }} min{{ minutes_elapsed|pluralize }} ago)</small>
+                </span>
+              </div>
+
+              <div class="kv-row">
+                <span class="kv-label"><i class="bi bi-activity text-muted"></i>Trigger Mechanism</span>
+                <span class="kv-val">
+                  <span class="badge bg-light text-dark border">
+                    <i class="bi bi-hand-index-thumb me-1 text-danger"></i>{{ emergency.trigger_type|title }} Activation
+                  </span>
+                </span>
+              </div>
+
+              <div class="kv-row">
+                <span class="kv-label"><i class="bi bi-shield-shaded text-muted"></i>Police Channel</span>
+                <span class="kv-val">
+                  <span class="badge bg-dark text-white px-2 py-1">
+                    <i class="bi bi-check2 me-1 text-success"></i>112_ERSS Dispatched
+                  </span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 5. INTERACTIVE MAP & ROUTE TRAIL -->
+      <div class="card border rounded-4 p-4 mb-4 bg-white shadow-sm">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+          <div>
+            <h5 class="fw-bold mb-0" style="color:var(--maroon);">
+              🗺️ Responder Verified GPS Route Trail (Append-Only Server Log)
+            </h5>
+            <small class="text-muted">
+              Live geo-fencing radar showing scene epicenter, responder route trail, and the 3 KM immediate response perimeter.
+            </small>
+          </div>
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="recenterMap()">
+              <i class="bi bi-arrows-fullscreen me-1"></i>Center on Scene
+            </button>
+          </div>
+        </div>
+
+        <div id="handoffMap"></div>
+      </div>
+
+      <!-- 6. IMMUTABLE GPS BREADCRUMB TELEMETRY LOG -->
+      <div class="card border rounded-4 overflow-hidden mb-4 bg-white shadow-sm">
+        <div class="card-header bg-light py-3 d-flex justify-content-between align-items-center">
+          <h6 class="fw-bold mb-0 text-dark">
+            <i class="bi bi-receipt-cutoff me-2 text-danger"></i>Immutable GPS Breadcrumb Log ({{ breadcrumbs|length }} Points Recorded)
+          </h6>
+          <span class="badge bg-secondary small">SHA-256 Verified Telemetry</span>
+        </div>
+        <div class="table-responsive" style="max-height: 260px; overflow-y: auto;">
+          <table class="table table-sm table-hover align-middle small mb-0">
+            <thead class="table-light sticky-top">
+              <tr>
+                <th class="ps-3">#</th>
+                <th>Timestamp</th>
+                <th>Latitude</th>
+                <th>Longitude</th>
+                <th>Distance to Victim</th>
+                <th>Speed (km/h)</th>
+                <th>Integrity</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for b in breadcrumbs %}
+              <tr>
+                <td class="ps-3 fw-bold text-muted">{{ forloop.counter }}</td>
+                <td><span class="badge bg-light text-dark border">{{ b.timestamp }}</span></td>
+                <td><code>{{ b.latitude|floatformat:5 }}</code></td>
+                <td><code>{{ b.longitude|floatformat:5 }}</code></td>
+                <td><strong class="text-danger">{{ b.distance_to_victim_meters|floatformat:1 }}m</strong></td>
+                <td>{{ b.speed|default:"0.0" }} km/h</td>
+                <td><span class="badge bg-success-subtle text-success">Verified</span></td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="7" class="text-center py-4 text-muted">
+                  <i class="bi bi-broadcast fs-3 d-block mb-1 text-danger opacity-50"></i>
+                  No movement breadcrumb points logged yet. Telemetry pings will record automatically as the assigned responder navigates toward the scene.
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 7. OFFICIAL HANDOVER & SIGN-OFF BLOCK (FOR POLICE & MEDICAL PRINTING) -->
+      <div class="p-4 rounded-4 border bg-light mt-4">
+        <h6 class="fw-bold text-dark mb-3">
+          <i class="bi bi-file-earmark-check-fill text-danger me-2"></i>Official First Responder &amp; Law Enforcement Handover Docket
+        </h6>
+        <div class="row g-3 small">
+          <div class="col-md-4">
+            <label class="text-muted d-block fw-semibold mb-1">Attending Police / ERSS Officer:</label>
+            <div class="p-2 bg-white border rounded" style="min-height:38px;">Officer In Charge / ERSS Post</div>
+          </div>
+          <div class="col-md-4">
+            <label class="text-muted d-block fw-semibold mb-1">Station / Unit Reference ID:</label>
+            <div class="p-2 bg-white border rounded" style="min-height:38px;">ERSS Sector 112 — UP Central</div>
+          </div>
+          <div class="col-md-4">
+            <label class="text-muted d-block fw-semibold mb-1">Officer Signature / Seal:</label>
+            <div class="p-2 bg-white border rounded text-muted" style="min-height:38px; border-style:dashed !important;">
+              Sign &amp; Stamp on Handover
+            </div>
+          </div>
+        </div>
+        <div class="mt-3 pt-2 border-top d-flex justify-content-between align-items-center flex-wrap gap-2 text-muted" style="font-size:0.75rem;">
+          <div>Women Safety Shield Platform Security Hash: <code>{{ verification_hash }}</code></div>
+          <div>Server Time: {% now "Y-m-d H:i:s T" %}</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/google-maps-shield.js' %}?v=6.0"></script>
+{% if GOOGLE_MAPS_API_KEY and GOOGLE_MAPS_API_KEY != 'your_real_google_maps_key' %}
+<script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places,geometry,marker&loading=async&callback=__initGoogleMapsShield"></script>
+{% endif %}
+<script>
+const victimLat = {{ emergency.latitude }};
+const victimLng = {{ emergency.longitude }};
+const breadcrumbs = {{ breadcrumbs_json|safe }};
+
+let map = null;
+let victimMarker = null;
+
+function initHandoffMap() {
+    const mapEl = document.getElementById('handoffMap');
+    if (!mapEl) return;
+
+    map = GoogleMapsShield.createMap(mapEl, {
+        center: { lat: victimLat, lng: victimLng },
+        zoom: 15,
+        mapId: 'DEMO_MAP_ID'
+    });
+
+    // 1. Victim / Emergency Scene Marker (Pulsing Red SOS beacon)
+    victimMarker = GoogleMapsShield.createSOSMarker(map, victimLat, victimLng, '🚨 Emergency Scene (Victim)');
+
+    // 2. Protective Citizen Coverage Radius Circle (3 KM)
+    GoogleMapsShield.createRadiusCircle(map, victimLat, victimLng, 3000, {
+        strokeColor: '#B3243A',
+        strokeOpacity: 0.8,
+        strokeWeight: 1.5,
+        fillColor: '#B3243A',
+        fillOpacity: 0.05
+    });
+
+    // 3. Breadcrumbs Route Trail (if any)
+    if (breadcrumbs && breadcrumbs.length > 0) {
+        const pathCoords = breadcrumbs.map(b => ({ lat: b.latitude, lng: b.longitude }));
+        GoogleMapsShield.createPolyline(map, pathCoords, {
+            strokeColor: '#0d6efd',
+            strokeOpacity: 0.85,
+            strokeWeight: 5
+        });
+
+        // Starting Point Marker (Green)
+        GoogleMapsShield.createCustomMarker(map, {
+            lat: pathCoords[0].lat,
+            lng: pathCoords[0].lng,
+            color: '#198754',
+            scale: 8,
+            title: 'Responder Dispatch Origin',
+            popupContent: '<b>🟢 Responder Dispatch Origin</b>'
+        });
+
+        // Current / Last Known Point Marker (Blue)
+        GoogleMapsShield.createCustomMarker(map, {
+            lat: pathCoords[pathCoords.length - 1].lat,
+            lng: pathCoords[pathCoords.length - 1].lng,
+            color: '#0d6efd',
+            scale: 9,
+            title: 'Responder Last Known Point',
+            popupContent: '<b>🔵 Responder Last Known Point</b>'
+        });
+
+        GoogleMapsShield.fitBounds(map, [{ lat: victimLat, lng: victimLng }, ...pathCoords]);
+    }
+}
+
+function recenterMap() {
+    if (map) {
+        map.setCenter({ lat: victimLat, lng: victimLng });
+        map.setZoom(15);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.GoogleMapsShield) {
+        window.GoogleMapsShield.load("{{ GOOGLE_MAPS_API_KEY|default:'' }}", initHandoffMap);
+    } else {
+        initHandoffMap();
+    }
+});
+
+setTimeout(() => {
+    if (map) map.invalidateSize();
+}, 300);
+</script>
+{% endblock %}

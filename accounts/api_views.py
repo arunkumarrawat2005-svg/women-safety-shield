@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import UserRegistrationSerializer, UserLoginSerializer, UserSerializer, UserProfileSerializer
+from .serializers import UserRegistrationSerializer, UserLoginSerializer, UserSerializer, UserProfileSerializer, PublicUserSerializer
 from .models import User
 
 
@@ -57,7 +57,7 @@ class ProfileAPIView(generics.RetrieveUpdateAPIView):
 
 class UserListAPIView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = UserSerializer
+    serializer_class = PublicUserSerializer
 
     def get_queryset(self):
         return User.objects.filter(role='user').exclude(id=self.request.user.id)

@@ -1,134 +1,318 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - Women Safety Shield</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="{% static 'css/main.css' %}" rel="stylesheet">
-    <style>
-        body { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); min-height: 100vh; padding: 2rem 0; }
-        .auth-card { background: white; border-radius: 24px; padding: 2.5rem; box-shadow: 0 20px 60px rgba(0,0,0,0.3); width: 100%; max-width: 560px; }
-        .role-card { border: 2px solid #dee2e6; border-radius: 12px; padding: 1rem; cursor: pointer; transition: all 0.2s; text-align: center; }
-        .role-card:hover, .role-card.selected { border-color: #e74c3c; background: #fff5f5; }
-        .role-input:checked + .role-card { border-color: #e74c3c; background: #fff5f5; }
-    </style>
-</head>
-<body>
-<div class="container d-flex justify-content-center align-items-center min-vh-100 py-4">
-    <div class="auth-card">
-        <div class="text-center mb-4">
-            <div style="font-size:3rem;">🛡️</div>
-            <h3 class="fw-800">Join Women Safety Shield</h3>
-            <p class="text-muted">Create your free account and stay protected</p>
+
+{% block title %}Register — Women Safety Shield{% endblock %}
+
+{% block extra_css %}
+<style>
+  .auth-wrapper {
+    min-height: calc(100vh - 200px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1.25rem;
+  }
+  .auth-card {
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 2.8rem 2.4rem;
+    box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.08);
+    width: 100%;
+    max-width: 560px;
+  }
+  .auth-logo-badge {
+    width: 58px;
+    height: 58px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+    border: 1px solid var(--crimson-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.65rem;
+    color: var(--crimson);
+    margin: 0 auto 1.2rem auto;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.12);
+  }
+  .role-card {
+    border: 1.5px solid var(--line);
+    border-radius: 14px;
+    padding: 1rem 0.6rem;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    text-align: center;
+    background: var(--surface);
+  }
+  .role-card:hover, .role-card.selected, .role-input:checked + .role-card {
+    border-color: var(--crimson);
+    background: var(--crimson-soft);
+    box-shadow: 0 4px 14px rgba(179, 36, 58, 0.12);
+  }
+  .btn-auth {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    border-color: #dc2626;
+    color: #ffffff;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    padding: 0.85rem 1.5rem;
+    border-radius: 12px;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.28);
+  }
+  .btn-auth:hover {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    border-color: #b91c1c;
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(220, 38, 38, 0.38);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-4 my-md-5">
+    <div class="row g-4 align-items-stretch">
+        
+        <!-- Left Column: Platform Features & Capabilities Showcase -->
+        <div class="col-lg-5 col-xl-5 d-flex flex-column">
+            <div class="p-4 p-md-5 rounded-4 shadow-sm d-flex flex-column justify-content-between h-100" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: #ffffff;">
+                <div>
+                    <span class="badge rounded-pill bg-danger px-3 py-1 fw-bold text-uppercase mb-3" style="font-size:0.75rem; letter-spacing:0.05em;">
+                        <i class="bi bi-shield-lock-fill me-1"></i>Women Safety Shield Ecosystem
+                    </span>
+                    <h2 class="fw-bold mb-2" style="font-family:'Plus Jakarta Sans',sans-serif; letter-spacing:-0.02em;">
+                        Safety Starts With Trust &amp; Community
+                    </h2>
+                    <p class="text-white-50 small mb-4" style="line-height:1.6;">
+                        A community-powered emergency response network uniting citizens, verified local helpers, safe havens, and official police response.
+                    </p>
+
+                    <!-- 4 Feature Cards -->
+                    <div class="d-flex flex-column gap-3 mb-4">
+                        
+                        <div class="p-3 rounded-3" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="rounded-circle bg-danger-subtle text-danger d-flex align-items-center justify-content-center p-2" style="width:42px;height:42px;flex-shrink:0;">
+                                    <i class="bi bi-broadcast fs-5 text-danger"></i>
+                                </div>
+                                <div>
+                                    <strong class="d-block text-white" style="font-size:0.95rem;">One-Tap Emergency SOS</strong>
+                                    <small class="text-white-50" style="font-size:0.82rem; line-height:1.4; display:block;">
+                                        Instantly sends SMS with live GPS, triggers an audio distress siren, and alerts your emergency contacts &amp; police in parallel.
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-3 rounded-3" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="rounded-circle bg-success-subtle text-success d-flex align-items-center justify-content-center p-2" style="width:42px;height:42px;flex-shrink:0;">
+                                    <i class="bi bi-geo-alt-fill fs-5 text-success"></i>
+                                </div>
+                                <div>
+                                    <strong class="d-block text-white" style="font-size:0.95rem;">3 KM Safety Radar &amp; Havens</strong>
+                                    <small class="text-white-50" style="font-size:0.82rem; line-height:1.4; display:block;">
+                                        View nearby verified local community guardians, verified institutional safe havens (hospitals/colleges), and PCR patrol beats.
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-3 rounded-3" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center p-2" style="width:42px;height:42px;flex-shrink:0;">
+                                    <i class="bi bi-signpost-split-fill fs-5 text-primary"></i>
+                                </div>
+                                <div>
+                                    <strong class="d-block text-white" style="font-size:0.95rem;">AI Safe Routes &amp; Journey Mode</strong>
+                                    <small class="text-white-50" style="font-size:0.82rem; line-height:1.4; display:block;">
+                                        Compares route safety scores based on street lighting, crowd density, safe haven proximity, and past incident heatmaps.
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-3 rounded-3" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="rounded-circle bg-warning-subtle text-warning d-flex align-items-center justify-content-center p-2" style="width:42px;height:42px;flex-shrink:0;">
+                                    <i class="bi bi-patch-check-fill fs-5 text-warning"></i>
+                                </div>
+                                <div>
+                                    <strong class="d-block text-white" style="font-size:0.95rem;">Verified Community Trust Model</strong>
+                                    <small class="text-white-50" style="font-size:0.82rem; line-height:1.4; display:block;">
+                                        Anyone can seek help immediately with Step 1. Only KYC-verified citizens and trained guardians are dispatched to assist.
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Interactive CTA to Open Onboarding Tour -->
+                <div class="p-3 rounded-3 border d-flex align-items-center justify-content-between flex-wrap gap-2 mt-3" style="background: rgba(220, 38, 38, 0.15); border-color: rgba(220, 38, 38, 0.4) !important;">
+                    <div>
+                        <strong class="d-block text-white" style="font-size:0.88rem;">Want to see how it works?</strong>
+                        <small class="text-white-50" style="font-size:0.75rem;">Interactive 4-screen onboarding walkthrough.</small>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-sm btn-danger rounded-pill px-3 fw-bold shadow-sm" onclick="openOnboardingModal()">
+                            <i class="bi bi-play-circle-fill me-1"></i>Tour
+                        </button>
+                        <a href="{% url 'how_it_works' %}" class="btn btn-sm btn-outline-light rounded-pill px-3 fw-semibold">
+                            Details
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        {% if messages %}
-        {% for message in messages %}
-        <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show">
-            {{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-        {% endfor %}
-        {% endif %}
+        <!-- Right Column: Registration Card -->
+        <div class="col-lg-7 col-xl-7">
+            <div class="auth-card mx-auto" style="max-width: 100%;">
+                <div class="text-center mb-4">
+                    <div class="auth-logo-badge">
+                        <i class="bi bi-shield-fill-check"></i>
+                    </div>
+                    <span class="badge bg-danger-subtle text-danger px-3 py-1 rounded-pill mb-2 fw-semibold">PROTECTION NETWORK &bull; STEP 1 OF 3</span>
+                    <h3 class="fw-bold mb-1" style="font-family:'Plus Jakarta Sans',sans-serif; letter-spacing:-0.025em; color:var(--text-primary);">Join Safety Shield</h3>
+                    <p class="text-muted small mb-3">Understand &bull; Verify &bull; Protect</p>
 
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
+                    <!-- 3-Step Journey Stepper -->
+                    <div class="p-2 mb-4 rounded-3 border bg-light d-flex justify-content-between text-start small">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge rounded-circle bg-danger text-white" style="width:24px;height:24px;display:flex;align-items:center;justify-content:center;">1</span>
+                            <div>
+                                <strong class="d-block text-dark" style="font-size:0.75rem;">Step 1: Account</strong>
+                                <span class="text-muted" style="font-size:0.68rem;">Basic Profile</span>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 opacity-75">
+                            <span class="badge rounded-circle bg-secondary text-white" style="width:24px;height:24px;display:flex;align-items:center;justify-content:center;">2</span>
+                            <div>
+                                <strong class="d-block text-dark" style="font-size:0.75rem;">Step 2: KYC Verification</strong>
+                                <span class="text-muted" style="font-size:0.68rem;">Government ID</span>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 opacity-75">
+                            <span class="badge rounded-circle bg-secondary text-white" style="width:24px;height:24px;display:flex;align-items:center;justify-content:center;">3</span>
+                            <div>
+                                <strong class="d-block text-dark" style="font-size:0.75rem;">Step 3: Assessment</strong>
+                                <span class="text-muted" style="font-size:0.68rem;">6 Civic Questions</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-            <!-- Role Selection -->
-            <div class="mb-4">
-                <label class="form-label fw-600">I want to join as</label>
-                <div class="row g-2">
-                    <div class="col-4">
-                        <input type="radio" name="role" value="user" class="d-none role-input" id="role_user" checked>
-                        <label for="role_user" class="role-card d-block">
-                            <div style="font-size:1.8rem;">👩</div>
-                            <small class="fw-600">User</small>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <!-- Role Selection -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold small text-muted">I WANT TO JOIN AS</label>
+                        <div class="row g-2">
+                            <div class="col-4">
+                                <input type="radio" name="role" value="user" class="d-none role-input" id="role_user" checked>
+                                <label for="role_user" class="role-card d-block">
+                                    <i class="bi bi-person-heart fs-3 text-danger d-block mb-1"></i>
+                                    <small class="fw-bold d-block text-dark">Citizen</small>
+                                    <span class="badge bg-light text-muted" style="font-size:0.65rem;">User</span>
+                                </label>
+                            </div>
+                            <div class="col-4">
+                                <input type="radio" name="role" value="guardian" class="d-none role-input" id="role_guardian">
+                                <label for="role_guardian" class="role-card d-block">
+                                    <i class="bi bi-shield-shaded fs-3 text-success d-block mb-1"></i>
+                                    <small class="fw-bold d-block text-dark">Resident</small>
+                                    <span class="badge bg-light text-muted" style="font-size:0.65rem;">Verified</span>
+                                </label>
+                            </div>
+                            <div class="col-4">
+                                <input type="radio" name="role" value="organization" class="d-none role-input" id="role_org">
+                                <label for="role_org" class="role-card d-block">
+                                    <i class="bi bi-building fs-3 text-primary d-block mb-1"></i>
+                                    <small class="fw-bold d-block text-dark">Organization</small>
+                                    <span class="badge bg-light text-muted" style="font-size:0.65rem;">NGO/Campus</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label class="form-label fw-semibold small text-muted">FIRST NAME *</label>
+                            <input type="text" name="first_name" class="form-control" placeholder="First name" required>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-semibold small text-muted">LAST NAME *</label>
+                            <input type="text" name="last_name" class="form-control" placeholder="Last name" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold small text-muted">USERNAME *</label>
+                            <input type="text" name="username" class="form-control" placeholder="Choose a username" required autocomplete="username">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold small text-muted">EMAIL ADDRESS *</label>
+                            <input type="email" name="email" class="form-control" placeholder="your@email.com" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold small text-muted">PHONE NUMBER *</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light">+91</span>
+                                <input type="tel" name="phone" class="form-control" placeholder="10-digit mobile number" required>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-semibold small text-muted">DATE OF BIRTH *</label>
+                            <input type="date" name="date_of_birth" class="form-control" required>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-semibold small text-muted">CITY / AREA *</label>
+                            <input type="text" name="city" class="form-control" placeholder="e.g. South Delhi" required>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-semibold small text-muted">PASSWORD *</label>
+                            <input type="password" name="password1" class="form-control" placeholder="Create password" required autocomplete="new-password">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-semibold small text-muted">CONFIRM PASSWORD *</label>
+                            <input type="password" name="password2" class="form-control" placeholder="Repeat password" required autocomplete="new-password">
+                        </div>
+                    </div>
+
+                    {% if form.errors %}
+                    <div class="alert alert-danger mt-3 py-2 small">
+                        {% for field, errors in form.errors.items %}
+                            {% for error in errors %}
+                            <div><i class="bi bi-x-circle me-1"></i>{{ error }}</div>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <div class="form-check my-3">
+                        <input class="form-check-input" type="checkbox" id="agreeTerms" required>
+                        <label class="form-check-label text-muted small" for="agreeTerms">
+                            I agree to the <a href="{% url 'terms' %}" target="_blank" style="color:var(--crimson);">Terms of Service</a>, Code of Conduct, and Emergency Safety Policies.
                         </label>
                     </div>
-                    <div class="col-4">
-                        <input type="radio" name="role" value="guardian" class="d-none role-input" id="role_guardian">
-                        <label for="role_guardian" class="role-card d-block">
-                            <div style="font-size:1.8rem;">🛡️</div>
-                            <small class="fw-600">Guardian</small>
-                        </label>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-auth">
+                            Continue to Step 2: Identity Verification <i class="bi bi-arrow-right ms-1"></i>
+                        </button>
                     </div>
-                    <div class="col-4">
-                        <input type="radio" name="role" value="organization" class="d-none role-input" id="role_org">
-                        <label for="role_org" class="role-card d-block">
-                            <div style="font-size:1.8rem;">🏢</div>
-                            <small class="fw-600">Organization</small>
-                        </label>
-                    </div>
+                </form>
+
+                <div class="text-center mt-3 pt-3 border-top" style="border-color:var(--line) !important;">
+                    <p class="mb-0 text-muted small">Already have an account? <a href="{% url 'login' %}" class="fw-bold" style="color:var(--crimson);">Sign In</a></p>
                 </div>
             </div>
-
-            <div class="row g-3">
-                <div class="col-6">
-                    <label class="form-label fw-600">First Name *</label>
-                    <input type="text" name="first_name" class="form-control" placeholder="First name" required>
-                </div>
-                <div class="col-6">
-                    <label class="form-label fw-600">Last Name *</label>
-                    <input type="text" name="last_name" class="form-control" placeholder="Last name" required>
-                </div>
-                <div class="col-12">
-                    <label class="form-label fw-600">Username *</label>
-                    <input type="text" name="username" class="form-control" placeholder="Choose a username" required autocomplete="username">
-                </div>
-                <div class="col-12">
-                    <label class="form-label fw-600">Email *</label>
-                    <input type="email" name="email" class="form-control" placeholder="your@email.com" required>
-                </div>
-                <div class="col-12">
-                    <label class="form-label fw-600">Phone Number *</label>
-                    <div class="input-group">
-                        <span class="input-group-text">+91</span>
-                        <input type="tel" name="phone" class="form-control" placeholder="Mobile number" required>
-                    </div>
-                </div>
-                <div class="col-6">
-                    <label class="form-label fw-600">Password *</label>
-                    <input type="password" name="password1" class="form-control" placeholder="Create password" required autocomplete="new-password">
-                </div>
-                <div class="col-6">
-                    <label class="form-label fw-600">Confirm Password *</label>
-                    <input type="password" name="password2" class="form-control" placeholder="Repeat password" required autocomplete="new-password">
-                </div>
-            </div>
-
-            {% if form.errors %}
-            <div class="alert alert-danger mt-3">
-                {% for field, errors in form.errors.items %}
-                    {% for error in errors %}
-                    <div><i class="bi bi-x-circle me-1"></i>{{ error }}</div>
-                    {% endfor %}
-                {% endfor %}
-            </div>
-            {% endif %}
-
-            <div class="form-check my-3">
-                <input class="form-check-input" type="checkbox" id="agreeTerms" required>
-                <label class="form-check-label text-muted small" for="agreeTerms">
-                    I agree to the <a href="#" class="text-danger">Terms of Service</a> and <a href="#" class="text-danger">Privacy Policy</a>
-                </label>
-            </div>
-
-            <div class="d-grid">
-                <button type="submit" class="btn btn-danger btn-lg fw-600">
-                    <i class="bi bi-shield-fill-check me-2"></i>Create Account & Get Protected
-                </button>
-            </div>
-        </form>
-
-        <div class="text-center mt-3">
-            <p class="mb-0 text-muted">Already have an account? <a href="{% url 'login' %}" class="text-danger fw-600">Sign In</a></p>
         </div>
     </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
 document.querySelectorAll('.role-input').forEach(input => {
     input.addEventListener('change', function() {
@@ -138,5 +322,4 @@ document.querySelectorAll('.role-input').forEach(input => {
 });
 document.getElementById('role_user').nextElementSibling.classList.add('selected');
 </script>
-</body>
-</html>
+{% endblock %}

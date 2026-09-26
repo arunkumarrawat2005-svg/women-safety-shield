@@ -5,14 +5,22 @@ from django.conf import settings
 class IncidentEvent(models.Model):
     EVENT_CHOICES = [
         ('SOS_CREATED', 'SOS Created'),
-        ('GUARDIAN_NOTIFIED', 'Guardian Notified'),
-        ('GUARDIAN_ACCEPTED', 'Guardian Accepted'),
-        ('GUARDIAN_MOVING', 'Guardian Moving'),
-        ('GUARDIAN_ARRIVED', 'Guardian Arrived'),
+        ('RESIDENT_NOTIFIED', 'Local Resident Notified'),
+        ('RESIDENT_ACCEPTED', 'Local Resident Accepted'),
+        ('RESIDENT_MOVING', 'Local Resident Moving'),
+        ('RESIDENT_ARRIVED', 'Local Resident Arrived'),
+        ('ORG_VOLUNTEER_NOTIFIED', 'Org Volunteer Notified'),
+        ('ORG_VOLUNTEER_ACCEPTED', 'Org Volunteer Accepted'),
+        ('GOV_ALERT_DISPATCHED', 'Official Emergency Alert Dispatched'),
         ('HELP_PROVIDED', 'Help Provided'),
         ('EMERGENCY_CLOSED', 'Emergency Closed'),
         ('CONTACT_NOTIFIED', 'Trusted Contact Notified'),
         ('LOCATION_UPDATED', 'Location Updated'),
+        # Backwards compatibility choices for existing DB rows
+        ('GUARDIAN_NOTIFIED', 'Guardian Notified'),
+        ('GUARDIAN_ACCEPTED', 'Guardian Accepted'),
+        ('GUARDIAN_MOVING', 'Guardian Moving'),
+        ('GUARDIAN_ARRIVED', 'Guardian Arrived'),
     ]
 
     emergency = models.ForeignKey('emergency.Emergency', on_delete=models.CASCADE, related_name='events')

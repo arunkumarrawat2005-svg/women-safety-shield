@@ -1,0 +1,427 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin Verification Command Center — Women Safety Shield{% endblock %}
+
+{% block extra_css %}
+<style>
+  .admin-sidebar-list {
+    max-height: calc(100vh - 220px);
+    overflow-y: auto;
+  }
+  .req-card-item {
+    cursor: pointer;
+    border-left: 4px solid transparent;
+    transition: all 0.2s;
+  }
+  .req-card-item:hover, .req-card-item.active {
+    background-color: #f8fafc;
+    border-left-color: var(--crimson);
+  }
+  .doc-preview-box {
+    background: #f1f5f9;
+    border: 1px dashed #cbd5e1;
+    border-radius: 12px;
+    padding: 0.75rem;
+    text-align: center;
+  }
+  .doc-preview-img {
+    max-height: 200px;
+    max-width: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .likert-badge {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    text-align: center;
+    border-radius: 50%;
+    font-weight: bold;
+    font-size: 0.75rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3 px-xl-4 py-3">
+
+  <!-- Header & Statistics Bar -->
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+    <div>
+      <span class="badge bg-danger px-3 py-1 rounded-pill fw-bold text-uppercase" style="letter-spacing:0.04em;">
+        <i class="bi bi-shield-lock-fill me-1"></i>Official Verification Queue
+      </span>
+      <h3 class="fw-bold mt-1 mb-0" style="color:var(--maroon); font-family:'Plus Jakarta Sans',sans-serif;">
+        Citizen &amp; Responder Verification Control
+      </h3>
+      <p class="text-muted small mb-0">Human administrative review panel with AI document verification &amp; civic attitude orientation signals.</p>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+        <i class="bi bi-speedometer2 me-1"></i>Admin Dashboard
+      </a>
+      <a href="{% url 'police_portal' %}" class="btn btn-primary btn-sm rounded-pill px-3">
+        <i class="bi bi-shield-shaded me-1"></i>Police Access Portal
+      </a>
+    </div>
+  </div>
+
+  <!-- Metric Badges Row -->
+  <div class="row g-2 mb-3">
+    <div class="col-6 col-md-2">
+      <a href="?status=" class="card border-0 shadow-sm rounded-3 p-2 text-decoration-none text-dark bg-white text-center">
+        <small class="text-muted d-block" style="font-size:0.7rem;">TOTAL QUEUE</small>
+        <strong class="fs-5">{{ stats.total }}</strong>
+      </a>
+    </div>
+    <div class="col-6 col-md-2">
+      <a href="?status=pending" class="card border-0 shadow-sm rounded-3 p-2 text-decoration-none text-dark bg-warning-subtle text-center">
+        <small class="text-warning-emphasis d-block" style="font-size:0.7rem;">PENDING REVIEW</small>
+        <strong class="fs-5 text-warning-emphasis">{{ stats.pending }}</strong>
+      </a>
+    </div>
+    <div class="col-6 col-md-2">
+      <a href="?status=under_review" class="card border-0 shadow-sm rounded-3 p-2 text-decoration-none text-dark bg-primary-subtle text-center">
+        <small class="text-primary d-block" style="font-size:0.7rem;">UNDER REVIEW</small>
+        <strong class="fs-5 text-primary">{{ stats.under_review }}</strong>
+      </a>
+    </div>
+    <div class="col-6 col-md-2">
+      <a href="?status=approved" class="card border-0 shadow-sm rounded-3 p-2 text-decoration-none text-dark bg-success-subtle text-center">
+        <small class="text-success d-block" style="font-size:0.7rem;">VERIFIED</small>
+        <strong class="fs-5 text-success">{{ stats.approved }}</strong>
+      </a>
+    </div>
+    <div class="col-6 col-md-2">
+      <a href="?status=reverification_required" class="card border-0 shadow-sm rounded-3 p-2 text-decoration-none text-dark bg-warning-subtle text-center">
+        <small class="text-dark d-block" style="font-size:0.7rem;">RE-VERIFY REQ.</small>
+        <strong class="fs-5 text-dark">{{ stats.reverification_required }}</strong>
+      </a>
+    </div>
+    <div class="col-6 col-md-2">
+      <a href="?status=rejected" class="card border-0 shadow-sm rounded-3 p-2 text-decoration-none text-dark bg-danger-subtle text-center">
+        <small class="text-danger d-block" style="font-size:0.7rem;">REJECTED</small>
+        <strong class="fs-5 text-danger">{{ stats.rejected }}</strong>
+      </a>
+    </div>
+  </div>
+
+  <!-- Search & Filter Controls -->
+  <div class="card border-0 shadow-sm rounded-3 p-3 mb-3 bg-white">
+    <form method="get" class="row g-2 align-items-center">
+      <div class="col-md-5">
+        <div class="input-group input-group-sm">
+          <span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span>
+          <input type="text" name="q" value="{{ search_q }}" class="form-control border-start-0" placeholder="Search by username, full name, email, or doc number...">
+        </div>
+      </div>
+      <div class="col-md-3">
+        <select name="status" class="form-select form-select-sm">
+          <option value="">All Verification Statuses</option>
+          <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending Review</option>
+          <option value="under_review" {% if status_filter == 'under_review' %}selected{% endif %}>Under Review</option>
+          <option value="approved" {% if status_filter == 'approved' %}selected{% endif %}>Verified / Approved</option>
+          <option value="reverification_required" {% if status_filter == 'reverification_required' %}selected{% endif %}>Re-verification Required</option>
+          <option value="rejected" {% if status_filter == 'rejected' %}selected{% endif %}>Rejected</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <select name="document_type" class="form-select form-select-sm">
+          <option value="">All Doc Types</option>
+          <option value="aadhaar" {% if doc_filter == 'aadhaar' %}selected{% endif %}>Aadhaar Card</option>
+          <option value="pan" {% if doc_filter == 'pan' %}selected{% endif %}>PAN Card</option>
+          <option value="voter_id" {% if doc_filter == 'voter_id' %}selected{% endif %}>Voter ID</option>
+          <option value="driving_license" {% if doc_filter == 'driving_license' %}selected{% endif %}>Driving License</option>
+          <option value="passport" {% if doc_filter == 'passport' %}selected{% endif %}>Passport</option>
+        </select>
+      </div>
+      <div class="col-md-2 d-flex gap-1">
+        <button type="submit" class="btn btn-sm btn-danger w-100 fw-bold">Filter</button>
+        <a href="{% url 'admin_verification_dashboard' %}" class="btn btn-sm btn-light border">Reset</a>
+      </div>
+    </form>
+  </div>
+
+  <!-- Main Split Layout: Left Queue / Right Inspection Panel -->
+  <div class="row g-3">
+    
+    <!-- LEFT: Request Queue (List) -->
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-header bg-light border-0 py-2 px-3 d-flex justify-content-between align-items-center">
+          <small class="fw-bold text-muted text-uppercase" style="font-size:0.75rem;">SUBMISSION QUEUE ({{ requests|length }})</small>
+        </div>
+        <div class="list-group list-group-flush admin-sidebar-list">
+          {% for r in requests %}
+          <a href="?selected_id={{ r.id }}&status={{ status_filter }}&q={{ search_q }}" 
+             class="list-group-item list-group-item-action p-3 req-card-item {% if selected_req and selected_req.id == r.id %}active{% endif %}">
+            <div class="d-flex justify-content-between align-items-start mb-1">
+              <div>
+                <strong class="text-dark d-block">@{{ r.user.username }}</strong>
+                <small class="text-muted">{{ r.user.full_name|default:"Name Unspecified" }}</small>
+              </div>
+              <div>
+                {% if r.status == 'approved' %}
+                <span class="badge bg-success-subtle text-success">Verified</span>
+                {% elif r.status == 'pending' %}
+                <span class="badge bg-warning-subtle text-warning-emphasis">Pending</span>
+                {% elif r.status == 'under_review' %}
+                <span class="badge bg-primary-subtle text-primary">Review</span>
+                {% elif r.status == 'reverification_required' %}
+                <span class="badge bg-warning text-dark">Re-verify</span>
+                {% elif r.status == 'rejected' %}
+                <span class="badge bg-danger-subtle text-danger">Rejected</span>
+                {% endif %}
+              </div>
+            </div>
+            
+            <div class="d-flex justify-content-between align-items-center small text-muted mt-2" style="font-size:0.72rem;">
+              <span><i class="bi bi-card-text me-1"></i>{{ r.get_document_type_display|truncatechars:14 }}</span>
+              <span>{{ r.created_at|date:"d M, H:i" }}</span>
+            </div>
+          </a>
+          {% empty %}
+          <div class="p-4 text-center text-muted small">
+            <i class="bi bi-inbox fs-2 d-block mb-1"></i>
+            No verification applications match this filter.
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Detailed Inspection & Actions Panel -->
+    <div class="col-lg-8">
+      {% if selected_req %}
+      <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+        
+        <!-- Header -->
+        <div class="card-header bg-white border-bottom py-3 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+          <div>
+            <h5 class="fw-bold mb-0 text-dark">
+              Inspection: @{{ selected_req.user.username }}
+              {% if selected_req.user.badge_identity_verified %}
+              <span class="badge bg-success text-white ms-1" style="font-size:0.75rem;">🛡️ Identity Verified</span>
+              {% endif %}
+            </h5>
+            <small class="text-muted">
+              Submitted: {{ selected_req.created_at|date:"d M Y, H:i" }} &bull; Role: {{ selected_req.user.get_role_display }}
+            </small>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-light text-dark border px-3 py-2">
+              Status: <strong class="text-uppercase">{{ selected_req.get_status_display }}</strong>
+            </span>
+          </div>
+        </div>
+
+        <div class="card-body p-4">
+          
+          <!-- User Profile & Contact Info -->
+          <div class="p-3 bg-light rounded-3 border mb-4">
+            <h6 class="fw-bold text-dark mb-2"><i class="bi bi-person-lines-fill me-2 text-danger"></i>User Profile Information</h6>
+            <div class="row g-2 small">
+              <div class="col-md-4"><strong>Full Name:</strong> {{ selected_req.user.full_name }}</div>
+              <div class="col-md-4"><strong>Email:</strong> {{ selected_req.user.email }}</div>
+              <div class="col-md-4"><strong>Mobile:</strong> +91 {{ selected_req.user.phone }}</div>
+              <div class="col-md-4"><strong>DOB (Account):</strong> {{ selected_req.user.date_of_birth|default:"Not specified" }}</div>
+              <div class="col-md-4"><strong>City/State:</strong> {{ selected_req.user.city|default:"Delhi NCR" }}, {{ selected_req.user.state }}</div>
+              <div class="col-md-4"><strong>Emergency Contact:</strong> {{ selected_req.user.emergency_contact|default:"None listed" }}</div>
+            </div>
+          </div>
+
+          <!-- Document Credentials & Previews -->
+          <h6 class="fw-bold text-dark mb-2"><i class="bi bi-card-checklist me-2 text-danger"></i>Submitted Identity Credentials</h6>
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <div class="p-3 border rounded-3 bg-white h-100">
+                <div class="small text-muted">DOCUMENT TYPE &amp; NUMBER:</div>
+                <strong class="d-block fs-6 text-dark mb-1">{{ selected_req.get_document_type_display }}</strong>
+                <span class="badge bg-secondary-subtle text-secondary font-monospace fs-6">
+                  {{ selected_req.masked_document_number }}
+                </span>
+                <hr class="my-2">
+                <div class="small">
+                  <div><strong>Name on Doc:</strong> {{ selected_req.ocr_name|default:selected_req.user.full_name }}</div>
+                  <div><strong>DOB on Doc:</strong> {{ selected_req.ocr_dob|default:"N/A" }}</div>
+                  <div><strong>PAN on File:</strong> {{ selected_req.ocr_pan_number|default:"N/A" }}</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Images Preview -->
+            <div class="col-md-6">
+              <div class="row g-2">
+                <div class="col-6">
+                  <div class="doc-preview-box">
+                    <small class="d-block fw-bold text-muted mb-1">ID Document Photo</small>
+                    {% if selected_req.aadhaar_image %}
+                    <a href="{{ selected_req.aadhaar_image.url }}" target="_blank">
+                      <img src="{{ selected_req.aadhaar_image.url }}" class="doc-preview-img" alt="ID Document">
+                    </a>
+                    {% elif selected_req.document_file %}
+                    <a href="{{ selected_req.document_file.url }}" target="_blank" class="btn btn-sm btn-outline-primary mt-2">
+                      <i class="bi bi-file-earmark-pdf me-1"></i>View File
+                    </a>
+                    {% else %}
+                    <span class="text-muted small">No photo uploaded</span>
+                    {% endif %}
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="doc-preview-box">
+                    <small class="d-block fw-bold text-muted mb-1">Live Selfie Photo</small>
+                    {% if selected_req.selfie_image %}
+                    <a href="{{ selected_req.selfie_image.url }}" target="_blank">
+                      <img src="{{ selected_req.selfie_image.url }}" class="doc-preview-img" alt="Live Selfie">
+                    </a>
+                    {% else %}
+                    <span class="text-muted small">No selfie uploaded</span>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6-QUESTION SAFETY ASSESSMENT BREAKDOWN -->
+          <h6 class="fw-bold text-dark mb-2"><i class="bi bi-patch-question-fill me-2 text-danger"></i>Citizen Safety &amp; Awareness Assessment (6 Questions)</h6>
+          {% if selected_assessment %}
+          <div class="card border rounded-3 p-3 bg-light mb-4">
+            <!-- Orientation Scores -->
+            <div class="row g-2 text-center mb-3">
+              <div class="col">
+                <div class="p-2 bg-white rounded border">
+                  <small class="text-muted d-block" style="font-size:0.68rem;">OVERALL</small>
+                  <strong class="text-danger">{{ selected_assessment.safety_awareness_score|floatformat:0 }}%</strong>
+                </div>
+              </div>
+              <div class="col">
+                <div class="p-2 bg-white rounded border">
+                  <small class="text-muted d-block" style="font-size:0.68rem;">HELP ORIENT.</small>
+                  <strong class="text-primary">{{ selected_assessment.community_help_score|floatformat:0 }}%</strong>
+                </div>
+              </div>
+              <div class="col">
+                <div class="p-2 bg-white rounded border">
+                  <small class="text-muted d-block" style="font-size:0.68rem;">WOMEN SAFETY</small>
+                  <strong class="text-success">{{ selected_assessment.womens_safety_score|floatformat:0 }}%</strong>
+                </div>
+              </div>
+              <div class="col">
+                <div class="p-2 bg-white rounded border">
+                  <small class="text-muted d-block" style="font-size:0.68rem;">EMERGENCY</small>
+                  <strong class="text-warning">{{ selected_assessment.emergency_response_score|floatformat:0 }}%</strong>
+                </div>
+              </div>
+              <div class="col">
+                <div class="p-2 bg-white rounded border">
+                  <small class="text-muted d-block" style="font-size:0.68rem;">RESPONSIBLE</small>
+                  <strong class="text-info">{{ selected_assessment.responsible_behavior_score|floatformat:0 }}%</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- Likert Questions List -->
+            <div class="small">
+              <div class="d-flex justify-content-between align-items-center py-1 border-bottom">
+                <span>Q1: Responsibility to help in genuine emergency</span>
+                <span class="badge bg-white text-dark border">{{ selected_assessment.q1_responsibility }}/5 ({{ selected_assessment.get_q1_responsibility_display }})</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-center py-1 border-bottom">
+                <span>Q2: Willingness to intervene safely</span>
+                <span class="badge bg-white text-dark border">{{ selected_assessment.q2_willingness }}/5 ({{ selected_assessment.get_q2_willingness_display }})</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-center py-1 border-bottom">
+                <span>Q3: Women's safety as shared responsibility</span>
+                <span class="badge bg-white text-dark border">{{ selected_assessment.q3_shared_safety }}/5 ({{ selected_assessment.get_q3_shared_safety_display }})</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-center py-1 border-bottom">
+                <span>Q4: Respect for boundaries and consent</span>
+                <span class="badge bg-white text-dark border">{{ selected_assessment.q4_consent_boundaries }}/5 ({{ selected_assessment.get_q4_consent_boundaries_display }})</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-center py-1 border-bottom">
+                <span>Q5: Willingness to report serious safety incidents</span>
+                <span class="badge bg-white text-dark border">{{ selected_assessment.q5_incident_reporting }}/5 ({{ selected_assessment.get_q5_incident_reporting_display }})</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-center py-1">
+                <span>Q6: Confidence in emergency assistance steps</span>
+                <span class="badge bg-white text-dark border">{{ selected_assessment.q6_emergency_confidence }}/5 ({{ selected_assessment.get_q6_emergency_confidence_display }})</span>
+              </div>
+            </div>
+
+            <!-- AI Summary Text -->
+            <div class="p-3 bg-white rounded border mt-3 small">
+              <strong class="text-dark d-block mb-1">AI-Assisted Orientation Summary:</strong>
+              <p class="text-muted mb-2" style="white-space:pre-line;">{{ selected_assessment.ai_summary }}</p>
+              <div class="text-muted fst-italic" style="font-size:0.75rem;">
+                <i class="bi bi-info-circle me-1"></i>{{ selected_assessment.ai_disclaimer }}
+              </div>
+            </div>
+          </div>
+          {% else %}
+          <div class="alert alert-secondary py-2 small mb-4">
+            <i class="bi bi-info-circle me-1"></i>Applicant has not completed the 6-question safety assessment yet.
+          </div>
+          {% endif %}
+
+          <!-- AUDIT TRAIL LOGS -->
+          <h6 class="fw-bold text-dark mb-2"><i class="bi bi-clock-history me-2 text-danger"></i>Verification Audit Trail</h6>
+          <div class="p-3 bg-light rounded-3 border mb-4 small" style="max-height:160px; overflow-y:auto;">
+            {% for log in selected_req.audit_logs.all %}
+            <div class="d-flex justify-content-between align-items-center border-bottom py-1">
+              <div>
+                <strong class="text-dark">{{ log.action|cut:"_"|upper }}</strong>: {{ log.reason|default:"Status modified" }}
+              </div>
+              <span class="text-muted" style="font-size:0.72rem;">{{ log.timestamp|date:"d M Y, H:i" }} by {{ log.actor.username|default:"System" }}</span>
+            </div>
+            {% empty %}
+            <span class="text-muted">No prior audit logs recorded.</span>
+            {% endfor %}
+          </div>
+
+          <!-- ADMINISTRATIVE ACTION CONTROLS -->
+          <div class="p-3 rounded-3 border bg-white shadow-sm">
+            <h6 class="fw-bold text-dark mb-2">Administrative Verification Action</h6>
+            <form method="post" action="{% url 'admin_verification_action' selected_req.id %}">
+              {% csrf_token %}
+              <div class="mb-3">
+                <label class="form-label small fw-semibold text-muted">ADMIN AUDIT NOTES / REJECTION REASON (REQUIRED FOR REJECTION)</label>
+                <input type="text" name="reason" class="form-control form-control-sm" placeholder="e.g. Identity documents verified authentic / Name mismatch on voter card...">
+              </div>
+              
+              <div class="d-flex gap-2 flex-wrap">
+                <button type="submit" name="action" value="approve" class="btn btn-sm btn-success fw-bold px-3">
+                  <i class="bi bi-check-circle-fill me-1"></i>Approve &amp; Verify Identity
+                </button>
+                <button type="submit" name="action" value="under_review" class="btn btn-sm btn-primary fw-semibold px-3">
+                  <i class="bi bi-search me-1"></i>Move to Under Review
+                </button>
+                <button type="submit" name="action" value="reverify" class="btn btn-sm btn-warning text-dark fw-semibold px-3">
+                  <i class="bi bi-arrow-repeat me-1"></i>Request Re-verification
+                </button>
+                <button type="submit" name="action" value="reject" class="btn btn-sm btn-danger fw-semibold px-3" onclick="return confirm('Are you sure you want to reject this verification application?');">
+                  <i class="bi bi-x-circle-fill me-1"></i>Reject Application
+                </button>
+              </div>
+            </form>
+          </div>
+
+        </div>
+      </div>
+      {% else %}
+      <div class="card border-0 shadow-sm rounded-4 p-5 text-center bg-white">
+        <i class="bi bi-shield-lock display-3 text-muted mb-3"></i>
+        <h5 class="fw-bold text-dark">No Verification Application Selected</h5>
+        <p class="text-muted small">Select an applicant from the submission queue on the left to inspect documents and take action.</p>
+      </div>
+      {% endif %}
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

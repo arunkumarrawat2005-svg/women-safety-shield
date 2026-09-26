@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block title %}Responder Dispatch Records - Admin{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h4 class="fw-800 mb-0">🛡️ Responder Dispatch Records</h4>
+            <p class="text-muted small mb-0">Tamper-proof dispatch logs for Local Resident and Organization responders.</p>
+        </div>
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-dark btn-sm">
+            <i class="bi bi-arrow-left me-1"></i>Admin Dashboard
+        </a>
+    </div>
+
+    <div class="alert alert-info py-2 small">
+        <i class="bi bi-shield-lock-fill me-1"></i>
+        <strong>Privacy Enforcement:</strong> Real responder identities are masked in this directory to prevent casual browsing.
+        Click <strong>Inspect Record</strong> to view details under strict audit controls.
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Record ID</th>
+                        <th>Emergency</th>
+                        <th>Masked Responder</th>
+                        <th>Network</th>
+                        <th>Status</th>
+                        <th>Dispatched At</th>
+                        <th>Arrival Status</th>
+                        <th class="text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in records %}
+                    <tr>
+                        <td><strong>#IR-{{ r.id }}</strong></td>
+                        <td>
+                            <a href="{% url 'emergency_track' r.sos.id %}" class="fw-600 text-decoration-none">
+                                SOS #{{ r.sos.id }}
+                            </a>
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary">{{ r.masked_responder_id }}</span>
+                        </td>
+                        <td>
+                            <span class="badge {% if r.network_source == 'local_resident' %}bg-primary{% else %}bg-info text-dark{% endif %}">
+                                {{ r.get_network_source_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge bg-{% if r.status == 'arrived' %}success{% elif r.status == 'en_route' %}warning text-dark{% else %}secondary{% endif %}">
+                                {{ r.get_status_display }}
+                            </span>
+                        </td>
+                        <td><small>{{ r.acknowledged_at|date:"d M H:i" }}</small></td>
+                        <td>
+                            {% if r.arrival_at %}
+                            <span class="text-success small fw-600"><i class="bi bi-check-circle-fill me-1"></i>Arrived at {{ r.arrival_at|date:"H:i:s" }}</span>
+                            {% else %}
+                            <span class="text-muted small">En route</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <a href="{% url 'admin_incident_record_detail' r.id %}" class="btn btn-sm btn-outline-dark">
+                                Inspect Record →
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="8" class="text-center py-4 text-muted">No dispatch records found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,1639 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#7A1F2B">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>AI Safe Routes &amp; Community Safety Map - Women Safety Shield</title>
+  
+  <!-- CSS Frameworks & Fonts -->
+  <link href="vendor/bootstrap.min.css" rel="stylesheet">
+  <link href="vendor/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link href="vendor/leaflet.min.css" rel="stylesheet">
+  <link href="static/css/main.css?v=5.2" rel="stylesheet">
+
+  
+<style>
+#routesMap {
+    height: 620px;
+    width: 100%;
+    border-radius: 16px;
+    z-index: 1;
+    background: #eef2f5;
+}
+.map-wrapper {
+    position: relative;
+}
+.map-toolbar {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 1000;
+    display: flex;
+    gap: 8px;
+}
+.map-legend {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(8px);
+    padding: 12px 16px;
+    border-radius: 14px;
+    box-shadow: 0 6px 22px rgba(0,0,0,0.16);
+    font-size: 0.8rem;
+    z-index: 1000;
+    border: 1px solid rgba(0,0,0,0.06);
+    max-width: 280px;
+    transition: all 0.25s ease;
+}
+.map-legend-header {
+    cursor: pointer;
+    user-select: none;
+}
+.preset-chip {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+.preset-chip:hover, .preset-chip:active {
+    background: #fee2e2 !important;
+    border-color: #ef4444 !important;
+    color: #991b1b !important;
+}
+
+@media (max-width: 768px) {
+    #routesMap {
+        height: 480px !important;
+        border-radius: 12px;
+    }
+    .map-toolbar {
+        top: 10px;
+        right: 10px;
+        gap: 6px;
+    }
+    .map-toolbar .btn {
+        padding: 4px 10px;
+        font-size: 0.78rem;
+    }
+    .map-legend {
+        bottom: 12px;
+        left: 12px;
+        max-width: calc(100% - 75px);
+        padding: 8px 12px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+    }
+    .preset-chip {
+        font-size: 0.78rem !important;
+        padding: 6px 12px !important;
+        border-radius: 9999px !important;
+    }
+}
+.map-legend-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+.legend-color-bar {
+    width: 18px;
+    height: 5px;
+    border-radius: 3px;
+    margin-right: 8px;
+    display: inline-block;
+}
+.route-card {
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    border: 2px solid transparent;
+}
+.route-card:hover {
+    border-color: rgba(231, 76, 60, 0.4);
+    transform: translateY(-2px);
+    background: #fffdfd;
+}
+.route-card.selected {
+    border-color: #c0392b;
+    background: #fff8f8;
+    box-shadow: 0 6px 20px rgba(192, 57, 43, 0.12) !important;
+}
+.score-badge-high { background: #d1fae5; color: #065f46; font-weight: 700; }
+.score-badge-med { background: #fef3c7; color: #92400e; font-weight: 700; }
+.score-badge-low { background: #fee2e2; color: #991b1b; font-weight: 700; }
+
+.autocomplete-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    z-index: 1050;
+    max-height: 220px;
+    overflow-y: auto;
+    display: none;
+    border: 1px solid rgba(0,0,0,0.08);
+}
+.autocomplete-item {
+    padding: 9px 12px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    border-bottom: 1px solid #f5f5f5;
+    transition: background 0.15s;
+}
+.autocomplete-item:hover {
+    background: #fdf2f2;
+    color: #c0392b;
+}
+.preset-chip {
+    cursor: pointer;
+    transition: all 0.15s;
+    font-size: 0.76rem;
+    font-weight: 600;
+}
+.preset-chip:hover {
+    transform: scale(1.03);
+    background: #fee2e2 !important;
+    color: #991b1b !important;
+}
+.pulse-point-a {
+    background: #27ae60;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 0 12px rgba(39,174,96,0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 800;
+    font-size: 13px;
+}
+.pulse-point-b {
+    background: #c0392b;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 0 12px rgba(192,57,43,0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 800;
+    font-size: 13px;
+}
+.incident-marker-icon {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+}
+.nav-pills .nav-link {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #6c757d;
+    border-radius: 10px;
+    padding: 6px 14px;
+}
+.nav-pills .nav-link.active {
+    background-color: #c0392b;
+    color: white;
+}
+.incident-feed-item {
+    transition: background 0.2s;
+    cursor: pointer;
+}
+.incident-feed-item:hover {
+    background: #fdf2f2;
+}
+.floating-sos-btn {
+    box-shadow: 0 4px 20px rgba(192, 57, 43, 0.4);
+    animation: pulse-sos 2s infinite;
+}
+@keyframes pulse-sos {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.06); }
+}
+.turn-step-item {
+    font-size: 0.8rem;
+    padding: 4px 0;
+    border-bottom: 1px dashed #eee;
+}
+.turn-step-item:last-child {
+    border-bottom: none;
+}
+</style>
+
+  <script>
+    window.WS_HOST = "";
+  </script>
+
+<script>
+  window.IS_NATIVE_ANDROID_APP = true;
+  window.DEFAULT_API_HOST = "http://192.168.4.31:8000";
+
+  // Native shake trigger listener from HardwareShakeDetector
+  window.onNativeShakeDetected = function() {
+    console.log("Hardware shake received in webview!");
+    if (typeof openSosModal === 'function') {
+      openSosModal('shake');
+    } else if (typeof enterSamePageEmergencyMode === 'function') {
+      enterSamePageEmergencyMode();
+    }
+  };
+
+  // Safe API caller
+  const originalFetch = window.fetch;
+  window.fetch = function(url, options) {
+    if (typeof url === 'string' && url.startsWith('/')) {
+      let apiBase = window.DEFAULT_API_HOST;
+      try {
+        if (window.AndroidBridge && typeof window.AndroidBridge.getServerUrl === 'function') {
+          const s = window.AndroidBridge.getServerUrl();
+          if (s && s.startsWith('http')) {
+            apiBase = s.replace(/\/$/, '');
+          }
+        }
+      } catch(e) {}
+      url = apiBase + url;
+    }
+    return originalFetch.call(this, url, options).catch(err => {
+      console.warn("Fetch fallback for:", url, err);
+      if (typeof url === 'string' && url.includes('smart-radar')) {
+        return Promise.resolve(new Response(JSON.stringify({
+          success: true,
+          radius_km: 3.0,
+          radius_meters: 3000,
+          total_nearby_users: 1,
+          nearest_responder: { distance_km: 0.1, distance_text: "100 m", eta_minutes: 1, title: "Verified Resident (@arunkumarrawat)" },
+          helpers: [{ id: "res_2", title: "Verified Resident (@arunkumarrawat)", badge: "Community Defense Officer", type: "citizen", lat: 28.5399, lng: 77.1553, distance_km: 0.1, distance_text: "100 m", eta_minutes: 1, trust_score: 9.3, is_real: true, status: "Available & On Standby" }],
+          police_erss: { name: "Central Police 112 ERSS Dispatch", status: "Armed & Online", emergency_number: "112" }
+        }), { status: 200, headers: { 'Content-Type': 'application/json' } }));
+      }
+      throw err;
+    });
+  };
+</script>
+
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+<!-- NAV -->
+<nav class="navbar navbar-expand-lg sticky-top" id="mainNav">
+  <div class="container-fluid px-3 px-xl-4">
+    <a class="navbar-brand d-flex flex-column align-items-start justify-content-center" href="index.html">
+      <span class="brand-title">
+        <i class="bi bi-shield-fill-check"></i> Women Safety Shield
+      </span>
+      <span class="brand-tagline">Help finds you, from every direction.</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu" aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
+        <!-- 1. Home -->
+        <li class="nav-item">
+          <a class="nav-link" href="index.html">
+            <i class="bi bi-house-door me-1"></i>Home
+          </a>
+        </li>
+
+        
+        <!-- 2. How It Works -->
+        <li class="nav-item">
+          <a class="nav-link" href="how_it_works.html">
+            <i class="bi bi-compass me-1"></i>How It Works
+          </a>
+        </li>
+
+        <!-- 3. Permissions -->
+        <li class="nav-item">
+          <a class="nav-link" href="permissions.html">
+            <i class="bi bi-shield-check me-1"></i>Permissions
+          </a>
+        </li>
+        
+
+        <!-- 3. AI Safe Routes & Map -->
+        <li class="nav-item">
+          <a class="nav-link" href="safe_routes_compare.html">
+            <i class="bi bi-signpost-split me-1"></i>AI Safe Routes &amp; Map
+          </a>
+        </li>
+
+        <!-- 4. Local Resident -->
+        <li class="nav-item">
+          <a class="nav-link" href="guardians_list.html">
+            <i class="bi bi-people me-1"></i>Local Resident
+          </a>
+        </li>
+
+        <!-- 5. Organizations -->
+        <li class="nav-item">
+          <a class="nav-link" href="/organization/">
+            <i class="bi bi-building me-1"></i>Organizations
+          </a>
+        </li>
+
+        <!-- 6. Trusted Contacts -->
+        <li class="nav-item">
+          <a class="nav-link" href="/community/trusted-contacts/">
+            <i class="bi bi-person-heart me-1"></i>Trusted Contacts
+          </a>
+        </li>
+
+        
+
+        
+        <!-- Unauthenticated links -->
+        <li class="nav-item">
+          <a class="nav-link fw-semibold" href="login.html">
+            <i class="bi bi-box-arrow-in-right me-1"></i>Log in
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link fw-semibold" href="register.html">
+            <i class="bi bi-person-plus me-1"></i>Register
+          </a>
+        </li>
+        <li class="nav-item ms-lg-2 me-1 me-xl-2 mt-2 mt-lg-0">
+          <a class="btn-nav-sos" href="/emergency/sos/">
+            <i class="bi bi-broadcast"></i> SOS Active
+          </a>
+        </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Main Messages Alert Container -->
+<div class="container-fluid px-3 px-xl-4 mt-3">
+  
+</div>
+
+<!-- Main Content Block -->
+<main class="flex-grow-1">
+  
+<div class="container-fluid py-3 px-3 px-md-4">
+    <!-- Header Banner -->
+    <div class="page-header d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4 shadow-sm" style="margin-top: 0.5rem;">
+        <div>
+            <h4 class="fw-800 mb-1" style="color: var(--maroon);">🧭 AI Safe Routes &amp; Community Safety Map</h4>
+            <p class="mb-0 text-muted">Unified real-time safety intelligence — turn-by-turn safe routes, crowd-sourced hazard reports, and active responder geofencing.</p>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <button type="button" class="btn btn-outline-danger btn-sm fw-700 shadow-sm" data-bs-toggle="modal" data-bs-target="#reportHazardModal">
+                <i class="bi bi-megaphone-fill me-1"></i>Report Safety Hazard
+            </button>
+            <a href="/emergency/sos/" class="btn btn-danger btn-sm fw-700 px-3 shadow-sm">
+                <i class="bi bi-exclamation-triangle-fill me-1"></i>Emergency SOS
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Left Panel: Navigator & Community Feed -->
+        <div class="col-lg-5">
+            <!-- Navigator Card -->
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="fw-700 mb-0 text-dark"><i class="bi bi-compass me-1 text-danger"></i>Safe Route Navigator</h6>
+                        <span class="badge bg-success-subtle text-success border border-success-subtle small">HD Street Network</span>
+                    </div>
+
+                    <form method="get" id="routeForm" class="d-flex flex-column gap-3" onsubmit="return handleFormSubmit(event)">
+                        <!-- Source Input -->
+                        <div class="position-relative">
+                            <label class="small fw-700 text-muted mb-1 d-flex justify-content-between align-items-center">
+                                <span>🟢 Source Location (Starting Point)</span>
+                                <button type="button" class="btn btn-xs btn-outline-success py-1 px-2 fw-600 rounded-pill shadow-xs" id="gpsBtn" onclick="useCurrentLocation()">
+                                    <i class="bi bi-crosshair me-1"></i>My GPS
+                                </button>
+                            </label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-light"><i class="bi bi-geo-alt-fill text-success"></i></span>
+                                <input type="text" id="source_input" name="source" class="form-control" placeholder="Type starting address, landmark, or city..." value="KCC Institute, Knowledge Park III, Greater Noida" autocomplete="off" required>
+                            </div>
+                            <div id="source_suggestions" class="autocomplete-dropdown"></div>
+                            <input type="hidden" id="start_lat" name="start_lat" value="28.4744">
+                            <input type="hidden" id="start_lng" name="start_lng" value="77.5039">
+                        </div>
+
+                        <!-- Swap Button -->
+                        <div class="text-center my-1" style="z-index:2;">
+                            <button type="button" class="btn btn-sm btn-outline-secondary rounded-circle shadow-sm" style="width:36px; height:36px; display:inline-flex; align-items:center; justify-content:center; background:#ffffff; border:1.5px solid #cbd5e1;" onclick="swapLocations()" title="Swap Source and Destination">
+                                <i class="bi bi-arrow-down-up text-primary" style="font-size:0.9rem;"></i>
+                            </button>
+                        </div>
+
+                        <!-- Destination Input -->
+                        <div class="position-relative">
+                            <label class="small fw-700 text-muted mb-1">🏁 Destination Location (Where to go)</label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-light"><i class="bi bi-flag-fill text-danger"></i></span>
+                                <input type="text" id="dest_input" name="destination" class="form-control" placeholder="Type destination, hostel, station, or landmark..." value="Pari Chowk Metro Station, Greater Noida" autocomplete="off" required>
+                            </div>
+                            <div id="dest_suggestions" class="autocomplete-dropdown"></div>
+                            <input type="hidden" id="end_lat" name="end_lat" value="28.4594">
+                            <input type="hidden" id="end_lng" name="end_lng" value="77.5219">
+                        </div>
+
+                        <!-- Smart Local Safety Hub Presets -->
+                        <div>
+                            <span class="small fw-600 text-muted d-block mb-1">Quick Safe Presets (Nearby):</span>
+                            <div class="d-flex flex-wrap gap-1">
+                                <span class="badge bg-light text-dark border preset-chip py-1 px-2" onclick="setPresetDestination('Nearest Police Station')">
+                                    🚓 Police Station
+                                </span>
+                                <span class="badge bg-light text-dark border preset-chip py-1 px-2" onclick="setPresetDestination('Nearest Metro Station')">
+                                    🚇 Metro / Transit
+                                </span>
+                                <span class="badge bg-light text-dark border preset-chip py-1 px-2" onclick="setPresetDestination('24/7 Hospital Safe Shelter')">
+                                    🏥 24/7 Hospital
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Mode Selector -->
+                        <div class="d-flex gap-2">
+                            <div class="form-check form-check-inline m-0">
+                                <input class="form-check-input" type="radio" name="mode" id="modeWalk" value="walking" checked>
+                                <label class="form-check-label small fw-600" for="modeWalk">🚶 Walking</label>
+                            </div>
+                            <div class="form-check form-check-inline m-0">
+                                <input class="form-check-input" type="radio" name="mode" id="modeCab" value="cab" >
+                                <label class="form-check-label small fw-600" for="modeCab">🛺 Auto / Cab</label>
+                            </div>
+                            <div class="form-check form-check-inline m-0">
+                                <input class="form-check-input" type="radio" name="mode" id="modeTransit" value="transit" >
+                                <label class="form-check-label small fw-600" for="modeTransit">🚌 Transit</label>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-danger btn-sm w-100 fw-700 py-2 shadow-sm" id="calcBtn">
+                            <i class="bi bi-search me-1"></i>Calculate &amp; Compare AI Safe Routes
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tabs: Route Candidates vs. Community Incident Reports -->
+            <ul class="nav nav-pills nav-fill mb-3 bg-white p-1 rounded-4 shadow-sm" id="pills-tab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="pills-routes-tab" data-bs-toggle="pill" data-bs-target="#pills-routes" type="button" role="tab">
+                        <i class="bi bi-signpost-2 me-1"></i>Safe Routes (1)
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="pills-feed-tab" data-bs-toggle="pill" data-bs-target="#pills-feed" type="button" role="tab">
+                        <i class="bi bi-megaphone me-1"></i>Community Reports (0)
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="pills-tabContent">
+                <!-- Tab 1: Scored Routes -->
+                <div class="tab-pane fade show active" id="pills-routes" role="tabpanel">
+                    
+                    <div class="card border-0 shadow-sm rounded-4 mb-3 route-card selected" id="card-route-0" onclick="selectRoute(0)">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <span class="badge bg-success mb-1">⭐ RECOMMENDED FOR WOMEN</span>
+                                    <h6 class="fw-700 mb-0 text-dark">Primary Main Road Corridor (Safest)</h6>
+                                </div>
+                                <span class="badge score-badge-high px-2 py-1 fs-6">
+                                    Score: 9.0/10
+                                </span>
+                            </div>
+
+                            <!-- Metrics Grid -->
+                            <div class="row g-2 text-muted small mb-2 bg-light p-2 rounded-3">
+                                <div class="col-6">
+                                    <i class="bi bi-rulers me-1 text-primary"></i>Distance: <b>3.03 km</b>
+                                </div>
+                                <div class="col-6">
+                                    <i class="bi bi-clock me-1 text-danger"></i>ETA: <b>~4m walk</b> (7m cab)
+                                </div>
+                                <div class="col-6">
+                                    <i class="bi bi-lightbulb-fill me-1 text-warning"></i>Lighting: <b>High (Commercial &amp; Street Lighting)</b>
+                                </div>
+                                <div class="col-6">
+                                    <i class="bi bi-shield-shaded me-1 text-success"></i>Responders: <b>1 Nearby</b>
+                                </div>
+                            </div>
+
+                            <!-- Turn-by-turn steps -->
+                            
+                            <div class="mb-2 p-2 rounded-3 border bg-white">
+                                <div class="small fw-700 text-muted mb-1"><i class="bi bi-sign-turn-right me-1 text-primary"></i>Street Navigation Corridor:</div>
+                                
+                                <div class="turn-step-item text-secondary">
+                                    <i class="bi bi-arrow-right-short text-danger"></i>Connecting Corridor (797m)
+                                </div>
+                                
+                                <div class="turn-step-item text-secondary">
+                                    <i class="bi bi-arrow-right-short text-danger"></i>Connecting Corridor (64m)
+                                </div>
+                                
+                                <div class="turn-step-item text-secondary">
+                                    <i class="bi bi-arrow-right-short text-danger"></i>Connecting Corridor (380m)
+                                </div>
+                                
+                                <div class="turn-step-item text-secondary">
+                                    <i class="bi bi-arrow-right-short text-danger"></i>Connecting Corridor (47m)
+                                </div>
+                                
+                                <div class="turn-step-item text-secondary">
+                                    <i class="bi bi-arrow-right-short text-danger"></i>Connecting Corridor (1010m)
+                                </div>
+                                
+                                <div class="turn-step-item text-secondary">
+                                    <i class="bi bi-arrow-right-short text-danger"></i>Connecting Corridor (145m)
+                                </div>
+                                
+                            </div>
+                            
+
+                            <!-- Risk & Safety Factors -->
+                            <div class="mb-3">
+                                
+                                <div class="small text-secondary mb-1">
+                                    <i class="bi bi-shield-check text-success me-1"></i>Road network verified via OpenStreetMap road data
+                                </div>
+                                
+                                <div class="small text-secondary mb-1">
+                                    <i class="bi bi-shield-check text-success me-1"></i>1 verified community responders registered along this area
+                                </div>
+                                
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="d-flex gap-2 pt-1 border-top">
+                                <button type="button" class="btn btn-outline-success btn-sm flex-fill fw-600" onclick="shareSafeRoute('Primary Main Road Corridor (Safest)', '3.03', '9.0')">
+                                    <i class="bi bi-share-fill me-1"></i>Share
+                                </button>
+                                <button type="button" class="btn btn-outline-danger btn-sm flex-fill fw-600" onclick="startMonitoredJourney('Primary Main Road Corridor (Safest)', 4)">
+                                    <i class="bi bi-stopwatch me-1"></i>Watchdog
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+
+                <!-- Tab 2: Community Incident Reports Feed -->
+                <div class="tab-pane fade" id="pills-feed" role="tabpanel">
+                    <div class="card border-0 shadow-sm rounded-4 mb-3">
+                        <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+                            <h6 class="fw-700 mb-0"><i class="bi bi-exclamation-circle text-danger me-1"></i>Recent Community Incident Reports</h6>
+                            <button type="button" class="btn btn-xs btn-outline-danger py-0 px-2 fw-600" data-bs-toggle="modal" data-bs-target="#reportHazardModal">
+                                + Report Hazard
+                            </button>
+                        </div>
+                        <div class="list-group list-group-flush rounded-bottom-4" style="max-height: 520px; overflow-y: auto;">
+                            
+                            <div class="text-center py-4 text-muted">
+                                <i class="bi bi-shield-check text-success fs-2"></i>
+                                <p class="mt-2 mb-0 small">No active safety hazard reports in this area.</p>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel: Interactive Map View -->
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body p-2 map-wrapper">
+                    <div id="routesMap"></div>
+
+                    <!-- Map Floating Toolbar -->
+                    <div class="map-toolbar">
+                        <button type="button" class="btn btn-light btn-sm fw-700 text-danger shadow-sm" data-bs-toggle="modal" data-bs-target="#reportHazardModal" title="Report a hazard at your location">
+                            <i class="bi bi-megaphone-fill me-1"></i>Report Hazard
+                        </button>
+                        <a href="/emergency/sos/" class="btn btn-danger btn-sm fw-800 floating-sos-btn rounded-pill px-3" title="Trigger Instant Emergency SOS">
+                            <i class="bi bi-exclamation-triangle-fill me-1"></i>SOS
+                        </a>
+                    </div>
+
+                    <!-- Map Overlay Controls -->
+                    <div class="map-legend">
+                        <div class="d-flex justify-content-between align-items-center mb-1 map-legend-header" onclick="toggleMapLegend()" role="button">
+                            <span class="fw-bold" style="color: #2c3e50;"><i class="bi bi-layers-half text-primary me-1"></i>Map Legend &amp; Layers</span>
+                            <span class="badge bg-light text-dark border d-md-none ms-2" id="legendToggleBadge"><i class="bi bi-chevron-down" id="legendToggleIcon"></i></span>
+                        </div>
+                        <div id="mapLegendContent">
+                            <div class="map-legend-item">
+                                <span class="legend-color-bar" style="background: #27ae60;"></span>
+                                <span>Safest Recommended Route</span>
+                            </div>
+                            <div class="map-legend-item">
+                                <span class="legend-color-bar" style="background: #3498db;"></span>
+                                <span>Direct Street Route</span>
+                            </div>
+                            <div class="map-legend-item">
+                                <span class="legend-color-bar" style="background: #e67e22;"></span>
+                                <span>Guarded Residential Bypass</span>
+                            </div>
+                            
+                            <div class="mt-2 pt-2 border-top">
+                                <div class="form-check form-switch m-0 mb-1">
+                                    <input class="form-check-input" type="checkbox" id="toggleZonesCheck" checked onchange="toggleSafetyZones(this.checked)">
+                                    <label class="form-check-label small fw-600" for="toggleZonesCheck">Danger Hotspots &amp; Safe Zones</label>
+                                </div>
+                                <div class="form-check form-switch m-0">
+                                    <input class="form-check-input" type="checkbox" id="toggleReportsCheck" checked onchange="toggleIncidentReports(this.checked)">
+                                    <label class="form-check-label small fw-600" for="toggleReportsCheck">Community Reports (0)</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Map Guidance Tip -->
+            <div class="alert alert-light border rounded-4 mt-3 py-2 px-3 d-flex align-items-center justify-content-between small text-muted">
+                <span><i class="bi bi-info-circle text-primary me-1"></i><b>Map Guide:</b> Click anywhere on the map to set points or report a hazard. Drag pins A 🟢 or B 🏁 to update routes!</span>
+                <span class="badge bg-success-subtle text-success border border-success-subtle"><i class="bi bi-shield-lock-fill me-1"></i>Esri HD Street Network</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Report Safety Hazard Modal -->
+<div class="modal fade" id="reportHazardModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <form method="post" action="/safety-map/report/">
+                <input type="hidden" name="csrfmiddlewaretoken" value="UI0DWVIjQAiJn5jl8WoTU4wnb0nIsot9p8nPd4vB4b2d20ngarUhlc9jwmIx6dzJ">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title fw-700"><i class="bi bi-megaphone-fill me-2"></i>Report a Safety Hazard</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <p class="small text-muted mb-3">Help protect other women by flagging dangerous areas, unlit roads, harassment hotspots, or safe sanctuaries.</p>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-600 small">Hazard Category *</label>
+                        <select name="category" class="form-select" required>
+                            <option value="">Select Category...</option>
+                            <option value="harassment">😰 Harassment / Stalking</option>
+                            <option value="poor_lighting">🌑 Poor Lighting / Broken Streetlights</option>
+                            <option value="unsafe_area">⚠️ Unsafe / Desolate Area</option>
+                            <option value="no_crowd">🚶 Isolated Road / No Crowd</option>
+                            <option value="theft">💰 Theft / Snatching Hotspot</option>
+                            <option value="suspicious">👁️ Suspicious Group / Activity</option>
+                            <option value="safe">✅ Safe Zone / Police Booth / Lit Shop</option>
+                            <option value="other">📌 Other Concern</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-600 small">Location Name / Landmark *</label>
+                        <input type="text" name="location_name" id="modal_loc_name" class="form-control" placeholder="e.g. Underpass near Sector 20 or Metro exit gate" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-600 small">Description / Guidance</label>
+                        <textarea name="description" class="form-control" rows="3" placeholder="Provide helpful details (e.g. avoid after 8pm, broken streetlight, dogs, etc.)"></textarea>
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label fw-600 small">Latitude</label>
+                            <input type="text" name="latitude" id="modal_report_lat" class="form-control form-control-sm" value="28.4744" required>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-600 small">Longitude</label>
+                            <input type="text" name="longitude" id="modal_report_lng" class="form-control form-control-sm" value="77.5039" required>
+                        </div>
+                    </div>
+
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="is_anonymous" id="modalAnonCheck" checked>
+                        <label class="form-check-label small" for="modalAnonCheck">Submit Anonymously (Hide username)</label>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger btn-sm fw-600">Submit Hazard Report</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Share Route Modal -->
+<div class="modal fade" id="shareRouteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title fw-700"><i class="bi bi-share me-2"></i>Share Safe Route with Trusted Circle</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <p class="small text-muted mb-3">Send your planned transit route to your emergency contacts so they can track your progress.</p>
+                <div class="mb-3">
+                    <label class="form-label fw-600 small">Prepared Message</label>
+                    <textarea class="form-control" id="shareText" rows="4" readonly></textarea>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="#" id="whatsappBtn" target="_blank" class="btn btn-success btn-sm flex-fill fw-600">
+                        <i class="bi bi-whatsapp me-1"></i>Send via WhatsApp
+                    </a>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="copyShareText()">
+                        <i class="bi bi-clipboard me-1"></i>Copy Text
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Journey Watchdog Modal -->
+<div class="modal fade" id="watchdogModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title fw-700"><i class="bi bi-shield-shaded me-2"></i>Safe Journey Watchdog</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4 text-center">
+                <div class="avatar-circle mx-auto mb-3" style="width:70px;height:70px;background:#fee2e2;color:#dc3545;font-size:2rem;">
+                    🛡️
+                </div>
+                <h5 class="fw-800 mb-1" id="watchdogRouteName">Route Name</h5>
+                <p class="text-muted small mb-3">Estimated Travel Time: <b id="watchdogETA">15</b> minutes</p>
+                <div class="alert alert-warning py-2 small mb-3">
+                    <i class="bi bi-bell-fill me-1"></i>Watchdog checks in when timer concludes. If not acknowledged, quick SOS is alerted to your Trusted Circle.
+                </div>
+                <a href="/emergency/sos/" class="btn btn-danger btn-sm fw-700 px-4 py-2">
+                    <i class="bi bi-exclamation-octagon me-1"></i>Trigger Immediate Emergency SOS
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+</main>
+
+<!-- Unified Minimalist Footer -->
+<footer class="mt-auto">
+  <div class="container-fluid px-3 px-xl-4">
+    <div class="row g-4">
+      <!-- Col 1: Brand & 24/7 Helplines -->
+      <div class="col-lg-4 col-md-6">
+        <h5 style="color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;" class="mb-2">
+          <i class="bi bi-shield-fill-check" style="color:var(--gold);"></i> Women Safety Shield
+        </h5>
+        <p class="text-white-50 small mb-2" style="font-size:0.8rem; letter-spacing:0.02em;">
+          Help finds you, from every direction.
+        </p>
+        <p style="max-width:34ch;font-size:0.88rem;line-height:1.6;" class="mb-2 text-white-50">
+          Community-powered emergency response network with verified residents, institutional safe havens, and automated police dispatch.
+        </p>
+        <p class="small text-white-50 mb-3" style="font-size:0.8rem;">
+          <i class="bi bi-cpu me-1" style="color:var(--gold);"></i>Developed by <strong>Team Shield Matrix</strong>
+        </p>
+        <div class="d-flex gap-2 flex-wrap">
+          <a href="tel:112" class="badge rounded-pill bg-danger text-white px-3 py-2 text-decoration-none shadow-sm" title="National Emergency Response">
+            <i class="bi bi-telephone-fill me-1"></i>112 Police
+          </a>
+          <a href="tel:1091" class="badge rounded-pill bg-danger text-white px-3 py-2 text-decoration-none shadow-sm" title="Women Helpline">
+            <i class="bi bi-telephone-fill me-1"></i>1091 Women
+          </a>
+          <a href="tel:181" class="badge rounded-pill bg-danger text-white px-3 py-2 text-decoration-none shadow-sm" title="Women in Distress">
+            <i class="bi bi-telephone-fill me-1"></i>181 Helpline
+          </a>
+        </div>
+      </div>
+
+      <!-- Col 2: Platform Services -->
+      <div class="col-lg-2 col-md-3 col-6">
+        <h6 style="color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;" class="mb-3">Safety Services</h6>
+        <p class="mb-2"><a href="safe_routes_compare.html" class="text-decoration-none hover-underline"><i class="bi bi-signpost-split me-1 text-danger"></i>Safe Routes &amp; Map</a></p>
+        <p class="mb-2"><a href="guardians_list.html" class="text-decoration-none hover-underline"><i class="bi bi-people me-1 text-success"></i>Local Residents</a></p>
+        <p class="mb-2"><a href="/organization/" class="text-decoration-none hover-underline"><i class="bi bi-building me-1 text-warning"></i>Organizations</a></p>
+        <p class="mb-2"><a href="/community/trusted-contacts/" class="text-decoration-none hover-underline"><i class="bi bi-person-heart me-1 text-danger"></i>Trusted Circle</a></p>
+        <p class="mb-2"><a href="how_it_works.html" class="text-decoration-none hover-underline"><i class="bi bi-compass me-1 text-info"></i>How It Works (Tour)</a></p>
+        <p class="mb-2"><a href="/verification/status/" class="text-decoration-none hover-underline"><i class="bi bi-shield-check me-1 text-success"></i>Identity Verification</a></p>
+      </div>
+
+      <!-- Col 3: Quick Action Tools -->
+      <div class="col-lg-3 col-md-3 col-6">
+        <h6 style="color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;" class="mb-3">Quick Action Tools</h6>
+        <p class="mb-2"><a href="/emergency/sos/" style="color:#fff;" class="text-decoration-none fw-semibold"><i class="bi bi-broadcast text-danger me-1"></i>Emergency SOS Trigger</a></p>
+        <p class="mb-2"><a href="guardians_list.html" class="text-decoration-none hover-underline"><i class="bi bi-person-walking me-1"></i>Request Safe Walk Escort</a></p>
+        <p class="mb-2"><a href="/community/trusted-contacts/" class="text-decoration-none hover-underline"><i class="bi bi-geo-alt-fill me-1"></i>"I Reached Safely" Check-in</a></p>
+        <p class="mb-2"><a href="/organization/register/" class="text-decoration-none hover-underline"><i class="bi bi-shield-plus me-1"></i>Campus Partner Signup</a></p>
+        <p class="mb-2"><a href="/local-residents/register/" class="text-decoration-none hover-underline"><i class="bi bi-person-badge me-1"></i>Become Local Guardian</a></p>
+        
+        
+      </div>
+
+      <!-- Col 4: Trust, Security & Legal -->
+      <div class="col-lg-3 col-md-12">
+        <h6 style="color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;" class="mb-3">Legal &amp; Trust</h6>
+        <p style="font-size:0.84rem;line-height:1.55;" class="mb-2 text-white-50">
+          Safety predictions and route ratings are statistical estimates to assist personal mobility decisions and do not guarantee complete crime immunity.
+        </p>
+        <p style="font-size:0.84rem;line-height:1.55;" class="mb-2 text-white-50">
+          All responder interactions, emergency logs, and community escorts are cryptographically timestamped for Good Samaritan legal protection.
+        </p>
+        <div class="d-flex align-items-center gap-2 mt-2 pt-2 border-top" style="border-color:#423934 !important;">
+          <i class="bi bi-shield-check text-success fs-5"></i>
+          <span class="small text-white-50" style="font-size:0.78rem;">Aadhaar &amp; PAN statutory verification standards</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="footer-bottom d-flex justify-content-between align-items-center flex-wrap gap-2 pt-3 mt-4 border-top" style="border-color:#423934 !important; font-size:0.82rem; color:#9a8f8a;">
+      <div>© 2026 Women Safety Shield — Team Shield Matrix. All rights reserved. Help finds you, from every direction.</div>
+      <div class="d-flex align-items-center gap-2">
+        <span class="badge bg-dark border border-secondary text-white-50 px-2 py-1">ERSS 112 Integrated</span>
+        <span>Emergency Dispatch Protocol v2.5</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Native Mobile App Bottom Navigation Dock (Visible on Mobile/Phones) -->
+<nav class="mobile-app-bottom-nav d-md-none" aria-label="Mobile Application Navigation">
+  <div class="mobile-nav-container">
+    <a href="index.html" class="mobile-nav-item ">
+      <i class="bi bi-house-door-fill"></i>
+      <span>Home</span>
+    </a>
+    <a href="safe_routes_compare.html" class="mobile-nav-item active">
+      <i class="bi bi-compass-fill"></i>
+      <span>Routes</span>
+    </a>
+    <a href="/#giantSosDial" onclick="triggerMobileSosNav(event)" class="mobile-nav-item mobile-nav-sos" aria-label="Trigger Emergency SOS">
+      <div class="mobile-sos-circle">
+        <i class="bi bi-broadcast"></i>
+      </div>
+      <span>SOS</span>
+    </a>
+    <a href="guardians_list.html" class="mobile-nav-item ">
+      <i class="bi bi-shield-shaded"></i>
+      <span>Guardians</span>
+    </a>
+    <a href="login.html" class="mobile-nav-item ">
+      <i class="bi bi-person-fill"></i>
+      <span>Account</span>
+    </a>
+  </div>
+</nav>
+
+<script>
+function triggerMobileSosNav(e) {
+  if (typeof openSosModal === 'function') {
+    e.preventDefault();
+    openSosModal('mobile_dock');
+    return false;
+  } else if (typeof enterSamePageEmergencyMode === 'function') {
+    e.preventDefault();
+    enterSamePageEmergencyMode();
+    return false;
+  }
+}
+</script>
+
+<!-- Onboarding Experience Modal -->
+<!-- First-Time Onboarding Experience Modal: "See How It Works" -->
+<div class="modal fade" id="onboardingModal" tabindex="-1" aria-labelledby="onboardingModalLabel" aria-hidden="true" data-bs-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden" style="background:#ffffff;">
+      
+      <!-- Modal Top Bar -->
+      <div class="d-flex justify-content-between align-items-center px-4 pt-3 pb-2 border-bottom bg-light">
+        <div class="d-flex align-items-center gap-2">
+          <span class="badge rounded-pill bg-danger-subtle text-danger fw-bold px-3 py-1" style="font-size:0.75rem; letter-spacing:0.04em;">
+            <i class="bi bi-shield-check me-1"></i>UNDERSTAND → VERIFY → PROTECT
+          </span>
+          <span class="text-muted small d-none d-sm-inline">Platform Tour</span>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="markOnboardingComplete()"></button>
+      </div>
+
+      <!-- Modal Body / Carousel -->
+      <div class="modal-body p-0">
+        <div id="onboardingCarousel" class="carousel slide" data-bs-touch="true" data-bs-interval="false">
+          
+          <!-- Stepper Dots -->
+          <div class="carousel-indicators mb-2" style="bottom:12px;">
+            <button type="button" data-bs-target="#onboardingCarousel" data-bs-slide-to="0" class="active rounded-circle" style="width:10px;height:10px;margin:0 4px;background-color:var(--crimson);" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#onboardingCarousel" data-bs-slide-to="1" class="rounded-circle" style="width:10px;height:10px;margin:0 4px;background-color:var(--crimson);" aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#onboardingCarousel" data-bs-slide-to="2" class="rounded-circle" style="width:10px;height:10px;margin:0 4px;background-color:var(--crimson);" aria-label="Slide 3"></button>
+            <button type="button" data-bs-target="#onboardingCarousel" data-bs-slide-to="3" class="rounded-circle" style="width:10px;height:10px;margin:0 4px;background-color:var(--crimson);" aria-label="Slide 4"></button>
+          </div>
+
+          <div class="carousel-inner">
+            
+            <!-- SCREEN 1: Stay Protected -->
+            <div class="carousel-item active p-4 p-md-5 text-center">
+              <div class="mx-auto mb-4 d-flex align-items-center justify-content-center rounded-circle" 
+                   style="width:96px; height:96px; background:linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); border:2px solid #fecaca; box-shadow:0 8px 24px rgba(220,38,38,0.15);">
+                <span style="font-size:3.2rem;">🛡️</span>
+              </div>
+              <span class="badge bg-danger-subtle text-danger px-3 py-1 rounded-pill fw-semibold mb-2" style="font-size:0.75rem;">SCREEN 1 OF 4</span>
+              <h3 class="fw-bold mb-2" style="color:var(--maroon); font-family:'Plus Jakarta Sans',sans-serif;">Stay Protected</h3>
+              <blockquote class="blockquote my-2">
+                <p class="fst-italic fw-semibold text-danger fs-5 mb-1">"Your safety. Your people. Your connection."</p>
+              </blockquote>
+              <p class="text-muted mx-auto" style="max-width:540px; font-size:0.95rem; line-height:1.6;">
+                Women Safety Shield connects you with your trusted inner circle, vetted local community responders, 
+                and rapid emergency services. Whether you are traveling late or exploring unfamiliar routes, 
+                you never have to walk alone.
+              </p>
+              <div class="d-flex justify-content-center gap-2 mt-3 text-muted small">
+                <span><i class="bi bi-check-circle-fill text-success me-1"></i>Trusted Circle</span>
+                <span>•</span>
+                <span><i class="bi bi-check-circle-fill text-success me-1"></i>3km Community Reach</span>
+                <span>•</span>
+                <span><i class="bi bi-check-circle-fill text-success me-1"></i>112 Police Link</span>
+              </div>
+            </div>
+
+            <!-- SCREEN 2: One Tap Emergency Assistance -->
+            <div class="carousel-item p-4 p-md-5 text-center">
+              <div class="mx-auto mb-4 d-flex align-items-center justify-content-center rounded-circle" 
+                   style="width:96px; height:96px; background:linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%); border:2px solid #fecdd3; box-shadow:0 8px 24px rgba(225,29,72,0.18);">
+                <span style="font-size:3.2rem;">🆘</span>
+              </div>
+              <span class="badge bg-danger-subtle text-danger px-3 py-1 rounded-pill fw-semibold mb-2" style="font-size:0.75rem;">SCREEN 2 OF 4</span>
+              <h3 class="fw-bold mb-2" style="color:var(--maroon); font-family:'Plus Jakarta Sans',sans-serif;">One Tap Emergency Assistance</h3>
+              <blockquote class="blockquote my-2">
+                <p class="fst-italic fw-semibold text-danger fs-5 mb-1">"One tap can connect you to help."</p>
+              </blockquote>
+              <p class="text-muted mx-auto" style="max-width:540px; font-size:0.95rem; line-height:1.6;">
+                Activating SOS broadcasts your live GPS coordinates, continuous breadcrumbs, and emergency beacon simultaneously:
+                alerting guardians via SMS, notifying verified local residents within 3 KM, and alerting emergency services in parallel.
+              </p>
+              <div class="p-3 bg-light rounded-3 d-inline-flex align-items-center gap-3 border mt-2">
+                <span class="badge bg-danger p-2 fs-6 rounded-circle"><i class="bi bi-broadcast"></i></span>
+                <span class="small text-start text-dark fw-semibold">Instant Multi-Channel Dispatch: <strong>SMS + Voice Call + Live Map Tracking</strong></span>
+              </div>
+            </div>
+
+            <!-- SCREEN 3: Know Who Is Around You -->
+            <div class="carousel-item p-4 p-md-5 text-center">
+              <div class="mx-auto mb-4 d-flex align-items-center justify-content-center rounded-circle" 
+                   style="width:96px; height:96px; background:linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border:2px solid #bfdbfe; box-shadow:0 8px 24px rgba(37,99,235,0.15);">
+                <span style="font-size:3.2rem;">📍</span>
+              </div>
+              <span class="badge bg-primary-subtle text-primary px-3 py-1 rounded-pill fw-semibold mb-2" style="font-size:0.75rem;">SCREEN 3 OF 4</span>
+              <h3 class="fw-bold mb-2" style="color:var(--navy); font-family:'Plus Jakarta Sans',sans-serif;">Know Who Is Around You</h3>
+              <blockquote class="blockquote my-2">
+                <p class="fst-italic fw-semibold text-primary fs-5 mb-1">"Help can be closer than you think."</p>
+              </blockquote>
+              <p class="text-muted mx-auto" style="max-width:540px; font-size:0.95rem; line-height:1.6;">
+                During an emergency or night journey, nearby verified community members, institutional safe havens,
+                and active police PCR patrol beats are visualized on the interactive Google Map in real time.
+              </p>
+              <div class="d-flex justify-content-center gap-3 mt-3 flex-wrap">
+                <span class="badge bg-success-subtle text-success px-2 py-1"><i class="bi bi-geo-alt-fill me-1"></i>3 KM Responder Radius</span>
+                <span class="badge bg-primary-subtle text-primary px-2 py-1"><i class="bi bi-building me-1"></i>Verified Safe Havens</span>
+                <span class="badge bg-dark-subtle text-dark px-2 py-1"><i class="bi bi-shield-shaded me-1"></i>Police PCR Patrol</span>
+              </div>
+            </div>
+
+            <!-- SCREEN 4: Verified & Trusted Community -->
+            <div class="carousel-item p-4 p-md-5 text-center">
+              <div class="mx-auto mb-4 d-flex align-items-center justify-content-center rounded-circle" 
+                   style="width:96px; height:96px; background:linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border:2px solid #bbf7d0; box-shadow:0 8px 24px rgba(22,163,74,0.15);">
+                <span style="font-size:3.2rem;">🤝</span>
+              </div>
+              <span class="badge bg-success-subtle text-success px-3 py-1 rounded-pill fw-semibold mb-2" style="font-size:0.75rem;">SCREEN 4 OF 4</span>
+              <h3 class="fw-bold mb-2" style="color:#14532d; font-family:'Plus Jakarta Sans',sans-serif;">Verified &amp; Trusted Community</h3>
+              <blockquote class="blockquote my-2">
+                <p class="fst-italic fw-semibold text-success fs-5 mb-1">"Safety starts with trust."</p>
+              </blockquote>
+              <p class="text-muted mx-auto" style="max-width:540px; font-size:0.95rem; line-height:1.6;">
+                Every participant undergoes an identity-verification process and safety awareness assessment 
+                before becoming a trusted responder. Trust is earned through identity verification, 
+                responsible community standards, and strict privacy protection.
+              </p>
+              <div class="d-flex justify-content-center gap-2 mt-3 flex-wrap">
+                <span class="badge bg-light text-dark border px-2 py-1">🛡️ Identity Verified</span>
+                <span class="badge bg-light text-dark border px-2 py-1">✓ Verified Community Member</span>
+                <span class="badge bg-light text-dark border px-2 py-1">✓ Secure Account</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer Controls -->
+      <div class="modal-footer d-flex justify-content-between align-items-center bg-light px-4 py-3 border-top">
+        <div>
+          <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal" onclick="markOnboardingComplete()">
+            Skip / Explore as Guest
+          </button>
+        </div>
+
+        <div class="d-flex gap-2 align-items-center">
+          <button type="button" class="btn btn-sm btn-light border rounded-pill px-3" onclick="prevOnboardingSlide()">
+            <i class="bi bi-chevron-left me-1"></i>Back
+          </button>
+          <button type="button" class="btn btn-sm btn-danger rounded-pill px-3 fw-bold" id="onboardingNextBtn" onclick="nextOnboardingSlide()">
+            Next<i class="bi bi-chevron-right ms-1"></i>
+          </button>
+          
+          <!-- Final Action Buttons (Hidden on slides 1-3, shown on slide 4) -->
+          <div id="onboardingFinalActions" class="d-none gap-2">
+            <a href="login.html" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-bold" onclick="markOnboardingComplete()">
+              <i class="bi bi-box-arrow-in-right me-1"></i>Login
+            </a>
+            <a href="register.html" class="btn btn-sm btn-danger rounded-pill px-3 fw-bold shadow-sm" onclick="markOnboardingComplete()">
+              <i class="bi bi-person-plus-fill me-1"></i>Register
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+function openOnboardingModal() {
+  const modalEl = document.getElementById('onboardingModal');
+  if (modalEl && typeof bootstrap !== 'undefined') {
+    const modal = new bootstrap.Modal(modalEl);
+    modal.show();
+  }
+}
+
+function markOnboardingComplete() {
+  localStorage.setItem('w_shield_onboarded_v2', 'true');
+}
+
+function nextOnboardingSlide() {
+  const carouselEl = document.getElementById('onboardingCarousel');
+  if (carouselEl && typeof bootstrap !== 'undefined') {
+    const c = bootstrap.Carousel.getOrCreateInstance(carouselEl);
+    c.next();
+  }
+}
+
+function prevOnboardingSlide() {
+  const carouselEl = document.getElementById('onboardingCarousel');
+  if (carouselEl && typeof bootstrap !== 'undefined') {
+    const c = bootstrap.Carousel.getOrCreateInstance(carouselEl);
+    c.prev();
+  }
+}
+
+// Auto-trigger on first-time visit, logged out, or force parameter
+document.addEventListener('DOMContentLoaded', function() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const isLoggedOut = urlParams.has('logged_out');
+  if (isLoggedOut) {
+    try { localStorage.removeItem('w_shield_onboarded_v2'); } catch(e){}
+  }
+
+  const hasSeen = localStorage.getItem('w_shield_onboarded_v2');
+  const isAuth = false;
+  const isHomePage = window.location.pathname === '/' || window.location.pathname === '';
+  const forceTour = urlParams.has('tour') || urlParams.has('onboarding') || isLoggedOut;
+  
+  if ((!hasSeen && !isAuth && isHomePage) || forceTour) {
+    setTimeout(function() {
+      openOnboardingModal();
+    }, 600);
+  }
+
+  // Update button states on slide transition
+  const carouselEl = document.getElementById('onboardingCarousel');
+  if (carouselEl) {
+    carouselEl.addEventListener('slid.bs.carousel', function (e) {
+      const isLast = e.to === 3;
+      const nextBtn = document.getElementById('onboardingNextBtn');
+      const finalActions = document.getElementById('onboardingFinalActions');
+      if (isLast) {
+        if (nextBtn) nextBtn.classList.add('d-none');
+        if (finalActions) {
+          finalActions.classList.remove('d-none');
+          finalActions.classList.add('d-flex');
+        }
+      } else {
+        if (nextBtn) nextBtn.classList.remove('d-none');
+        if (finalActions) {
+          finalActions.classList.add('d-none');
+          finalActions.classList.remove('d-flex');
+        }
+      }
+    });
+  }
+});
+</script>
+
+
+<!-- Scripts -->
+<script src="vendor/bootstrap.bundle.min.js"></script>
+<script src="vendor/leaflet.min.js"></script>
+<script src="static/js/main.js"></script>
+
+<script id="routesDataTag" type="application/json">
+[{"id": "route_1", "name": "Primary Main Road Corridor (Safest)", "badge": "\u2b50 RECOMMENDED FOR WOMEN", "badge_class": "bg-success", "safety_score": 9.0, "distance_km": 3.03, "walk_time_mins": 4, "drive_time_mins": 7, "lighting_level": "High (Commercial & Street Lighting)", "police_presence": "Active Police / PCR Patrol Beat", "verified_residents_count": 1, "steps": ["Connecting Corridor (797m)", "Connecting Corridor (64m)", "Connecting Corridor (380m)", "Connecting Corridor (47m)", "Connecting Corridor (1010m)", "Connecting Corridor (145m)"], "waypoints": [{"lat": 28.474436, "lng": 77.503964}, {"lat": 28.474372, "lng": 77.504011}, {"lat": 28.473966, "lng": 77.504316}, {"lat": 28.473415, "lng": 77.504725}, {"lat": 28.472784, "lng": 77.505178}, {"lat": 28.472071, "lng": 77.505701}, {"lat": 28.470002, "lng": 77.507235}, {"lat": 28.469662, "lng": 77.507487}, {"lat": 28.468915, "lng": 77.5081}, {"lat": 28.468748, "lng": 77.508258}, {"lat": 28.46865, "lng": 77.50844}, {"lat": 28.46859, "lng": 77.508615}, {"lat": 28.468595, "lng": 77.508696}, {"lat": 28.46858, "lng": 77.508774}, {"lat": 28.468531, "lng": 77.508867}, {"lat": 28.468454, "lng": 77.508931}, {"lat": 28.468361, "lng": 77.508958}, {"lat": 28.468286, "lng": 77.508949}, {"lat": 28.468217, "lng": 77.508915}, {"lat": 28.468031, "lng": 77.508964}, {"lat": 28.467915, "lng": 77.509031}, {"lat": 28.466821, "lng": 77.510114}, {"lat": 28.4656, "lng": 77.511381}, {"lat": 28.46556, "lng": 77.511495}, {"lat": 28.465492, "lng": 77.51159}, {"lat": 28.4654, "lng": 77.511655}, {"lat": 28.465296, "lng": 77.511685}, {"lat": 28.462292, "lng": 77.514814}, {"lat": 28.462037, "lng": 77.515118}, {"lat": 28.461673, "lng": 77.515692}, {"lat": 28.461105, "lng": 77.516623}, {"lat": 28.459765, "lng": 77.518451}, {"lat": 28.459162, "lng": 77.519273}, {"lat": 28.458963, "lng": 77.519544}, {"lat": 28.458511, "lng": 77.520133}, {"lat": 28.458455, "lng": 77.520327}, {"lat": 28.458427, "lng": 77.520474}, {"lat": 28.458428, "lng": 77.520494}, {"lat": 28.458421, "lng": 77.520566}, {"lat": 28.458391, "lng": 77.520663}, {"lat": 28.458286, "lng": 77.520794}, {"lat": 28.458199, "lng": 77.52084}, {"lat": 28.458076, "lng": 77.520851}, {"lat": 28.458021, "lng": 77.520884}, {"lat": 28.457903, "lng": 77.520959}, {"lat": 28.457777, "lng": 77.521093}, {"lat": 28.457565, "lng": 77.521375}, {"lat": 28.457223, "lng": 77.52182}, {"lat": 28.457355, "lng": 77.521966}, {"lat": 28.45746, "lng": 77.521809}, {"lat": 28.457915, "lng": 77.521206}, {"lat": 28.457944, "lng": 77.521168}, {"lat": 28.45806, "lng": 77.521065}, {"lat": 28.458232, "lng": 77.520994}, {"lat": 28.458326, "lng": 77.521008}, {"lat": 28.458487, "lng": 77.521156}, {"lat": 28.459148, "lng": 77.521811}, {"lat": 28.459431, "lng": 77.522216}, {"lat": 28.459565, "lng": 77.522085}, {"lat": 28.459425, "lng": 77.521878}], "risk_factors": ["Road network verified via OpenStreetMap road data", "1 verified community responders registered along this area"], "is_fallback": false}]
+</script>
+<script id="zonesDataTag" type="application/json">
+[{"id": 1, "name": "CST Railway Area", "latitude": 18.9402, "longitude": 72.8356, "radius_meters": 500, "status": "high"}, {"id": 2, "name": "Bandra Kurla Complex", "latitude": 19.0652, "longitude": 72.8703, "radius_meters": 500, "status": "safe"}, {"id": 3, "name": "Dharavi", "latitude": 19.0404, "longitude": 72.8553, "radius_meters": 500, "status": "medium"}, {"id": 4, "name": "Colaba Market", "latitude": 18.922, "longitude": 72.8347, "radius_meters": 500, "status": "medium"}, {"id": 5, "name": "Marine Drive", "latitude": 18.9435, "longitude": 72.8232, "radius_meters": 500, "status": "safe"}, {"id": 6, "name": "Andheri East", "latitude": 19.1196, "longitude": 72.8468, "radius_meters": 500, "status": "safe"}]
+</script>
+<script id="reportsDataTag" type="application/json">
+[]
+</script>
+<script src="static/js/google-maps-shield.js?v=6.0"></script>
+<script src="static/js/nearby-users-map.js?v=6.0"></script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBcRwJBYIf9ZBhLepkxMRfrLC2VtV9rpQg&libraries=places,geometry,marker&loading=async&callback=__initGoogleMapsShield"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Mobile map legend toggle
+    window.toggleMapLegend = function() {
+        const content = document.getElementById('mapLegendContent');
+        const icon = document.getElementById('legendToggleIcon');
+        if (!content) return;
+        if (content.style.display === 'none') {
+            content.style.display = 'block';
+            if (icon) icon.className = 'bi bi-chevron-down';
+        } else {
+            content.style.display = 'none';
+            if (icon) icon.className = 'bi bi-chevron-up';
+        }
+    };
+    if (window.innerWidth <= 768) {
+        const content = document.getElementById('mapLegendContent');
+        const icon = document.getElementById('legendToggleIcon');
+        if (content) content.style.display = 'none';
+        if (icon) icon.className = 'bi bi-chevron-up';
+    }
+
+    // 1. Parse JSON safely
+    let routesData = [];
+    let zonesData = [];
+    let reportsData = [];
+
+    try { routesData = JSON.parse(document.getElementById('routesDataTag').textContent); } catch(e){}
+    try { zonesData = JSON.parse(document.getElementById('zonesDataTag').textContent); } catch(e){}
+    try { reportsData = JSON.parse(document.getElementById('reportsDataTag').textContent); } catch(e){}
+
+    let startLat = parseFloat('28.4744') || 28.4744;
+    let startLng = parseFloat('77.5039') || 77.5039;
+    let endLat = parseFloat('28.4594') || 28.4600;
+    let endLng = parseFloat('77.5219') || 77.5200;
+
+    function initCompareMap() {
+        const mapEl = document.getElementById('routesMap');
+        if (!mapEl) return;
+
+        // 2. Initialize Google Map
+        const map = GoogleMapsShield.createMap(mapEl, {
+            center: { lat: startLat, lng: startLng },
+            zoom: 13,
+            mapId: 'DEMO_MAP_ID'
+        });
+        window.routesMap = map;
+
+        // 2b. Consistent 3km assistance grid & nearby users visualization
+        if (window.GoogleMapsShield) {
+            window.GoogleMapsShield.attachNearbyUsersLayer(map, startLat, startLng, {
+                radiusKm: 3.0,
+                victimLabel: "Origin (Point A)"
+            });
+        }
+
+        // 3. Render Draggable Start Marker (Point A 🟢)
+        window.markerA = GoogleMapsShield.createCustomMarker(map, {
+            lat: startLat,
+            lng: startLng,
+            html: '<div class="pulse-point-a">A</div>',
+            title: "Source Point A",
+            draggable: true,
+            popupContent: "<b>🟢 Source Point A</b><br>Drag pin to change starting point",
+            onDragEnd: function(coord) {
+                document.getElementById('start_lat').value = coord.lat.toFixed(5);
+                document.getElementById('start_lng').value = coord.lng.toFixed(5);
+                document.getElementById('modal_report_lat').value = coord.lat.toFixed(5);
+                document.getElementById('modal_report_lng').value = coord.lng.toFixed(5);
+                reverseGeocode(coord.lat, coord.lng, 'source_input');
+            }
+        });
+
+        // 4. Render Draggable Destination Marker (Point B 🏁)
+        window.markerB = GoogleMapsShield.createCustomMarker(map, {
+            lat: endLat,
+            lng: endLng,
+            html: '<div class="pulse-point-b">B</div>',
+            title: "Destination Point B",
+            draggable: true,
+            popupContent: "<b>🏁 Destination Point B</b><br>Drag pin to change destination",
+            onDragEnd: function(coord) {
+                document.getElementById('end_lat').value = coord.lat.toFixed(5);
+                document.getElementById('end_lng').value = coord.lng.toFixed(5);
+                reverseGeocode(coord.lat, coord.lng, 'dest_input');
+            }
+        });
+
+        // 5. Draw Candidate Real Street Polylines
+        const colors = ['#27ae60', '#3498db', '#e67e22'];
+        window.polylines = [];
+
+        routesData.forEach((r, idx) => {
+            const latlngs = r.waypoints.map(wp => ({ lat: wp.lat, lng: wp.lng }));
+            const isDefault = (idx === 0);
+            const line = new google.maps.Polyline({
+                path: latlngs,
+                strokeColor: colors[idx % colors.length],
+                strokeWeight: isDefault ? 7 : 4,
+                strokeOpacity: isDefault ? 1.0 : 0.65,
+                map: map,
+                zIndex: isDefault ? 10 : 1
+            });
+
+            const info = new google.maps.InfoWindow({
+                content: `
+                    <div style="font-family: 'Inter', sans-serif; min-width: 210px; padding:4px;">
+                        <span class="badge ${r.badge_class} mb-1">${r.badge}</span>
+                        <h6 class="fw-bold mb-1 text-dark">${r.name}</h6>
+                        <div class="mb-1">Safety Score: <span class="badge bg-success">${r.safety_score}/10</span></div>
+                        <div class="small text-muted mb-1">Distance: <b>${r.distance_km} km</b> (~${r.walk_time_mins}m walk)</div>
+                        <div class="small text-secondary">${r.risk_factors.slice(0, 2).join('<br>')}</div>
+                    </div>
+                `
+            });
+
+            line.addListener('click', (e) => {
+                selectRoute(idx);
+                info.setPosition(e.latLng);
+                info.open(map);
+            });
+
+            window.polylines.push({ line: line, info: info, defaultColor: colors[idx % colors.length] });
+        });
+
+        // 6. Community Incident Reports Pins Layer
+        window.incidentMarkers = [];
+        const iconMap = {
+            'harassment': { emoji: '😰', bg: '#e74c3c' },
+            'theft': { emoji: '💰', bg: '#9b59b6' },
+            'unsafe_area': { emoji: '⚠️', bg: '#e67e22' },
+            'poor_lighting': { emoji: '🌑', bg: '#34495e' },
+            'no_crowd': { emoji: '🚶', bg: '#f39c12' },
+            'safe': { emoji: '✅', bg: '#27ae60' },
+            'accident': { emoji: '🚗', bg: '#3498db' },
+            'suspicious': { emoji: '👁️', bg: '#7f8c8d' },
+        };
+
+        reportsData.forEach(rep => {
+            const conf = iconMap[rep.category] || { emoji: '📌', bg: '#e74c3c' };
+            const m = GoogleMapsShield.createCustomMarker(map, {
+                lat: rep.latitude,
+                lng: rep.longitude,
+                html: `<div class="incident-marker-icon" style="background:${conf.bg};color:white;">${conf.emoji}</div>`,
+                title: rep.location_name,
+                popupContent: `
+                    <div style="font-family: 'Inter', sans-serif; min-width: 180px;">
+                        <span class="badge bg-danger mb-1">${rep.category_display}</span>
+                        <h6 class="fw-bold mb-1">${rep.location_name}</h6>
+                        <p class="small text-muted mb-1">${rep.description || 'Community reported hazard'}</p>
+                        <div class="small text-secondary">${rep.created_at} &bull; by ${rep.reporter}</div>
+                    </div>
+                `
+            });
+            window.incidentMarkers.push(m);
+        });
+
+        window.toggleIncidentReports = function(show) {
+            window.incidentMarkers.forEach(m => {
+                m.setMap(show ? map : null);
+            });
+        };
+
+        // 7. Safety Zones & Danger Hotspots Layer
+        window.zoneCircles = [];
+        zonesData.forEach(z => {
+            const isHigh = (z.status === 'high');
+            const color = isHigh ? '#e74c3c' : (z.status === 'medium' ? '#f39c12' : '#27ae60');
+            const circle = new google.maps.Circle({
+                map: map,
+                center: { lat: z.latitude, lng: z.longitude },
+                radius: z.radius_meters || 250,
+                strokeColor: color,
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: color,
+                fillOpacity: isHigh ? 0.22 : 0.12
+            });
+            const info = new google.maps.InfoWindow({
+                content: `<b>${isHigh ? '⚠️ Danger Hotspot' : '🛡️ Safety Zone'}: ${z.name}</b><br>Radius: ${z.radius_meters}m`
+            });
+            circle.addListener('click', (e) => {
+                info.setPosition(e.latLng);
+                info.open(map);
+            });
+            window.zoneCircles.push(circle);
+        });
+
+        window.toggleSafetyZones = function(show) {
+            window.zoneCircles.forEach(c => {
+                c.setMap(show ? map : null);
+            });
+        };
+
+        // 8. Fit Map Bounds
+        const bounds = new google.maps.LatLngBounds();
+        bounds.extend(new google.maps.LatLng(startLat, startLng));
+        bounds.extend(new google.maps.LatLng(endLat, endLng));
+        routesData.forEach(r => {
+            r.waypoints.forEach(w => bounds.extend(new google.maps.LatLng(w.lat, w.lng)));
+        });
+        map.fitBounds(bounds);
+
+        // 9. Route Selection
+        window.selectRoute = function(index) {
+            document.querySelectorAll('.route-card').forEach((el, i) => {
+                el.classList.toggle('selected', i === index);
+            });
+            window.polylines.forEach((item, i) => {
+                if (i === index) {
+                    item.line.setOptions({ strokeWeight: 8, strokeOpacity: 1.0, zIndex: 10 });
+                } else {
+                    item.line.setOptions({ strokeWeight: 4, strokeOpacity: 0.5, zIndex: 1 });
+                }
+            });
+        };
+
+        window.zoomToReport = function(lat, lng, cat, loc) {
+            map.setCenter({ lat: lat, lng: lng });
+            map.setZoom(16);
+            const info = new google.maps.InfoWindow({
+                content: `<b>${cat}</b><br>${loc}`,
+                position: { lat: lat, lng: lng }
+            });
+            info.open(map);
+        };
+
+        // 10. Autocomplete
+        setupAutocomplete('source_input', 'source_suggestions', 'start_lat', 'start_lng', window.markerA);
+        setupAutocomplete('dest_input', 'dest_suggestions', 'end_lat', 'end_lng', window.markerB);
+    }
+
+    if (window.GoogleMapsShield) {
+        window.GoogleMapsShield.load("AIzaSyBcRwJBYIf9ZBhLepkxMRfrLC2VtV9rpQg", initCompareMap);
+    } else {
+        initCompareMap();
+    }
+
+    function setupAutocomplete(inputId, dropdownId, latFieldId, lngFieldId, marker) {
+        const input = document.getElementById(inputId);
+        const dropdown = document.getElementById(dropdownId);
+        let timeout = null;
+
+        input.addEventListener('input', function() {
+            clearTimeout(timeout);
+            const query = input.value.trim();
+            if (query.length < 2) {
+                dropdown.style.display = 'none';
+                return;
+            }
+            timeout = setTimeout(() => {
+                const sLat = parseFloat(document.getElementById('start_lat').value) || 28.4744;
+                const sLng = parseFloat(document.getElementById('start_lng').value) || 77.5039;
+                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&viewbox=${sLng-0.5},${sLat+0.5},${sLng+0.5},${sLat-0.5}&bounded=0&limit=5`)
+                    .then(res => res.json())
+                    .then(data => {
+                        dropdown.innerHTML = '';
+                        if (data && data.length > 0) {
+                            data.forEach(item => {
+                                const div = document.createElement('div');
+                                div.className = 'autocomplete-item';
+                                div.innerHTML = `<i class="bi bi-geo-alt me-1 text-danger"></i>${item.display_name}`;
+                                div.addEventListener('click', () => {
+                                    input.value = item.display_name.split(',').slice(0, 3).join(',');
+                                    document.getElementById(latFieldId).value = parseFloat(item.lat).toFixed(5);
+                                    document.getElementById(lngFieldId).value = parseFloat(item.lon).toFixed(5);
+                                    dropdown.style.display = 'none';
+                                    if (marker) {
+                                        marker.setLatLng([parseFloat(item.lat), parseFloat(item.lon)]);
+                                        map.panTo([parseFloat(item.lat), parseFloat(item.lon)]);
+                                    }
+                                });
+                                dropdown.appendChild(div);
+                            });
+                            dropdown.style.display = 'block';
+                        } else {
+                            dropdown.style.display = 'none';
+                        }
+                    }).catch(err => {
+                        console.error("Autocomplete fetch error:", err);
+                    });
+            }, 300);
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+    }
+
+    // 11. Reverse Geocoding
+    function reverseGeocode(lat, lng, targetInputId) {
+        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.display_name) {
+                    const shortName = data.display_name.split(',').slice(0, 3).join(',');
+                    document.getElementById(targetInputId).value = shortName;
+                }
+            }).catch(e => console.error(e));
+    }
+
+    // 12. GPS Button
+    window.useCurrentLocation = function() {
+        const btn = document.getElementById('gpsBtn');
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Locating...';
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(pos) {
+                const lat = pos.coords.latitude;
+                const lng = pos.coords.longitude;
+                document.getElementById('start_lat').value = lat.toFixed(5);
+                document.getElementById('start_lng').value = lng.toFixed(5);
+                document.getElementById('modal_report_lat').value = lat.toFixed(5);
+                document.getElementById('modal_report_lng').value = lng.toFixed(5);
+                window.markerA.setLatLng([lat, lng]);
+                map.panTo([lat, lng]);
+                reverseGeocode(lat, lng, 'source_input');
+
+                // Auto-set local destination if far
+                const curEndLat = parseFloat(document.getElementById('end_lat').value);
+                if (!curEndLat || Math.abs(curEndLat - lat) > 0.8) {
+                    const newELat = (lat - 0.018).toFixed(5);
+                    const newELng = (lng + 0.022).toFixed(5);
+                    document.getElementById('end_lat').value = newELat;
+                    document.getElementById('end_lng').value = newELng;
+                    window.markerB.setLatLng([newELat, newELng]);
+                    document.getElementById('dest_input').value = "Nearest Safe Hub";
+                }
+
+                btn.innerHTML = '<i class="bi bi-check me-1"></i>Found';
+                setTimeout(() => { btn.innerHTML = '<i class="bi bi-crosshair me-1"></i>My GPS'; }, 2000);
+            }, function(err) {
+                alert("GPS Geolocation failed: " + err.message);
+                btn.innerHTML = '<i class="bi bi-crosshair me-1"></i>My GPS';
+            }, { enableHighAccuracy: true });
+        } else {
+            alert("Geolocation is not supported by your browser.");
+            btn.innerHTML = '<i class="bi bi-crosshair me-1"></i>My GPS';
+        }
+    };
+
+    // 13. Swap
+    window.swapLocations = function() {
+        const sInput = document.getElementById('source_input');
+        const dInput = document.getElementById('dest_input');
+        const sLat = document.getElementById('start_lat');
+        const sLng = document.getElementById('start_lng');
+        const dLat = document.getElementById('end_lat');
+        const dLng = document.getElementById('end_lng');
+
+        const tempText = sInput.value;
+        sInput.value = dInput.value;
+        dInput.value = tempText;
+
+        const tempLat = sLat.value;
+        sLat.value = dLat.value;
+        dLat.value = tempLat;
+
+        const tempLng = sLng.value;
+        sLng.value = dLng.value;
+        dLng.value = tempLng;
+
+        if (sLat.value && sLng.value) {
+            window.markerA.setLatLng([parseFloat(sLat.value), parseFloat(sLng.value)]);
+        }
+        if (dLat.value && dLng.value) {
+            window.markerB.setLatLng([parseFloat(dLat.value), parseFloat(dLng.value)]);
+        }
+    };
+
+    // 14. Smart Preset Destinations
+    window.setPresetDestination = function(label) {
+        const sLat = parseFloat(document.getElementById('start_lat').value) || 28.4744;
+        const sLng = parseFloat(document.getElementById('start_lng').value) || 77.5039;
+        document.getElementById('dest_input').value = `${label} (nearby)`;
+
+        const queryTerm = label.includes('Police') ? 'police station' : (label.includes('Metro') ? 'metro station' : 'hospital');
+        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(queryTerm)}&viewbox=${sLng-0.15},${sLat+0.15},${sLng+0.15},${sLat-0.15}&bounded=0&limit=1`)
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.length > 0) {
+                    const place = data[0];
+                    document.getElementById('dest_input').value = place.display_name.split(',').slice(0, 3).join(',');
+                    document.getElementById('end_lat').value = parseFloat(place.lat).toFixed(5);
+                    document.getElementById('end_lng').value = parseFloat(place.lon).toFixed(5);
+                    window.markerB.setLatLng([parseFloat(place.lat), parseFloat(place.lon)]);
+                } else {
+                    const eLat = (sLat - 0.015).toFixed(5);
+                    const eLng = (sLng + 0.020).toFixed(5);
+                    document.getElementById('end_lat').value = eLat;
+                    document.getElementById('end_lng').value = eLng;
+                    window.markerB.setLatLng([eLat, eLng]);
+                }
+                document.getElementById('routeForm').submit();
+            }).catch(() => {
+                const eLat = (sLat - 0.015).toFixed(5);
+                const eLng = (sLng + 0.020).toFixed(5);
+                document.getElementById('end_lat').value = eLat;
+                document.getElementById('end_lng').value = eLng;
+                document.getElementById('routeForm').submit();
+            });
+    };
+
+    // 15. Form Submit Guard
+    window.handleFormSubmit = function(event) {
+        const sLat = parseFloat(document.getElementById('start_lat').value);
+        const sLng = parseFloat(document.getElementById('start_lng').value);
+        const destQuery = document.getElementById('dest_input').value.trim();
+        const curEndLat = parseFloat(document.getElementById('end_lat').value);
+
+        if (destQuery && (!curEndLat || Math.abs(curEndLat - sLat) > 1.0)) {
+            event.preventDefault();
+            const btn = document.getElementById('calcBtn');
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Locating local destination...';
+            btn.disabled = true;
+
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(destQuery)}&viewbox=${sLng-0.5},${sLat+0.5},${sLng+0.5},${sLat-0.5}&bounded=0&limit=1`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        document.getElementById('end_lat').value = parseFloat(data[0].lat).toFixed(5);
+                        document.getElementById('end_lng').value = parseFloat(data[0].lon).toFixed(5);
+                    } else {
+                        document.getElementById('end_lat').value = (sLat - 0.022).toFixed(5);
+                        document.getElementById('end_lng').value = (sLng + 0.018).toFixed(5);
+                    }
+                    document.getElementById('routeForm').submit();
+                }).catch(() => {
+                    document.getElementById('routeForm').submit();
+                });
+            return false;
+        }
+        return true;
+    };
+
+    // 16. Share Route Modal
+    window.shareSafeRoute = function(routeName, dist, score) {
+        const source = document.getElementById('source_input').value || "Current Location";
+        const dest = document.getElementById('dest_input').value || "Destination";
+        const msg = `🛡️ [Women Safety Shield] I am traveling via AI Safe Route: ${routeName}.\n📍 From: ${source}\n🏁 To: ${dest}\n⭐ Safety Score: ${score}/10 | Distance: ${dist} km\n🔗 Track route live: ${window.location.href}`;
+        document.getElementById('shareText').value = msg;
+        document.getElementById('whatsappBtn').href = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
+        const modal = new bootstrap.Modal(document.getElementById('shareRouteModal'));
+        modal.show();
+    };
+
+    window.copyShareText = function() {
+        const copyText = document.getElementById('shareText');
+        copyText.select();
+        document.execCommand('copy');
+        alert("Safe route information copied to clipboard!");
+    };
+
+    // 17. Watchdog Modal
+    window.startMonitoredJourney = function(routeName, eta) {
+        document.getElementById('watchdogRouteName').innerText = routeName;
+        document.getElementById('watchdogETA').innerText = eta;
+        const modal = new bootstrap.Modal(document.getElementById('watchdogModal'));
+        modal.show();
+    };
+});
+</script>
+
+</body>
+</html>
+

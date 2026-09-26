@@ -1,0 +1,353 @@
+{% extends 'base.html' %}
+{% block title %}Local Resident Governance & AI Verification — Women Safety Shield{% endblock %}
+
+{% block content %}
+<div class="container-fluid my-4 px-3 px-md-4">
+    <!-- Header -->
+    <div class="page-header d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+        <div>
+            <h4 class="fw-800 mb-1" style="color:var(--maroon);">
+                🛡️ Local Resident &amp; AI Document Verification Governance
+            </h4>
+            <p class="mb-0 text-muted small">
+                Automated AI screening across Aadhaar, PAN, and live selfie biometrics with human administrator sign-off.
+            </p>
+        </div>
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-danger btn-sm fw-semibold shadow-sm">
+            <i class="bi bi-arrow-left me-1"></i>Back to Admin Dashboard
+        </a>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div class="d-flex gap-2 mb-3 flex-wrap">
+        <a href="{% url 'admin_residents' %}" class="btn btn-sm {% if not status_filter %}btn-danger{% else %}btn-outline-secondary{% endif %} rounded-pill px-3">
+            All Responders ({{ total_residents }})
+        </a>
+        <a href="{% url 'admin_residents' %}?status=pending" class="btn btn-sm {% if status_filter == 'pending' %}btn-warning text-dark{% else %}btn-outline-warning text-dark{% endif %} rounded-pill px-3">
+            Pending Approval ({{ pending_count }})
+        </a>
+        <a href="{% url 'admin_residents' %}?status=verified" class="btn btn-sm {% if status_filter == 'verified' %}btn-success{% else %}btn-outline-success{% endif %} rounded-pill px-3">
+            Verified Responders ({{ verified_count }})
+        </a>
+        <a href="{% url 'admin_residents' %}?status=available" class="btn btn-sm {% if status_filter == 'available' %}btn-info text-white{% else %}btn-outline-info{% endif %} rounded-pill px-3">
+            Currently Available
+        </a>
+    </div>
+
+    <!-- Main Table -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Responder Details</th>
+                            <th>Category</th>
+                            <th>AI Verification Assistant</th>
+                            <th>Official Status</th>
+                            <th>Availability</th>
+                            <th>Trust Score</th>
+                            <th class="text-end pe-3">Governance Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for res in residents %}
+                        <tr>
+                            <!-- Responder Details -->
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="avatar-circle" style="width:38px;height:38px;font-size:0.9rem;background:{% if res.is_verified %}#27ae60{% else %}#f39c12{% endif %};">
+                                        {{ res.user.first_name|first|default:res.user.username|first }}
+                                    </div>
+                                    <div>
+                                        <div class="fw-700 text-dark">{{ res.user.full_name|default:res.user.username }}</div>
+                                        <small class="text-muted">@{{ res.user.username }} &bull; {{ res.user.phone|default:"No phone" }}</small>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <!-- Category -->
+                            <td>
+                                <span class="badge bg-light text-dark border">{{ res.get_local_resident_type_display }}</span>
+                            </td>
+
+                            <!-- AI Assistant Assessment Column -->
+                            <td>
+                                {% if res.v_req and res.v_req.ai_outcome %}
+                                    <div class="d-flex flex-column gap-1 align-items-start">
+                                        {% if res.v_req.ai_outcome == 'forward_for_approval' %}
+                                        <span class="badge bg-success-subtle text-success fw-bold px-2 py-1" style="font-size:0.75rem;">
+                                            <i class="bi bi-check-circle-fill me-1"></i>Forward for Approval ({{ res.v_req.ai_confidence|floatformat:2 }})
+                                        </span>
+                                        {% elif res.v_req.ai_outcome == 'auto_reject' %}
+                                        <span class="badge bg-danger-subtle text-danger fw-bold px-2 py-1" style="font-size:0.75rem;">
+                                            <i class="bi bi-shield-x me-1"></i>Flagged: Auto-Reject ({{ res.v_req.ai_confidence|floatformat:2 }})
+                                        </span>
+                                        {% else %}
+                                        <span class="badge bg-warning-subtle text-warning fw-bold px-2 py-1" style="font-size:0.75rem;">
+                                            <i class="bi bi-search me-1"></i>Manual Review ({{ res.v_req.ai_confidence|floatformat:2 }})
+                                        </span>
+                                        {% endif %}
+
+                                        <button type="button" class="btn btn-xs btn-outline-primary py-0 px-2 fw-semibold mt-1" style="font-size:0.72rem;" data-bs-toggle="modal" data-bs-target="#aiModal{{ res.id }}">
+                                            <i class="bi bi-cpu me-1"></i>Inspect AI Dossier
+                                        </button>
+                                    </div>
+                                {% else %}
+                                    <span class="text-muted small">No AI assessment</span>
+                                {% endif %}
+                            </td>
+
+                            <!-- Official Status -->
+                            <td>
+                                {% if res.is_verified %}
+                                <span class="badge bg-success"><i class="bi bi-patch-check-fill me-1"></i>Verified</span>
+                                {% if res.verified_by %}<br><small class="text-muted">by {{ res.verified_by.username }}</small>{% endif %}
+                                {% else %}
+                                <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split me-1"></i>Pending Review</span>
+                                {% endif %}
+                            </td>
+
+                            <!-- Availability -->
+                            <td>
+                                <span class="badge {% if res.is_available %}bg-success{% else %}bg-secondary{% endif %}">
+                                    {% if res.is_available %}Available (3KM Pool){% else %}Offline{% endif %}
+                                </span>
+                            </td>
+
+                            <!-- Trust Score -->
+                            <td>
+                                <form method="post" action="{% url 'admin_update_trust_score' res.id %}" class="d-flex align-items-center gap-1">
+                                    {% csrf_token %}
+                                    <input type="number" step="0.1" min="0" max="10" name="trust_score" value="{{ res.trust_score }}" class="form-control form-control-sm text-center" style="width:65px;">
+                                    <button type="submit" class="btn btn-xs btn-outline-secondary py-0 px-1" title="Save">✓</button>
+                                </form>
+                            </td>
+
+                            <!-- Actions -->
+                            <td class="text-end pe-3">
+                                <div class="d-inline-flex gap-1">
+                                    {% if not res.is_verified %}
+                                    <a href="{% url 'verify_resident' res.id %}" class="btn btn-sm btn-success fw-600" onclick="return confirm('Confirm human approval for {{ res.user.username }}?');">
+                                        <i class="bi bi-check-lg"></i> Approve
+                                    </a>
+                                    <a href="{% url 'reject_resident' res.id %}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Reject application for {{ res.user.username }}?');">
+                                        <i class="bi bi-x-lg"></i> Reject
+                                    </a>
+                                    {% else %}
+                                    <a href="{% url 'revoke_resident' res.id %}" class="btn btn-sm btn-outline-warning" title="Revoke Status" onclick="return confirm('Revoke verified status for {{ res.user.username }}?');">
+                                        <i class="bi bi-shield-slash"></i> Revoke
+                                    </a>
+                                    {% endif %}
+                                    <form method="post" action="{% url 'admin_delete_resident' res.id %}" class="d-inline" onsubmit="return confirm('Delete responder {{ res.user.username }}?');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete Profile">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- AI DOSSIER MODAL FOR THIS RESIDENT -->
+                        {% if res.v_req %}
+                        <div class="modal fade" id="aiModal{{ res.id }}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered modal-lg">
+                                <div class="modal-content border-0 rounded-4 shadow-lg">
+                                    <div class="modal-header border-bottom py-3" style="background:#FAF6F4;">
+                                        <div>
+                                            <span class="badge bg-danger-subtle text-danger fw-bold small mb-1">
+                                                <i class="bi bi-cpu me-1"></i>AI DOCUMENT VERIFICATION ASSISTANT
+                                            </span>
+                                            <h5 class="modal-title fw-bold text-dark mb-0">
+                                                Identity Screening Packet: {{ res.user.full_name|default:res.user.username }} (@{{ res.user.username }})
+                                            </h5>
+                                        </div>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+
+                                    <div class="modal-body p-4">
+                                        <!-- Outcome Banner -->
+                                        <div class="p-3 rounded-3 mb-4 {% if res.v_req.ai_outcome == 'forward_for_approval' %}bg-success-subtle border border-success{% elif res.v_req.ai_outcome == 'auto_reject' %}bg-danger-subtle border border-danger{% else %}bg-warning-subtle border border-warning{% endif %}">
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <strong class="fs-6 text-dark text-uppercase">
+                                                    AI Recommendation: {{ res.v_req.ai_outcome }}
+                                                </strong>
+                                                <span class="badge bg-white text-dark border fw-bold">
+                                                    Confidence Score: {{ res.v_req.ai_confidence|floatformat:2 }} / 1.0
+                                                </span>
+                                            </div>
+                                            <div class="text-dark small mt-1">
+                                                <strong>Admin Guidance:</strong> {{ res.v_req.ai_reasoning }}
+                                            </div>
+                                        </div>
+
+                                        <!-- The 6 AI Checks Checklist -->
+                                        <h6 class="fw-bold text-dark border-bottom pb-2 mb-3">
+                                            <i class="bi bi-check2-square text-danger me-1"></i>Automated Verification Checks Checklist
+                                        </h6>
+
+                                        <div class="row g-2 mb-4">
+                                            <!-- Check 1: Name Match -->
+                                            <div class="col-md-6">
+                                                <div class="p-2 px-3 bg-light rounded border d-flex justify-content-between align-items-center small">
+                                                    <span><strong>1. Name Consistency:</strong></span>
+                                                    {% if res.v_req.ai_checks.name_match == True %}
+                                                    <span class="badge bg-success"><i class="bi bi-check-lg me-1"></i>Match</span>
+                                                    {% elif res.v_req.ai_checks.name_match == False %}
+                                                    <span class="badge bg-danger"><i class="bi bi-x-lg me-1"></i>Mismatch</span>
+                                                    {% else %}
+                                                    <span class="badge bg-warning text-dark"><i class="bi bi-question-lg me-1"></i>Uncertain</span>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+
+                                            <!-- Check 2: DOB Match -->
+                                            <div class="col-md-6">
+                                                <div class="p-2 px-3 bg-light rounded border d-flex justify-content-between align-items-center small">
+                                                    <span><strong>2. Date of Birth Match:</strong></span>
+                                                    {% if res.v_req.ai_checks.dob_match == True %}
+                                                    <span class="badge bg-success"><i class="bi bi-check-lg me-1"></i>Match</span>
+                                                    {% elif res.v_req.ai_checks.dob_match == False %}
+                                                    <span class="badge bg-danger"><i class="bi bi-x-lg me-1"></i>Mismatch</span>
+                                                    {% else %}
+                                                    <span class="badge bg-secondary">Not applicable</span>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+
+                                            <!-- Check 3: Document Number Formats -->
+                                            <div class="col-md-6">
+                                                <div class="p-2 px-3 bg-light rounded border d-flex justify-content-between align-items-center small">
+                                                    <span><strong>3. Document Formats:</strong></span>
+                                                    {% if res.v_req.ai_checks.document_number_format_valid %}
+                                                    <span class="badge bg-success"><i class="bi bi-check-lg me-1"></i>Valid Formats</span>
+                                                    {% else %}
+                                                    <span class="badge bg-danger"><i class="bi bi-x-lg me-1"></i>Invalid Format</span>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+
+                                            <!-- Check 4: Tampering Signs -->
+                                            <div class="col-md-6">
+                                                <div class="p-2 px-3 bg-light rounded border d-flex justify-content-between align-items-center small">
+                                                    <span><strong>4. Tampering Signs:</strong></span>
+                                                    {% if res.v_req.ai_checks.tampering_signs_detected %}
+                                                    <span class="badge bg-danger"><i class="bi bi-exclamation-triangle-fill me-1"></i>Tampering Detected</span>
+                                                    {% else %}
+                                                    <span class="badge bg-success"><i class="bi bi-check-lg me-1"></i>Clean (No Tampering)</span>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+
+                                            <!-- Check 5: Face Match -->
+                                            <div class="col-md-6">
+                                                <div class="p-2 px-3 bg-light rounded border d-flex justify-content-between align-items-center small">
+                                                    <span><strong>5. Face Biometric Match:</strong></span>
+                                                    {% if res.v_req.ai_checks.face_match == True %}
+                                                    <span class="badge bg-success"><i class="bi bi-check-lg me-1"></i>Plausible Match</span>
+                                                    {% elif res.v_req.ai_checks.face_match == False %}
+                                                    <span class="badge bg-danger"><i class="bi bi-x-lg me-1"></i>Mismatch</span>
+                                                    {% else %}
+                                                    <span class="badge bg-warning text-dark"><i class="bi bi-question-lg me-1"></i>Uncertain (Inspect Photo)</span>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+
+                                            <!-- Check 6: Anti-Spoofing -->
+                                            <div class="col-md-6">
+                                                <div class="p-2 px-3 bg-light rounded border d-flex justify-content-between align-items-center small">
+                                                    <span><strong>6. Selfie Anti-Spoofing:</strong></span>
+                                                    {% if res.v_req.ai_checks.spoofing_signs_detected %}
+                                                    <span class="badge bg-danger"><i class="bi bi-exclamation-triangle-fill me-1"></i>Spoofing Detected</span>
+                                                    {% else %}
+                                                    <span class="badge bg-success"><i class="bi bi-check-lg me-1"></i>Live Human Capture</span>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Document Images Visual Inspection -->
+                                        <h6 class="fw-bold text-dark border-bottom pb-2 mb-3">
+                                            <i class="bi bi-images text-danger me-1"></i>Document Visual Inspection
+                                        </h6>
+
+                                        <div class="row g-3 mb-3">
+                                            <!-- Aadhaar -->
+                                            <div class="col-md-4 text-center">
+                                                <small class="fw-bold d-block text-muted mb-1">Aadhaar Card Photo</small>
+                                                {% if res.v_req.aadhaar_image %}
+                                                <a href="{{ res.v_req.aadhaar_image.url }}" target="_blank">
+                                                    <img src="{{ res.v_req.aadhaar_image.url }}" class="img-fluid rounded border shadow-sm" style="max-height:140px;" alt="Aadhaar">
+                                                </a>
+                                                {% else %}
+                                                <div class="p-4 bg-light rounded border text-muted small">No Aadhaar image</div>
+                                                {% endif %}
+                                            </div>
+
+                                            <!-- PAN -->
+                                            <div class="col-md-4 text-center">
+                                                <small class="fw-bold d-block text-muted mb-1">PAN Card Photo</small>
+                                                {% if res.v_req.pan_image %}
+                                                <a href="{{ res.v_req.pan_image.url }}" target="_blank">
+                                                    <img src="{{ res.v_req.pan_image.url }}" class="img-fluid rounded border shadow-sm" style="max-height:140px;" alt="PAN">
+                                                </a>
+                                                {% else %}
+                                                <div class="p-4 bg-light rounded border text-muted small">No PAN image</div>
+                                                {% endif %}
+                                            </div>
+
+                                            <!-- Live Selfie -->
+                                            <div class="col-md-4 text-center">
+                                                <small class="fw-bold d-block text-muted mb-1">Live Selfie Photo</small>
+                                                {% if res.v_req.selfie_image %}
+                                                <a href="{{ res.v_req.selfie_image.url }}" target="_blank">
+                                                    <img src="{{ res.v_req.selfie_image.url }}" class="img-fluid rounded border shadow-sm" style="max-height:140px;" alt="Selfie">
+                                                </a>
+                                                {% else %}
+                                                <div class="p-4 bg-light rounded border text-muted small">No Selfie photo</div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+
+                                        <!-- Raw JSON Inspection Accordion -->
+                                        <details class="small mt-3">
+                                            <summary class="text-muted fw-semibold" style="cursor:pointer;">
+                                                <i class="bi bi-code-slash me-1"></i>View Assistant Standard JSON Output
+                                            </summary>
+                                            <pre class="p-3 bg-dark text-white rounded mt-2" style="font-size:0.75rem; max-height:160px; overflow:auto;">{{ res.v_req.ai_assessment_json|pprint }}</pre>
+                                        </details>
+                                    </div>
+
+                                    <!-- Modal Footer with Admin Final Authority Decision -->
+                                    <div class="modal-footer bg-light d-flex justify-content-between">
+                                        <small class="text-muted">
+                                            <i class="bi bi-shield-lock me-1"></i>Human admin confirmation is mandatory to finalize responder verification.
+                                        </small>
+                                        <div class="d-flex gap-2">
+                                            <a href="{% url 'reject_resident' res.id %}" class="btn btn-outline-danger btn-sm px-3 fw-bold" onclick="return confirm('Reject {{ res.user.username }}?');">
+                                                <i class="bi bi-x-circle me-1"></i>Reject Submission
+                                            </a>
+                                            <a href="{% url 'verify_resident' res.id %}" class="btn btn-success btn-sm px-3 fw-bold" onclick="return confirm('Approve and verify {{ res.user.username }}?');">
+                                                <i class="bi bi-check-circle me-1"></i>Approve &amp; Verify Resident
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center py-4 text-muted">No responders matching criteria.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

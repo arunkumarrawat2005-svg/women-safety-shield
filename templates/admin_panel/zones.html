@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% block title %}Danger Hotspots &amp; Safety Zones - Women Safety Shield{% endblock %}
+
+{% block content %}
+<div class="container-fluid my-4 px-3 px-md-4">
+    <div class="page-header d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+        <div>
+            <h4 class="fw-800 mb-1" style="color:var(--maroon);">🗺️ Danger Hotspots &amp; Safety Zones</h4>
+            <p class="mb-0 text-muted small">Establish geofenced high-risk areas, well-lit corridors, and police safety zones</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn-outline-danger btn-sm fw-semibold shadow-sm" data-bs-toggle="modal" data-bs-target="#createZoneModal">
+                <i class="bi bi-plus-circle me-1"></i>Add Safety Zone
+            </button>
+            <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-light btn-sm fw-600">
+                <i class="bi bi-arrow-left me-1"></i>Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Zones Table -->
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Zone Name</th>
+                            <th>Coordinates</th>
+                            <th>Coverage Radius</th>
+                            <th>Risk Classification</th>
+                            <th>Created</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for z in zones %}
+                        <tr>
+                            <td class="fw-700 text-dark">{{ z.name }}</td>
+                            <td><small class="text-muted">{{ z.latitude|floatformat:4 }}, {{ z.longitude|floatformat:4 }}</small></td>
+                            <td><span class="badge bg-light text-dark border">{{ z.radius_meters }} meters</span></td>
+                            <td>
+                                <span class="badge {% if z.status == 'high' %}bg-danger{% elif z.status == 'medium' %}bg-warning text-dark{% else %}bg-success{% endif %}">
+                                    {{ z.get_status_display }}
+                                </span>
+                            </td>
+                            <td><small class="text-muted">{{ z.created_at|date:"d M Y" }}</small></td>
+                            <td class="text-end">
+                                <form method="post" action="{% url 'admin_delete_zone' z.id %}" class="d-inline" onsubmit="return confirm('Delete safety zone {{ z.name }}?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-trash"></i> Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-muted">No safety zones configured yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Zone Modal -->
+<div class="modal fade" id="createZoneModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <form method="post" action="{% url 'admin_create_zone' %}">
+                {% csrf_token %}
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title fw-700"><i class="bi bi-geo-alt-fill me-2"></i>Create New Safety Zone</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-600">Zone Label / Description</label>
+                        <input type="text" name="name" class="form-control" placeholder="e.g. Unlit Underpass or Police Post" required>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label fw-600">Latitude</label>
+                            <input type="text" name="latitude" class="form-control" placeholder="19.0760" required>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-600">Longitude</label>
+                            <input type="text" name="longitude" class="form-control" placeholder="72.8777" required>
+                        </div>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label fw-600">Radius (meters)</label>
+                            <input type="number" name="radius_meters" class="form-control" value="250" required>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-600">Risk Assessment</label>
+                            <select name="status" class="form-select">
+                                <option value="high">High Risk Hotspot</option>
+                                <option value="medium">Medium Caution</option>
+                                <option value="safe">Safe Well-Lit Zone</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger btn-sm fw-600">Save Zone</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

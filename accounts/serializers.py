@@ -49,6 +49,19 @@ class UserSerializer(serializers.ModelSerializer):
         return obj.full_name
 
 
+class PublicUserSerializer(serializers.ModelSerializer):
+    """Data-minimized serializer that protects sensitive contact info (phone/email)."""
+    full_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'first_name', 'last_name', 'full_name', 'profile_pic', 'city', 'is_verified')
+        read_only_fields = ('id', 'is_verified')
+
+    def get_full_name(self, obj):
+        return obj.full_name
+
+
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User

@@ -1,0 +1,464 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Institutional Safety Network & Safe Havens - Women Safety Shield{% endblock %}
+
+{% block extra_css %}
+<style>
+  .org-hero {
+    background: linear-gradient(135deg, #1b0c11 0%, #3d0d19 45%, #6a1626 100%);
+    color: #ffffff !important;
+    border-radius: 22px;
+    padding: 2.75rem 2.25rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 14px 38px rgba(45, 10, 18, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+  .org-hero h1, .org-hero h2, .org-hero h3, .org-hero h4, .org-hero h5, .org-hero h6 {
+    color: #ffffff !important;
+  }
+  .org-hero p {
+    color: rgba(255, 255, 255, 0.92) !important;
+  }
+  .org-hero::before {
+    content: '';
+    position: absolute;
+    top: -40%;
+    right: -10%;
+    width: 480px;
+    height: 480px;
+    background: radial-gradient(circle, rgba(239, 68, 68, 0.25) 0%, rgba(196, 30, 61, 0.08) 55%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .org-hero::after {
+    content: '';
+    position: absolute;
+    bottom: -35%;
+    left: 15%;
+    width: 380px;
+    height: 380px;
+    background: radial-gradient(circle, rgba(251, 146, 60, 0.15) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .stat-pill {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 14px;
+    padding: 0.9rem 1.35rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: #ffffff !important;
+    transition: all 0.25s ease;
+  }
+  .stat-pill:hover {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.38);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+  }
+  .stat-icon-wrap {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .stat-number {
+    font-size: 1.65rem;
+    font-weight: 800;
+    color: #ffffff !important;
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.85) !important;
+    font-weight: 500;
+    margin-top: 0.2rem;
+  }
+  .filter-pill {
+    padding: 0.5rem 1.2rem;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid var(--line);
+    background: #ffffff;
+    color: var(--charcoal);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .filter-pill:hover, .filter-pill.active {
+    background: var(--crimson);
+    color: #ffffff;
+    border-color: var(--crimson);
+    box-shadow: 0 4px 12px rgba(179, 36, 58, 0.25);
+  }
+  .org-card {
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .org-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(122, 31, 43, 0.09);
+    border-color: rgba(179, 36, 58, 0.3);
+  }
+  #orgMap {
+    height: 380px;
+    border-radius: 16px;
+    border: 1px solid var(--line);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  }
+  .badge-verified {
+    background: #198754;
+    color: #ffffff;
+    font-size: 0.75rem;
+    padding: 0.35rem 0.65rem;
+    border-radius: 50px;
+    font-weight: 600;
+  }
+  .safe-haven-tag {
+    background: #FFF8E7;
+    color: #8A6D3B;
+    border: 1px solid #FFE699;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    padding: 0.2rem 0.5rem;
+    font-weight: 600;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+
+  <!-- Hero Banner -->
+  <div class="org-hero">
+    <div class="row align-items-center position-relative" style="z-index: 2;">
+      <div class="col-lg-7 col-xl-8">
+        <div class="d-inline-flex align-items-center gap-2 mb-3">
+          <span class="badge rounded-pill bg-danger text-white px-3 py-1 fw-bold shadow-sm" style="font-size: 0.76rem; letter-spacing: 0.5px;">
+            <i class="bi bi-shield-shaded me-1"></i>INSTITUTIONAL NETWORK
+          </span>
+          <span class="badge rounded-pill bg-white text-dark px-3 py-1 fw-semibold small bg-opacity-75">
+            Campuses • Hospitals • Safe Havens
+          </span>
+        </div>
+        <h2 class="fw-bold mb-3 text-white" style="font-family:'Plus Jakarta Sans',sans-serif;letter-spacing:-0.02em;font-size: 2.1rem; line-height: 1.25;">
+          Verified Organization Safety Network
+        </h2>
+        <p class="mb-4 text-white-50" style="max-width:640px;line-height:1.65;font-size: 1rem; color: rgba(255, 255, 255, 0.9) !important;">
+          Partner educational institutions, corporate campuses, medical centers, and women shelters equipped with 
+          24/7 security control desks, designated first responders, and emergency safe haven facilities.
+        </p>
+        <div class="d-flex flex-wrap gap-3 pt-1">
+          <a href="{% url 'org_register' %}" class="btn btn-light fw-bold px-4 py-2 text-danger shadow-sm rounded-3">
+            <i class="bi bi-building-add me-2 text-danger"></i>Register Your Organization
+          </a>
+          {% if user_org %}
+          <a href="{% url 'org_dashboard' %}" class="btn btn-outline-light fw-semibold px-4 py-2 rounded-3">
+            <i class="bi bi-speedometer2 me-2"></i>My Campus Dashboard
+          </a>
+          {% else %}
+          <a href="#campusDirectory" class="btn btn-outline-light fw-semibold px-4 py-2 rounded-3">
+            <i class="bi bi-search me-2"></i>Explore Verified Campuses
+          </a>
+          {% endif %}
+        </div>
+      </div>
+      <div class="col-lg-5 col-xl-4 mt-4 mt-lg-0">
+        <div class="d-flex flex-column gap-3">
+          <div class="stat-pill">
+            <div class="stat-icon-wrap" style="background: rgba(234, 179, 8, 0.2); border: 1px solid rgba(234, 179, 8, 0.35);">
+              <i class="bi bi-building-check fs-3 text-warning"></i>
+            </div>
+            <div>
+              <div class="stat-number">{{ total_orgs_count }}</div>
+              <div class="stat-label">Verified Safety Partners</div>
+            </div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-icon-wrap" style="background: rgba(56, 189, 248, 0.2); border: 1px solid rgba(56, 189, 248, 0.35);">
+              <i class="bi bi-hospital fs-3 text-info"></i>
+            </div>
+            <div>
+              <div class="stat-number">{{ safe_havens_count }}</div>
+              <div class="stat-label">24/7 Safe Haven Shelters</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Map Section -->
+  <div class="card border-0 shadow-sm rounded-4 p-3 mb-4 bg-white">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+      <div>
+        <h5 class="fw-bold mb-0" style="color:var(--maroon);">
+          <i class="bi bi-geo-alt-fill text-danger me-2"></i>Campus &amp; Safe Haven Radar Map
+        </h5>
+        <small class="text-muted">Click any verified institutional marker to view campus emergency desk &amp; directions</small>
+      </div>
+      <div class="d-flex gap-2">
+        <button class="btn btn-sm btn-outline-secondary" onclick="locateUserAndCenter()">
+          <i class="bi bi-crosshair me-1"></i>My Location
+        </button>
+      </div>
+    </div>
+    <div id="orgMap"></div>
+  </div>
+
+  <!-- Search & Category Filters -->
+  <div class="card border-0 shadow-sm rounded-4 p-3 mb-4 bg-white" id="campusDirectory">
+    <form method="GET" action="{% url 'org_list' %}" class="row g-2 align-items-center">
+      <div class="col-md-5">
+        <div class="input-group">
+          <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+          <input type="text" name="q" value="{{ search_query }}" class="form-control border-start-0" placeholder="Search by institution name, campus, or landmark...">
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="input-group">
+          <span class="input-group-text bg-white border-end-0"><i class="bi bi-geo-alt text-muted"></i></span>
+          <input type="text" name="city" value="{{ search_city }}" class="form-control border-start-0" placeholder="Filter by City...">
+        </div>
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-danger w-100 fw-bold">
+          <i class="bi bi-filter me-1"></i>Search
+        </button>
+      </div>
+      <div class="col-md-2">
+        <a href="{% url 'org_list' %}" class="btn btn-outline-secondary w-100">
+          Reset
+        </a>
+      </div>
+    </form>
+
+    <!-- Category Pills -->
+    <div class="d-flex flex-wrap gap-2 pt-3 border-top mt-3">
+      <a href="{% url 'org_list' %}?category=all{% if search_query %}&q={{ search_query }}{% endif %}" class="filter-pill {% if selected_category == 'all' or not selected_category %}active{% endif %}">
+        <i class="bi bi-grid-fill"></i>All Institutions ({{ total_orgs_count }})
+      </a>
+      <a href="{% url 'org_list' %}?category=college{% if search_query %}&q={{ search_query }}{% endif %}" class="filter-pill {% if selected_category == 'college' %}active{% endif %}">
+        <i class="bi bi-mortarboard-fill"></i>Colleges &amp; Campuses ({{ colleges_count }})
+      </a>
+      <a href="{% url 'org_list' %}?category=hospital{% if search_query %}&q={{ search_query }}{% endif %}" class="filter-pill {% if selected_category == 'hospital' %}active{% endif %}">
+        <i class="bi bi-hospital-fill"></i>Hospitals &amp; Medical ({{ hospitals_count }})
+      </a>
+      <a href="{% url 'org_list' %}?category=company{% if search_query %}&q={{ search_query }}{% endif %}" class="filter-pill {% if selected_category == 'company' %}active{% endif %}">
+        <i class="bi bi-building-check"></i>Corporate &amp; Tech Parks
+      </a>
+      <a href="{% url 'org_list' %}?category=ngo{% if search_query %}&q={{ search_query }}{% endif %}" class="filter-pill {% if selected_category == 'ngo' %}active{% endif %}">
+        <i class="bi bi-heart-pulse-fill"></i>NGOs &amp; Shelters
+      </a>
+      <a href="{% url 'org_list' %}?category=government{% if search_query %}&q={{ search_query }}{% endif %}" class="filter-pill {% if selected_category == 'government' %}active{% endif %}">
+        <i class="bi bi-shield-shaded"></i>Government &amp; Transit
+      </a>
+    </div>
+  </div>
+
+  <!-- Organization Cards Grid -->
+  <div class="row g-4">
+    {% for org in organizations %}
+    <div class="col-md-6 col-lg-4">
+      <div class="org-card p-4">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <span class="badge {{ org.get_badge_class }}">
+            <i class="bi {{ org.get_icon }} me-1"></i>{{ org.get_org_type_display }}
+          </span>
+          {% if org.is_verified %}
+          <span class="badge-verified"><i class="bi bi-patch-check-fill me-1"></i>Verified</span>
+          {% endif %}
+        </div>
+
+        <h5 class="fw-bold mb-1" style="font-family:'Plus Jakarta Sans',sans-serif;color:var(--maroon);">
+          <a href="{% url 'org_detail' org.id %}" class="text-decoration-none text-dark hover-crimson">
+            {{ org.name }}
+          </a>
+        </h5>
+
+        <p class="text-muted small mb-3">
+          <i class="bi bi-geo-alt me-1 text-danger"></i>{{ org.address }}{% if org.city %}, {{ org.city }}{% endif %}
+        </p>
+
+        <!-- Facilities Pill Row -->
+        <div class="d-flex flex-wrap gap-1 mb-3">
+          {% if org.has_safe_haven %}
+          <span class="safe-haven-tag"><i class="bi bi-house-heart-fill me-1"></i>Safe Haven Shelter</span>
+          {% endif %}
+          {% if org.cctv_monitored %}
+          <span class="badge bg-light text-dark border"><i class="bi bi-camera-video me-1 text-primary"></i>24/7 CCTV</span>
+          {% endif %}
+          <span class="badge bg-light text-dark border">
+            <i class="bi bi-shield-fill-check me-1 text-success"></i>{{ org.security_guards_count }} Guards on Roster
+          </span>
+        </div>
+
+        {% if org.description %}
+        <p class="small text-muted mb-3 text-truncate-2" style="font-size:0.85rem;line-height:1.5;">
+          {{ org.description|truncatewords:20 }}
+        </p>
+        {% endif %}
+
+        <!-- Emergency Hotline Box -->
+        <div class="p-2 rounded-3 bg-light border mb-3 mt-auto">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="text-muted" style="font-size:0.7rem;font-weight:700;text-transform:uppercase;">24/7 Security Hotline</div>
+              <div class="fw-bold text-danger font-monospace" style="font-size:0.95rem;">
+                {{ org.hotline_display }}
+              </div>
+            </div>
+            <a href="tel:{{ org.hotline_display }}" class="btn btn-sm btn-danger py-1 px-3 fw-bold">
+              <i class="bi bi-telephone-outbound me-1"></i>Call
+            </a>
+          </div>
+        </div>
+
+        <!-- Action Links -->
+        <div class="d-flex gap-2">
+          <a href="{% url 'org_detail' org.id %}" class="btn btn-sm btn-outline-dark flex-grow-1 fw-semibold">
+            View Campus Profile &rarr;
+          </a>
+          {% if org.latitude and org.longitude %}
+          <a href="https://www.google.com/maps/dir/?api=1&destination={{ org.latitude }},{{ org.longitude }}" target="_blank" class="btn btn-sm btn-outline-secondary" title="Get Directions">
+            <i class="bi bi-signpost-2"></i>
+          </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+      <div class="card border-0 shadow-sm rounded-4 p-5 text-center bg-white">
+        <i class="bi bi-building-exclamation text-muted display-4 mb-3"></i>
+        <h4 class="fw-bold">No Organizations Found</h4>
+        <p class="text-muted mb-4">No verified institutional partners match your search criteria. Try expanding your search or category filter.</p>
+        <div>
+          <a href="{% url 'org_list' %}" class="btn btn-outline-secondary me-2">Clear All Filters</a>
+          <a href="{% url 'org_register' %}" class="btn btn-danger">Register as a Partner Organization</a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Bottom CTA -->
+  <div class="card border-0 shadow-sm rounded-4 p-4 mt-5 text-center bg-white" style="border-left:6px solid var(--crimson) !important;">
+    <div class="row align-items-center">
+      <div class="col-md-8 text-md-start">
+        <h5 class="fw-bold mb-1" style="color:var(--maroon);">Is your College, Tech Park, or Hospital equipped to protect women?</h5>
+        <p class="text-muted mb-0 small">Join the official Women Safety Shield institutional network. Protect your students, staff, and neighborhood with real-time perimeter SOS alerts.</p>
+      </div>
+      <div class="col-md-4 text-md-end mt-3 mt-md-0">
+        <a href="{% url 'org_register' %}" class="btn btn-danger fw-bold px-4 py-2">
+          <i class="bi bi-shield-plus me-1"></i>Partner With Us
+        </a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="{% static 'js/google-maps-shield.js' %}?v=6.0"></script>
+{% if GOOGLE_MAPS_API_KEY and GOOGLE_MAPS_API_KEY != 'your_real_google_maps_key' %}
+<script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places,geometry,marker&loading=async&callback=__initGoogleMapsShield"></script>
+{% endif %}
+<script>
+  let orgMap = null;
+  let userMarker = null;
+  const pinsData = {{ map_pins_json|safe }};
+
+  function initMap() {
+    const mapEl = document.getElementById('orgMap');
+    if (!mapEl) return;
+
+    const defaultCenter = pinsData.length > 0 ? { lat: pinsData[0].lat, lng: pinsData[0].lng } : { lat: 28.6139, lng: 77.2090 };
+    orgMap = GoogleMapsShield.createMap(mapEl, {
+      center: defaultCenter,
+      zoom: 12,
+      mapId: 'DEMO_MAP_ID'
+    });
+
+    const bounds = new google.maps.LatLngBounds();
+    pinsData.forEach(p => {
+      const popupContent = `
+        <div style="font-family:'Inter',sans-serif;min-width:210px;padding:4px;">
+          <div style="font-weight:700;color:#7A1F2B;font-size:1.05rem;margin-bottom:2px;">${p.name}</div>
+          <div style="font-size:0.8rem;color:#666;margin-bottom:6px;"><i class="bi bi-geo-alt"></i> ${p.address}</div>
+          <div style="font-size:0.82rem;font-weight:700;color:#B3243A;margin-bottom:8px;">
+            <i class="bi bi-telephone"></i> Hotline: <a href="tel:${p.hotline}" style="color:#B3243A;text-decoration:none;">${p.hotline}</a>
+          </div>
+          <div style="display:flex;gap:6px;">
+            <a href="${p.detail_url}" class="btn btn-xs btn-outline-dark" style="font-size:0.75rem;padding:2px 8px;border-radius:4px;text-decoration:none;">View Details</a>
+            <a href="https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}" target="_blank" class="btn btn-xs btn-danger" style="font-size:0.75rem;padding:2px 8px;border-radius:4px;color:#fff;text-decoration:none;">Directions</a>
+          </div>
+        </div>
+      `;
+
+      GoogleMapsShield.createCustomMarker(orgMap, {
+        lat: p.lat,
+        lng: p.lng,
+        color: '#7A1F2B',
+        scale: 8,
+        title: p.name,
+        popupContent: popupContent
+      });
+
+      bounds.extend(new google.maps.LatLng(p.lat, p.lng));
+    });
+
+    if (pinsData.length > 1) {
+      orgMap.fitBounds(bounds);
+    }
+  }
+
+  function locateUserAndCenter() {
+    if (navigator.geolocation && orgMap) {
+      navigator.geolocation.getCurrentPosition(pos => {
+        const uLat = pos.coords.latitude;
+        const uLng = pos.coords.longitude;
+        orgMap.setCenter({ lat: uLat, lng: uLng });
+        orgMap.setZoom(14);
+
+        if (userMarker) userMarker.setMap(null);
+        userMarker = GoogleMapsShield.createCustomMarker(orgMap, {
+          lat: uLat,
+          lng: uLng,
+          color: '#B3243A',
+          scale: 9,
+          title: 'You are here',
+          popupContent: '<b>You are here</b>'
+        });
+        userMarker.openPopup();
+      });
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    if (window.GoogleMapsShield) {
+      window.GoogleMapsShield.load("{{ GOOGLE_MAPS_API_KEY|default:'' }}", initMap);
+    } else {
+      initMap();
+    }
+  });
+</script>
+{% endblock %}

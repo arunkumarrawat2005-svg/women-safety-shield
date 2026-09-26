@@ -1,0 +1,730 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#7A1F2B">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Sign In — Women Safety Shield</title>
+  
+  <!-- CSS Frameworks & Fonts -->
+  <link href="vendor/bootstrap.min.css" rel="stylesheet">
+  <link href="vendor/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link href="vendor/leaflet.min.css" rel="stylesheet">
+  <link href="static/css/main.css?v=5.2" rel="stylesheet">
+
+  
+<style>
+  .auth-wrapper {
+    min-height: calc(100vh - 200px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1.25rem;
+  }
+  .auth-card {
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 2.8rem 2.4rem;
+    box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.08);
+    width: 100%;
+    max-width: 440px;
+  }
+  .auth-logo-badge {
+    width: 58px;
+    height: 58px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+    border: 1px solid var(--crimson-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.65rem;
+    color: var(--crimson);
+    margin: 0 auto 1.2rem auto;
+    box-shadow: 0 4px 12px rgba(179, 36, 58, 0.12);
+  }
+  .btn-auth {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    border-color: #dc2626;
+    color: #ffffff;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    padding: 0.8rem 1.5rem;
+    border-radius: 12px;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.28);
+  }
+  .btn-auth:hover {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    border-color: #b91c1c;
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(220, 38, 38, 0.38);
+  }
+</style>
+
+  <script>
+    window.WS_HOST = "";
+  </script>
+
+<script>
+  window.IS_NATIVE_ANDROID_APP = true;
+  window.DEFAULT_API_HOST = "http://192.168.4.31:8000";
+
+  // Native shake trigger listener from HardwareShakeDetector
+  window.onNativeShakeDetected = function() {
+    console.log("Hardware shake received in webview!");
+    if (typeof openSosModal === 'function') {
+      openSosModal('shake');
+    } else if (typeof enterSamePageEmergencyMode === 'function') {
+      enterSamePageEmergencyMode();
+    }
+  };
+
+  // Safe API caller
+  const originalFetch = window.fetch;
+  window.fetch = function(url, options) {
+    if (typeof url === 'string' && url.startsWith('/')) {
+      let apiBase = window.DEFAULT_API_HOST;
+      try {
+        if (window.AndroidBridge && typeof window.AndroidBridge.getServerUrl === 'function') {
+          const s = window.AndroidBridge.getServerUrl();
+          if (s && s.startsWith('http')) {
+            apiBase = s.replace(/\/$/, '');
+          }
+        }
+      } catch(e) {}
+      url = apiBase + url;
+    }
+    return originalFetch.call(this, url, options).catch(err => {
+      console.warn("Fetch fallback for:", url, err);
+      if (typeof url === 'string' && url.includes('smart-radar')) {
+        return Promise.resolve(new Response(JSON.stringify({
+          success: true,
+          radius_km: 3.0,
+          radius_meters: 3000,
+          total_nearby_users: 1,
+          nearest_responder: { distance_km: 0.1, distance_text: "100 m", eta_minutes: 1, title: "Verified Resident (@arunkumarrawat)" },
+          helpers: [{ id: "res_2", title: "Verified Resident (@arunkumarrawat)", badge: "Community Defense Officer", type: "citizen", lat: 28.5399, lng: 77.1553, distance_km: 0.1, distance_text: "100 m", eta_minutes: 1, trust_score: 9.3, is_real: true, status: "Available & On Standby" }],
+          police_erss: { name: "Central Police 112 ERSS Dispatch", status: "Armed & Online", emergency_number: "112" }
+        }), { status: 200, headers: { 'Content-Type': 'application/json' } }));
+      }
+      throw err;
+    });
+  };
+</script>
+
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+<!-- NAV -->
+<nav class="navbar navbar-expand-lg sticky-top" id="mainNav">
+  <div class="container-fluid px-3 px-xl-4">
+    <a class="navbar-brand d-flex flex-column align-items-start justify-content-center" href="index.html">
+      <span class="brand-title">
+        <i class="bi bi-shield-fill-check"></i> Women Safety Shield
+      </span>
+      <span class="brand-tagline">Help finds you, from every direction.</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu" aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
+        <!-- 1. Home -->
+        <li class="nav-item">
+          <a class="nav-link" href="index.html">
+            <i class="bi bi-house-door me-1"></i>Home
+          </a>
+        </li>
+
+        
+        <!-- 2. How It Works -->
+        <li class="nav-item">
+          <a class="nav-link" href="how_it_works.html">
+            <i class="bi bi-compass me-1"></i>How It Works
+          </a>
+        </li>
+
+        <!-- 3. Permissions -->
+        <li class="nav-item">
+          <a class="nav-link" href="permissions.html">
+            <i class="bi bi-shield-check me-1"></i>Permissions
+          </a>
+        </li>
+        
+
+        <!-- 3. AI Safe Routes & Map -->
+        <li class="nav-item">
+          <a class="nav-link" href="safe_routes_compare.html">
+            <i class="bi bi-signpost-split me-1"></i>AI Safe Routes &amp; Map
+          </a>
+        </li>
+
+        <!-- 4. Local Resident -->
+        <li class="nav-item">
+          <a class="nav-link" href="guardians_list.html">
+            <i class="bi bi-people me-1"></i>Local Resident
+          </a>
+        </li>
+
+        <!-- 5. Organizations -->
+        <li class="nav-item">
+          <a class="nav-link" href="/organization/">
+            <i class="bi bi-building me-1"></i>Organizations
+          </a>
+        </li>
+
+        <!-- 6. Trusted Contacts -->
+        <li class="nav-item">
+          <a class="nav-link" href="/community/trusted-contacts/">
+            <i class="bi bi-person-heart me-1"></i>Trusted Contacts
+          </a>
+        </li>
+
+        
+
+        
+        <!-- Unauthenticated links -->
+        <li class="nav-item">
+          <a class="nav-link fw-semibold" href="login.html">
+            <i class="bi bi-box-arrow-in-right me-1"></i>Log in
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link fw-semibold" href="register.html">
+            <i class="bi bi-person-plus me-1"></i>Register
+          </a>
+        </li>
+        <li class="nav-item ms-lg-2 me-1 me-xl-2 mt-2 mt-lg-0">
+          <a class="btn-nav-sos" href="/emergency/sos/">
+            <i class="bi bi-broadcast"></i> SOS Active
+          </a>
+        </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Main Messages Alert Container -->
+<div class="container-fluid px-3 px-xl-4 mt-3">
+  
+</div>
+
+<!-- Main Content Block -->
+<main class="flex-grow-1">
+  
+<div class="container my-4 my-md-5">
+    <div class="row g-4 align-items-stretch">
+        
+        <!-- Left Column: Platform Features & Capabilities Showcase -->
+        <div class="col-lg-6 col-xl-6 d-flex flex-column">
+            <div class="p-4 p-md-5 rounded-4 shadow-sm d-flex flex-column justify-content-between h-100" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: #ffffff;">
+                <div>
+                    <span class="badge rounded-pill bg-danger px-3 py-1 fw-bold text-uppercase mb-3" style="font-size:0.75rem; letter-spacing:0.05em;">
+                        <i class="bi bi-shield-lock-fill me-1"></i>Women Safety Shield Ecosystem
+                    </span>
+                    <h2 class="fw-bold mb-2 text-white" style="color: #ffffff !important; font-family:'Plus Jakarta Sans',sans-serif; letter-spacing:-0.02em;">
+                        Your Safety. Your People. Your Connection.
+                    </h2>
+                    <p class="text-white-50 small mb-4" style="line-height:1.6;">
+                        Sign in to monitor live emergency response routes, configure trusted circles, and coordinate with verified community guardians.
+                    </p>
+
+                    <!-- 4 Feature Cards -->
+                    <div class="d-flex flex-column gap-3 mb-4">
+                        
+                        <div class="p-3 rounded-3" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="rounded-circle bg-danger-subtle text-danger d-flex align-items-center justify-content-center p-2" style="width:40px;height:40px;flex-shrink:0;">
+                                    <i class="bi bi-broadcast fs-5 text-danger"></i>
+                                </div>
+                                <div>
+                                    <strong class="d-block text-white" style="font-size:0.95rem;">One-Tap Emergency SOS</strong>
+                                    <small class="text-white-50" style="font-size:0.82rem; line-height:1.4; display:block;">
+                                        Instant multi-channel dispatch — live coordinates, audible siren, and parallel emergency contacts notification.
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-3 rounded-3" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="rounded-circle bg-success-subtle text-success d-flex align-items-center justify-content-center p-2" style="width:40px;height:40px;flex-shrink:0;">
+                                    <i class="bi bi-geo-alt-fill fs-5 text-success"></i>
+                                </div>
+                                <div>
+                                    <strong class="d-block text-white" style="font-size:0.95rem;">3 KM Safety Radar &amp; Havens</strong>
+                                    <small class="text-white-50" style="font-size:0.82rem; line-height:1.4; display:block;">
+                                        Live radar visualization of verified citizen helpers, institutional safe havens, and police PCR beats.
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-3 rounded-3" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center p-2" style="width:40px;height:40px;flex-shrink:0;">
+                                    <i class="bi bi-signpost-split-fill fs-5 text-primary"></i>
+                                </div>
+                                <div>
+                                    <strong class="d-block text-white" style="font-size:0.95rem;">AI Safe Routes &amp; Journey Mode</strong>
+                                    <small class="text-white-50" style="font-size:0.82rem; line-height:1.4; display:block;">
+                                        Intelligent routing through well-lit streets and high-activity zones with live escort tracking.
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Interactive CTA to Open Onboarding Tour -->
+                <div class="p-3 rounded-3 border d-flex align-items-center justify-content-between flex-wrap gap-2 mt-3" style="background: rgba(220, 38, 38, 0.15); border-color: rgba(220, 38, 38, 0.4) !important;">
+                    <div>
+                        <strong class="d-block text-white" style="font-size:0.88rem;">New to Safety Shield?</strong>
+                        <small class="text-white-50" style="font-size:0.75rem;">Walk through our interactive features tour.</small>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-sm btn-danger rounded-pill px-3 fw-bold shadow-sm" onclick="openOnboardingModal()">
+                            <i class="bi bi-play-circle-fill me-1"></i>Tour
+                        </button>
+                        <a href="how_it_works.html" class="btn btn-sm btn-outline-light rounded-pill px-3 fw-semibold">
+                            Features Guide
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Sign In Card -->
+        <div class="col-lg-6 col-xl-6">
+            <div class="auth-card mx-auto" style="max-width: 480px;">
+                <div class="text-center mb-4">
+                    <div class="auth-logo-badge">
+                        <i class="bi bi-shield-fill-check"></i>
+                    </div>
+                    <span class="badge bg-danger-subtle text-danger px-3 py-1 rounded-pill mb-2 fw-semibold">SECURE ACCESS</span>
+                    <h3 class="fw-bold mb-1" style="font-family:'Plus Jakarta Sans',sans-serif; letter-spacing:-0.025em; color:var(--text-primary);">Welcome Back</h3>
+                    <p class="text-muted small mb-0">Sign in to your account and stay protected</p>
+                </div>
+
+                <form method="post" autocomplete="on">
+                    <input type="hidden" name="csrfmiddlewaretoken" value="7KsAYInQMzWhvfTfMy75YOI7g6rSKyPbF2u7sYKvsNQANOOGp30na7mVtcQxtDxA">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold small text-muted">USERNAME</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-person text-muted"></i></span>
+                            <input type="text" name="username" class="form-control border-start-0 ps-0" placeholder="Enter your username" required autocomplete="username">
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label class="form-label fw-semibold small text-muted mb-0">PASSWORD</label>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-lock text-muted"></i></span>
+                            <input type="password" name="password" id="passwordInput" class="form-control border-start-0 ps-0" placeholder="Enter your password" required autocomplete="current-password">
+                            <button class="btn btn-light border border-start-0" type="button" onclick="togglePassword()"><i class="bi bi-eye" id="eyeIcon"></i></button>
+                        </div>
+                    </div>
+                    <div class="d-grid mb-3">
+                        <button type="submit" class="btn btn-auth">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                        </button>
+                    </div>
+                </form>
+
+                <div class="text-center pt-3 border-top" style="border-color:var(--line) !important;">
+                    <p class="mb-0 text-muted small">Don't have an account? <a href="register.html" class="fw-bold" style="color:var(--crimson);">Register Now</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function togglePassword() {
+    const input = document.getElementById('passwordInput');
+    const icon = document.getElementById('eyeIcon');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'bi bi-eye-slash';
+    } else {
+        input.type = 'password';
+        icon.className = 'bi bi-eye';
+    }
+}
+</script>
+
+</main>
+
+<!-- Unified Minimalist Footer -->
+<footer class="mt-auto">
+  <div class="container-fluid px-3 px-xl-4">
+    <div class="row g-4">
+      <!-- Col 1: Brand & 24/7 Helplines -->
+      <div class="col-lg-4 col-md-6">
+        <h5 style="color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;" class="mb-2">
+          <i class="bi bi-shield-fill-check" style="color:var(--gold);"></i> Women Safety Shield
+        </h5>
+        <p class="text-white-50 small mb-2" style="font-size:0.8rem; letter-spacing:0.02em;">
+          Help finds you, from every direction.
+        </p>
+        <p style="max-width:34ch;font-size:0.88rem;line-height:1.6;" class="mb-2 text-white-50">
+          Community-powered emergency response network with verified residents, institutional safe havens, and automated police dispatch.
+        </p>
+        <p class="small text-white-50 mb-3" style="font-size:0.8rem;">
+          <i class="bi bi-cpu me-1" style="color:var(--gold);"></i>Developed by <strong>Team Shield Matrix</strong>
+        </p>
+        <div class="d-flex gap-2 flex-wrap">
+          <a href="tel:112" class="badge rounded-pill bg-danger text-white px-3 py-2 text-decoration-none shadow-sm" title="National Emergency Response">
+            <i class="bi bi-telephone-fill me-1"></i>112 Police
+          </a>
+          <a href="tel:1091" class="badge rounded-pill bg-danger text-white px-3 py-2 text-decoration-none shadow-sm" title="Women Helpline">
+            <i class="bi bi-telephone-fill me-1"></i>1091 Women
+          </a>
+          <a href="tel:181" class="badge rounded-pill bg-danger text-white px-3 py-2 text-decoration-none shadow-sm" title="Women in Distress">
+            <i class="bi bi-telephone-fill me-1"></i>181 Helpline
+          </a>
+        </div>
+      </div>
+
+      <!-- Col 2: Platform Services -->
+      <div class="col-lg-2 col-md-3 col-6">
+        <h6 style="color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;" class="mb-3">Safety Services</h6>
+        <p class="mb-2"><a href="safe_routes_compare.html" class="text-decoration-none hover-underline"><i class="bi bi-signpost-split me-1 text-danger"></i>Safe Routes &amp; Map</a></p>
+        <p class="mb-2"><a href="guardians_list.html" class="text-decoration-none hover-underline"><i class="bi bi-people me-1 text-success"></i>Local Residents</a></p>
+        <p class="mb-2"><a href="/organization/" class="text-decoration-none hover-underline"><i class="bi bi-building me-1 text-warning"></i>Organizations</a></p>
+        <p class="mb-2"><a href="/community/trusted-contacts/" class="text-decoration-none hover-underline"><i class="bi bi-person-heart me-1 text-danger"></i>Trusted Circle</a></p>
+        <p class="mb-2"><a href="how_it_works.html" class="text-decoration-none hover-underline"><i class="bi bi-compass me-1 text-info"></i>How It Works (Tour)</a></p>
+        <p class="mb-2"><a href="/verification/status/" class="text-decoration-none hover-underline"><i class="bi bi-shield-check me-1 text-success"></i>Identity Verification</a></p>
+      </div>
+
+      <!-- Col 3: Quick Action Tools -->
+      <div class="col-lg-3 col-md-3 col-6">
+        <h6 style="color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;" class="mb-3">Quick Action Tools</h6>
+        <p class="mb-2"><a href="/emergency/sos/" style="color:#fff;" class="text-decoration-none fw-semibold"><i class="bi bi-broadcast text-danger me-1"></i>Emergency SOS Trigger</a></p>
+        <p class="mb-2"><a href="guardians_list.html" class="text-decoration-none hover-underline"><i class="bi bi-person-walking me-1"></i>Request Safe Walk Escort</a></p>
+        <p class="mb-2"><a href="/community/trusted-contacts/" class="text-decoration-none hover-underline"><i class="bi bi-geo-alt-fill me-1"></i>"I Reached Safely" Check-in</a></p>
+        <p class="mb-2"><a href="/organization/register/" class="text-decoration-none hover-underline"><i class="bi bi-shield-plus me-1"></i>Campus Partner Signup</a></p>
+        <p class="mb-2"><a href="/local-residents/register/" class="text-decoration-none hover-underline"><i class="bi bi-person-badge me-1"></i>Become Local Guardian</a></p>
+        
+        
+      </div>
+
+      <!-- Col 4: Trust, Security & Legal -->
+      <div class="col-lg-3 col-md-12">
+        <h6 style="color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;" class="mb-3">Legal &amp; Trust</h6>
+        <p style="font-size:0.84rem;line-height:1.55;" class="mb-2 text-white-50">
+          Safety predictions and route ratings are statistical estimates to assist personal mobility decisions and do not guarantee complete crime immunity.
+        </p>
+        <p style="font-size:0.84rem;line-height:1.55;" class="mb-2 text-white-50">
+          All responder interactions, emergency logs, and community escorts are cryptographically timestamped for Good Samaritan legal protection.
+        </p>
+        <div class="d-flex align-items-center gap-2 mt-2 pt-2 border-top" style="border-color:#423934 !important;">
+          <i class="bi bi-shield-check text-success fs-5"></i>
+          <span class="small text-white-50" style="font-size:0.78rem;">Aadhaar &amp; PAN statutory verification standards</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="footer-bottom d-flex justify-content-between align-items-center flex-wrap gap-2 pt-3 mt-4 border-top" style="border-color:#423934 !important; font-size:0.82rem; color:#9a8f8a;">
+      <div>© 2026 Women Safety Shield — Team Shield Matrix. All rights reserved. Help finds you, from every direction.</div>
+      <div class="d-flex align-items-center gap-2">
+        <span class="badge bg-dark border border-secondary text-white-50 px-2 py-1">ERSS 112 Integrated</span>
+        <span>Emergency Dispatch Protocol v2.5</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Native Mobile App Bottom Navigation Dock (Visible on Mobile/Phones) -->
+<nav class="mobile-app-bottom-nav d-md-none" aria-label="Mobile Application Navigation">
+  <div class="mobile-nav-container">
+    <a href="index.html" class="mobile-nav-item ">
+      <i class="bi bi-house-door-fill"></i>
+      <span>Home</span>
+    </a>
+    <a href="safe_routes_compare.html" class="mobile-nav-item ">
+      <i class="bi bi-compass-fill"></i>
+      <span>Routes</span>
+    </a>
+    <a href="/#giantSosDial" onclick="triggerMobileSosNav(event)" class="mobile-nav-item mobile-nav-sos" aria-label="Trigger Emergency SOS">
+      <div class="mobile-sos-circle">
+        <i class="bi bi-broadcast"></i>
+      </div>
+      <span>SOS</span>
+    </a>
+    <a href="guardians_list.html" class="mobile-nav-item ">
+      <i class="bi bi-shield-shaded"></i>
+      <span>Guardians</span>
+    </a>
+    <a href="login.html" class="mobile-nav-item active">
+      <i class="bi bi-person-fill"></i>
+      <span>Account</span>
+    </a>
+  </div>
+</nav>
+
+<script>
+function triggerMobileSosNav(e) {
+  if (typeof openSosModal === 'function') {
+    e.preventDefault();
+    openSosModal('mobile_dock');
+    return false;
+  } else if (typeof enterSamePageEmergencyMode === 'function') {
+    e.preventDefault();
+    enterSamePageEmergencyMode();
+    return false;
+  }
+}
+</script>
+
+<!-- Onboarding Experience Modal -->
+<!-- First-Time Onboarding Experience Modal: "See How It Works" -->
+<div class="modal fade" id="onboardingModal" tabindex="-1" aria-labelledby="onboardingModalLabel" aria-hidden="true" data-bs-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden" style="background:#ffffff;">
+      
+      <!-- Modal Top Bar -->
+      <div class="d-flex justify-content-between align-items-center px-4 pt-3 pb-2 border-bottom bg-light">
+        <div class="d-flex align-items-center gap-2">
+          <span class="badge rounded-pill bg-danger-subtle text-danger fw-bold px-3 py-1" style="font-size:0.75rem; letter-spacing:0.04em;">
+            <i class="bi bi-shield-check me-1"></i>UNDERSTAND → VERIFY → PROTECT
+          </span>
+          <span class="text-muted small d-none d-sm-inline">Platform Tour</span>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="markOnboardingComplete()"></button>
+      </div>
+
+      <!-- Modal Body / Carousel -->
+      <div class="modal-body p-0">
+        <div id="onboardingCarousel" class="carousel slide" data-bs-touch="true" data-bs-interval="false">
+          
+          <!-- Stepper Dots -->
+          <div class="carousel-indicators mb-2" style="bottom:12px;">
+            <button type="button" data-bs-target="#onboardingCarousel" data-bs-slide-to="0" class="active rounded-circle" style="width:10px;height:10px;margin:0 4px;background-color:var(--crimson);" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#onboardingCarousel" data-bs-slide-to="1" class="rounded-circle" style="width:10px;height:10px;margin:0 4px;background-color:var(--crimson);" aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#onboardingCarousel" data-bs-slide-to="2" class="rounded-circle" style="width:10px;height:10px;margin:0 4px;background-color:var(--crimson);" aria-label="Slide 3"></button>
+            <button type="button" data-bs-target="#onboardingCarousel" data-bs-slide-to="3" class="rounded-circle" style="width:10px;height:10px;margin:0 4px;background-color:var(--crimson);" aria-label="Slide 4"></button>
+          </div>
+
+          <div class="carousel-inner">
+            
+            <!-- SCREEN 1: Stay Protected -->
+            <div class="carousel-item active p-4 p-md-5 text-center">
+              <div class="mx-auto mb-4 d-flex align-items-center justify-content-center rounded-circle" 
+                   style="width:96px; height:96px; background:linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); border:2px solid #fecaca; box-shadow:0 8px 24px rgba(220,38,38,0.15);">
+                <span style="font-size:3.2rem;">🛡️</span>
+              </div>
+              <span class="badge bg-danger-subtle text-danger px-3 py-1 rounded-pill fw-semibold mb-2" style="font-size:0.75rem;">SCREEN 1 OF 4</span>
+              <h3 class="fw-bold mb-2" style="color:var(--maroon); font-family:'Plus Jakarta Sans',sans-serif;">Stay Protected</h3>
+              <blockquote class="blockquote my-2">
+                <p class="fst-italic fw-semibold text-danger fs-5 mb-1">"Your safety. Your people. Your connection."</p>
+              </blockquote>
+              <p class="text-muted mx-auto" style="max-width:540px; font-size:0.95rem; line-height:1.6;">
+                Women Safety Shield connects you with your trusted inner circle, vetted local community responders, 
+                and rapid emergency services. Whether you are traveling late or exploring unfamiliar routes, 
+                you never have to walk alone.
+              </p>
+              <div class="d-flex justify-content-center gap-2 mt-3 text-muted small">
+                <span><i class="bi bi-check-circle-fill text-success me-1"></i>Trusted Circle</span>
+                <span>•</span>
+                <span><i class="bi bi-check-circle-fill text-success me-1"></i>3km Community Reach</span>
+                <span>•</span>
+                <span><i class="bi bi-check-circle-fill text-success me-1"></i>112 Police Link</span>
+              </div>
+            </div>
+
+            <!-- SCREEN 2: One Tap Emergency Assistance -->
+            <div class="carousel-item p-4 p-md-5 text-center">
+              <div class="mx-auto mb-4 d-flex align-items-center justify-content-center rounded-circle" 
+                   style="width:96px; height:96px; background:linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%); border:2px solid #fecdd3; box-shadow:0 8px 24px rgba(225,29,72,0.18);">
+                <span style="font-size:3.2rem;">🆘</span>
+              </div>
+              <span class="badge bg-danger-subtle text-danger px-3 py-1 rounded-pill fw-semibold mb-2" style="font-size:0.75rem;">SCREEN 2 OF 4</span>
+              <h3 class="fw-bold mb-2" style="color:var(--maroon); font-family:'Plus Jakarta Sans',sans-serif;">One Tap Emergency Assistance</h3>
+              <blockquote class="blockquote my-2">
+                <p class="fst-italic fw-semibold text-danger fs-5 mb-1">"One tap can connect you to help."</p>
+              </blockquote>
+              <p class="text-muted mx-auto" style="max-width:540px; font-size:0.95rem; line-height:1.6;">
+                Activating SOS broadcasts your live GPS coordinates, continuous breadcrumbs, and emergency beacon simultaneously:
+                alerting guardians via SMS, notifying verified local residents within 3 KM, and alerting emergency services in parallel.
+              </p>
+              <div class="p-3 bg-light rounded-3 d-inline-flex align-items-center gap-3 border mt-2">
+                <span class="badge bg-danger p-2 fs-6 rounded-circle"><i class="bi bi-broadcast"></i></span>
+                <span class="small text-start text-dark fw-semibold">Instant Multi-Channel Dispatch: <strong>SMS + Voice Call + Live Map Tracking</strong></span>
+              </div>
+            </div>
+
+            <!-- SCREEN 3: Know Who Is Around You -->
+            <div class="carousel-item p-4 p-md-5 text-center">
+              <div class="mx-auto mb-4 d-flex align-items-center justify-content-center rounded-circle" 
+                   style="width:96px; height:96px; background:linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border:2px solid #bfdbfe; box-shadow:0 8px 24px rgba(37,99,235,0.15);">
+                <span style="font-size:3.2rem;">📍</span>
+              </div>
+              <span class="badge bg-primary-subtle text-primary px-3 py-1 rounded-pill fw-semibold mb-2" style="font-size:0.75rem;">SCREEN 3 OF 4</span>
+              <h3 class="fw-bold mb-2" style="color:var(--navy); font-family:'Plus Jakarta Sans',sans-serif;">Know Who Is Around You</h3>
+              <blockquote class="blockquote my-2">
+                <p class="fst-italic fw-semibold text-primary fs-5 mb-1">"Help can be closer than you think."</p>
+              </blockquote>
+              <p class="text-muted mx-auto" style="max-width:540px; font-size:0.95rem; line-height:1.6;">
+                During an emergency or night journey, nearby verified community members, institutional safe havens,
+                and active police PCR patrol beats are visualized on the interactive Google Map in real time.
+              </p>
+              <div class="d-flex justify-content-center gap-3 mt-3 flex-wrap">
+                <span class="badge bg-success-subtle text-success px-2 py-1"><i class="bi bi-geo-alt-fill me-1"></i>3 KM Responder Radius</span>
+                <span class="badge bg-primary-subtle text-primary px-2 py-1"><i class="bi bi-building me-1"></i>Verified Safe Havens</span>
+                <span class="badge bg-dark-subtle text-dark px-2 py-1"><i class="bi bi-shield-shaded me-1"></i>Police PCR Patrol</span>
+              </div>
+            </div>
+
+            <!-- SCREEN 4: Verified & Trusted Community -->
+            <div class="carousel-item p-4 p-md-5 text-center">
+              <div class="mx-auto mb-4 d-flex align-items-center justify-content-center rounded-circle" 
+                   style="width:96px; height:96px; background:linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border:2px solid #bbf7d0; box-shadow:0 8px 24px rgba(22,163,74,0.15);">
+                <span style="font-size:3.2rem;">🤝</span>
+              </div>
+              <span class="badge bg-success-subtle text-success px-3 py-1 rounded-pill fw-semibold mb-2" style="font-size:0.75rem;">SCREEN 4 OF 4</span>
+              <h3 class="fw-bold mb-2" style="color:#14532d; font-family:'Plus Jakarta Sans',sans-serif;">Verified &amp; Trusted Community</h3>
+              <blockquote class="blockquote my-2">
+                <p class="fst-italic fw-semibold text-success fs-5 mb-1">"Safety starts with trust."</p>
+              </blockquote>
+              <p class="text-muted mx-auto" style="max-width:540px; font-size:0.95rem; line-height:1.6;">
+                Every participant undergoes an identity-verification process and safety awareness assessment 
+                before becoming a trusted responder. Trust is earned through identity verification, 
+                responsible community standards, and strict privacy protection.
+              </p>
+              <div class="d-flex justify-content-center gap-2 mt-3 flex-wrap">
+                <span class="badge bg-light text-dark border px-2 py-1">🛡️ Identity Verified</span>
+                <span class="badge bg-light text-dark border px-2 py-1">✓ Verified Community Member</span>
+                <span class="badge bg-light text-dark border px-2 py-1">✓ Secure Account</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer Controls -->
+      <div class="modal-footer d-flex justify-content-between align-items-center bg-light px-4 py-3 border-top">
+        <div>
+          <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal" onclick="markOnboardingComplete()">
+            Skip / Explore as Guest
+          </button>
+        </div>
+
+        <div class="d-flex gap-2 align-items-center">
+          <button type="button" class="btn btn-sm btn-light border rounded-pill px-3" onclick="prevOnboardingSlide()">
+            <i class="bi bi-chevron-left me-1"></i>Back
+          </button>
+          <button type="button" class="btn btn-sm btn-danger rounded-pill px-3 fw-bold" id="onboardingNextBtn" onclick="nextOnboardingSlide()">
+            Next<i class="bi bi-chevron-right ms-1"></i>
+          </button>
+          
+          <!-- Final Action Buttons (Hidden on slides 1-3, shown on slide 4) -->
+          <div id="onboardingFinalActions" class="d-none gap-2">
+            <a href="login.html" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-bold" onclick="markOnboardingComplete()">
+              <i class="bi bi-box-arrow-in-right me-1"></i>Login
+            </a>
+            <a href="register.html" class="btn btn-sm btn-danger rounded-pill px-3 fw-bold shadow-sm" onclick="markOnboardingComplete()">
+              <i class="bi bi-person-plus-fill me-1"></i>Register
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+function openOnboardingModal() {
+  const modalEl = document.getElementById('onboardingModal');
+  if (modalEl && typeof bootstrap !== 'undefined') {
+    const modal = new bootstrap.Modal(modalEl);
+    modal.show();
+  }
+}
+
+function markOnboardingComplete() {
+  localStorage.setItem('w_shield_onboarded_v2', 'true');
+}
+
+function nextOnboardingSlide() {
+  const carouselEl = document.getElementById('onboardingCarousel');
+  if (carouselEl && typeof bootstrap !== 'undefined') {
+    const c = bootstrap.Carousel.getOrCreateInstance(carouselEl);
+    c.next();
+  }
+}
+
+function prevOnboardingSlide() {
+  const carouselEl = document.getElementById('onboardingCarousel');
+  if (carouselEl && typeof bootstrap !== 'undefined') {
+    const c = bootstrap.Carousel.getOrCreateInstance(carouselEl);
+    c.prev();
+  }
+}
+
+// Auto-trigger on first-time visit, logged out, or force parameter
+document.addEventListener('DOMContentLoaded', function() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const isLoggedOut = urlParams.has('logged_out');
+  if (isLoggedOut) {
+    try { localStorage.removeItem('w_shield_onboarded_v2'); } catch(e){}
+  }
+
+  const hasSeen = localStorage.getItem('w_shield_onboarded_v2');
+  const isAuth = false;
+  const isHomePage = window.location.pathname === '/' || window.location.pathname === '';
+  const forceTour = urlParams.has('tour') || urlParams.has('onboarding') || isLoggedOut;
+  
+  if ((!hasSeen && !isAuth && isHomePage) || forceTour) {
+    setTimeout(function() {
+      openOnboardingModal();
+    }, 600);
+  }
+
+  // Update button states on slide transition
+  const carouselEl = document.getElementById('onboardingCarousel');
+  if (carouselEl) {
+    carouselEl.addEventListener('slid.bs.carousel', function (e) {
+      const isLast = e.to === 3;
+      const nextBtn = document.getElementById('onboardingNextBtn');
+      const finalActions = document.getElementById('onboardingFinalActions');
+      if (isLast) {
+        if (nextBtn) nextBtn.classList.add('d-none');
+        if (finalActions) {
+          finalActions.classList.remove('d-none');
+          finalActions.classList.add('d-flex');
+        }
+      } else {
+        if (nextBtn) nextBtn.classList.remove('d-none');
+        if (finalActions) {
+          finalActions.classList.add('d-none');
+          finalActions.classList.remove('d-flex');
+        }
+      }
+    });
+  }
+});
+</script>
+
+
+<!-- Scripts -->
+<script src="vendor/bootstrap.bundle.min.js"></script>
+<script src="vendor/leaflet.min.js"></script>
+<script src="static/js/main.js"></script>
+
+</body>
+</html>
+

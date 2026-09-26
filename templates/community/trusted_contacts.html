@@ -1,123 +1,866 @@
 {% extends 'base.html' %}
-{% block title %}Trusted Circle - Women Safety Shield{% endblock %}
+{% block title %}My Trusted Circle - Women Safety Shield{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Segmented Pill Tabs for Add Contact */
+  #addContactTabs {
+    background: #f1f5f9;
+    padding: 5px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    gap: 6px;
+  }
+  #addContactTabs .nav-item {
+    flex: 1;
+  }
+  #addContactTabs .nav-link {
+    color: #475569 !important;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 9px !important;
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding: 8px 12px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #addContactTabs .nav-link:hover:not(.active) {
+    color: var(--crimson, #C41E3D) !important;
+    background: #ffffff !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  }
+  #addContactTabs .nav-link.active {
+    background: linear-gradient(135deg, #7A1F2B 0%, #C41E3D 100%) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(196, 30, 61, 0.3) !important;
+    font-weight: 700;
+  }
+
+  /* Signature Brand Action Button */
+  .btn-trusted-submit {
+    background: linear-gradient(135deg, #7A1F2B 0%, #C41E3D 100%) !important;
+    color: #ffffff !important;
+    border: none !important;
+    font-weight: 700;
+    font-size: 0.92rem;
+    padding: 0.65rem 1.25rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 14px rgba(196, 30, 61, 0.28);
+    transition: all 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+  }
+  .btn-trusted-submit:hover {
+    background: linear-gradient(135deg, #631722 0%, #a81732 100%) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 7px 20px rgba(196, 30, 61, 0.38);
+    color: #ffffff !important;
+  }
+  .btn-trusted-submit:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(196, 30, 61, 0.2);
+  }
+
+  /* Quick action buttons hover lift */
+  .hover-lift {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08) !important;
+  }
+
+  /* Refined quick message pills */
+  .quick-msg-btn {
+    border-color: #e2e8f0;
+    color: #475569;
+    background: #ffffff;
+    font-size: 0.8rem;
+    transition: all 0.2s ease;
+  }
+  .quick-msg-btn:hover {
+    background: #fff0f3;
+    border-color: #fecdd3;
+    color: var(--crimson, #C41E3D);
+  }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container my-4">
-    <div class="page-header d-flex justify-content-between align-items-center">
-        <div>
-            <h4 class="fw-800 mb-1">👥 My Trusted Circle</h4>
-            <p class="mb-0 opacity-75">These people will be alerted when you press SOS</p>
-        </div>
-        <span class="badge bg-light text-dark fs-6 fw-600">{{ contacts.count }} Contact{{ contacts.count|pluralize }}</span>
-    </div>
+<div class="container-fluid px-3 px-xl-4 my-4">
 
-    <div class="row g-4">
-        <!-- Existing Contacts -->
+  <!-- 1. Header & Safety Readiness Console -->
+  <div class="card border-0 shadow-sm rounded-4 mb-4" style="background: linear-gradient(135deg, #ffffff 0%, #fdf8f6 100%); border-left: 6px solid var(--crimson) !important;">
+    <div class="card-body p-4">
+      <div class="row align-items-center g-3">
         <div class="col-lg-7">
-            {% if contacts %}
-            <div class="row g-3">
-                {% for tc in contacts %}
-                <div class="col-md-6">
-                    <div class="card border-0 shadow-sm rounded-4 h-100">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center gap-3 mb-3">
-                                <div class="avatar-circle" style="width:48px;height:48px;font-size:1.2rem;background:{% cycle '#e74c3c' '#3498db' '#27ae60' '#9b59b6' '#f39c12' %};">
-                                    {{ tc.contact.first_name|first|default:tc.contact.username|first }}
-                                </div>
-                                <div>
-                                    <h6 class="fw-700 mb-0">{{ tc.contact.full_name }}</h6>
-                                    <small class="text-muted">@{{ tc.contact.username }}</small>
-                                </div>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <span class="badge bg-light text-dark me-1">
-                                        {% if tc.relation == 'family' %}👨‍👩‍👧 
-                                        {% elif tc.relation == 'friend' %}👫 
-                                        {% elif tc.relation == 'colleague' %}💼 
-                                        {% elif tc.relation == 'neighbor' %}🏠 
-                                        {% else %}👤 {% endif %}
-                                        {{ tc.get_relation_display }}
-                                    </span>
-                                    {% if tc.contact.phone %}
-                                    <small class="text-muted">📞 {{ tc.contact.phone }}</small>
-                                    {% endif %}
-                                </div>
-                                <a href="{% url 'remove_trusted_contact' tc.id %}"
-                                   class="btn btn-outline-danger btn-sm"
-                                   onclick="return confirm('Remove {{ tc.contact.full_name }} from trusted circle?')">
-                                    <i class="bi bi-trash3"></i>
-                                </a>
-                            </div>
-                            <div class="mt-2">
-                                <small class="text-muted"><i class="bi bi-clock me-1"></i>Added {{ tc.added_at|date:"d M Y" }}</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
+          <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+            <span class="badge bg-danger px-3 py-1 fw-bold text-uppercase" style="letter-spacing:0.04em;">
+              <i class="bi bi-shield-fill-check me-1"></i>Safety Guardian Network
+            </span>
+            <span class="badge bg-{{ score_color }} px-3 py-1 fw-semibold text-white">
+              {{ score_badge }}
+            </span>
+            <span class="small text-muted fw-semibold">
+              <i class="bi bi-people-fill me-1"></i>{{ contact_count }} Designated Contact{{ contact_count|pluralize }}
+            </span>
+          </div>
+          <h2 class="fw-bold mb-1" style="color:var(--text-primary); font-family:'Plus Jakarta Sans',sans-serif; letter-spacing:-0.025em;">
+            <i class="bi bi-person-heart text-danger me-2"></i>My Trusted Circle
+          </h2>
+          <p class="text-muted mb-3" style="max-width: 650px; font-size: 0.95rem;">
+            Your first line of defense. When you trigger an SOS, these designated guardians receive instant SMS alerts with your real-time GPS coordinates, automated voice escalation, and live tracking links.
+          </p>
+
+          <div class="d-flex flex-wrap gap-2">
+            <button type="button" class="btn btn-trusted-submit btn-sm fw-bold px-3 py-2 shadow-sm rounded-3 hover-lift" data-bs-toggle="modal" data-bs-target="#safeCheckinModal">
+              <i class="bi bi-geo-alt-fill me-1"></i>Send "I Reached Safely" Check-in
+            </button>
+            <button type="button" class="btn btn-outline-dark btn-sm fw-semibold px-3 py-2 rounded-3 hover-lift" data-bs-toggle="modal" data-bs-target="#fakeCallModal" style="border-color: #cbd5e1; background: #ffffff;">
+              <i class="bi bi-telephone-inbound-fill me-1 text-danger"></i>Fake Escape Call
+            </button>
+            <button type="button" class="btn btn-outline-secondary btn-sm fw-semibold px-3 py-2 rounded-3 hover-lift" data-bs-toggle="modal" data-bs-target="#helplinesModal" style="border-color: #cbd5e1; background: #ffffff;">
+              <i class="bi bi-shield-exclamation me-1 text-warning"></i>Helpline Directory
+            </button>
+          </div>
+        </div>
+
+        <!-- Circle Strength Meter Card -->
+        <div class="col-lg-5">
+          <div class="p-3 rounded-4 bg-white border shadow-sm">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="small fw-bold text-muted text-uppercase" style="letter-spacing: 0.05em;">Circle Protection Level</span>
+              <span class="badge bg-{{ score_color }} text-white fw-bold fs-6">{{ score }}%</span>
             </div>
-            {% else %}
-            <div class="card border-0 shadow-sm rounded-4">
-                <div class="card-body text-center py-5">
-                    <div style="font-size:4rem;">👥</div>
-                    <h5 class="mt-3 text-muted">No trusted contacts yet</h5>
-                    <p class="text-muted">Add family and friends who will be alerted in an emergency.</p>
-                </div>
+            <div class="progress mb-2" style="height: 10px; border-radius: 8px;">
+              <div class="progress-bar bg-{{ score_color }} progress-bar-striped progress-bar-animated" role="progressbar" style="width: {{ score }}%"></div>
+            </div>
+            <p class="small text-muted mb-3" style="font-size:0.82rem; line-height: 1.4;">
+              <i class="bi bi-info-circle-fill text-{{ score_color }} me-1"></i>{{ score_advice }}
+            </p>
+
+            <div class="d-flex flex-wrap gap-2 pt-2 border-top">
+              <span class="badge bg-light text-dark border small fw-normal py-1 px-2">
+                <i class="bi bi-chat-dots-fill text-danger me-1"></i>SMS: <strong>{{ sms_count }}</strong>
+              </span>
+              <span class="badge bg-light text-dark border small fw-normal py-1 px-2">
+                <i class="bi bi-whatsapp text-success me-1"></i>WhatsApp: <strong>{{ whatsapp_count }}</strong>
+              </span>
+              <span class="badge bg-light text-dark border small fw-normal py-1 px-2">
+                <i class="bi bi-geo-fill text-info me-1"></i>Live GPS: <strong>{{ location_count }}</strong>
+              </span>
+              <span class="badge bg-light text-dark border small fw-normal py-1 px-2">
+                <i class="bi bi-star-fill text-warning me-1"></i>Primary: <strong>{% if primary_contact %}Assigned{% else %}None{% endif %}</strong>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Main Content Grid -->
+  <div class="row g-4">
+
+    <!-- Left Column: Contact Cards -->
+    <div class="col-lg-7 col-xl-8">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold mb-0" style="color:var(--maroon);font-family:'Plus Jakarta Sans',sans-serif;">
+          <i class="bi bi-shield-shaded text-danger me-2"></i>Designated Emergency Guardians ({{ contact_count }})
+        </h5>
+        {% if primary_contact %}
+        <span class="badge bg-warning-subtle text-dark border border-warning px-2 py-1 small fw-semibold">
+          <i class="bi bi-star-fill text-warning me-1"></i>Primary Lead: {{ primary_contact.display_name }}
+        </span>
+        {% endif %}
+      </div>
+
+      {% if contacts %}
+      <div class="row g-3">
+        {% for tc in contacts %}
+        <div class="col-md-6 col-xl-6">
+          <div class="card h-100 rounded-4 shadow-sm border-0 transition-hover position-relative"
+               style="background: #ffffff; border: 1px solid {% if tc.is_primary %}#D9A441 !important; box-shadow: 0 4px 15px rgba(217, 164, 65, 0.18) !important;{% else %}var(--line) !important;{% endif %}">
+            
+            {% if tc.is_primary %}
+            <div class="position-absolute top-0 end-0 m-2">
+              <span class="badge bg-warning text-dark fw-bold px-2 py-1 shadow-sm" style="font-size:0.72rem; letter-spacing:0.02em;">
+                <i class="bi bi-star-fill me-1"></i>PRIMARY GUARDIAN
+              </span>
             </div>
             {% endif %}
+
+            <div class="card-body p-3 d-flex flex-column justify-content-between">
+              <div>
+                <!-- Top Row: Avatar & Name -->
+                <div class="d-flex align-items-center gap-3 mb-3">
+                  <div class="avatar-circle shadow-sm" style="width:50px; height:50px; font-size:1.3rem; font-weight:700; background:{% if tc.is_primary %}#D9A441{% else %}{% cycle '#B3243A' '#3498db' '#27ae60' '#9b59b6' '#e67e22' %}{% endif %}; color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                    {{ tc.avatar_initial }}
+                  </div>
+                  <div class="overflow-hidden pe-3">
+                    <h6 class="fw-bold mb-0 text-truncate" style="color:var(--charcoal); font-size:1.02rem;">
+                      {{ tc.display_name }}
+                    </h6>
+                    {% if tc.contact %}
+                    <small class="text-primary fw-semibold d-block text-truncate">
+                      <i class="bi bi-person-check-fill me-1"></i>@{{ tc.contact.username }}
+                    </small>
+                    {% else %}
+                    <small class="text-muted d-block text-truncate">
+                      <i class="bi bi-phone me-1"></i>External Phone Contact
+                    </small>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <!-- Contact Meta: Relation & Phone -->
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                  <span class="badge bg-light text-dark border px-2 py-1 fw-semibold" style="font-size:0.78rem;">
+                    {% if tc.relation == 'family' %}👨‍👩‍👧 Family
+                    {% elif tc.relation == 'parent' %}🛡️ Parent / Guardian
+                    {% elif tc.relation == 'sibling' %}👫 Sister / Brother
+                    {% elif tc.relation == 'spouse' %}💍 Spouse / Partner
+                    {% elif tc.relation == 'friend' %}🤝 Friend
+                    {% elif tc.relation == 'colleague' %}💼 Colleague
+                    {% elif tc.relation == 'neighbor' %}🏠 Neighbor
+                    {% else %}👤 Other{% endif %}
+                  </span>
+                  
+                  {% if tc.display_phone %}
+                  <a href="tel:{{ tc.display_phone }}" class="badge bg-light text-dark border text-decoration-none px-2 py-1 fw-semibold" style="font-size:0.78rem;" title="Tap to Call">
+                    <i class="bi bi-telephone-fill text-danger me-1"></i>{{ tc.display_phone }}
+                  </a>
+                  {% endif %}
+
+                  {% if tc.display_email %}
+                  <span class="badge bg-light text-muted border px-2 py-1 fw-normal text-truncate" style="max-width:160px; font-size:0.75rem;" title="{{ tc.display_email }}">
+                    <i class="bi bi-envelope me-1"></i>{{ tc.display_email }}
+                  </span>
+                  {% endif %}
+                </div>
+
+                <!-- Alert Channel Capabilities -->
+                <div class="d-flex flex-wrap gap-1 mb-3">
+                  {% if tc.alert_sms %}
+                  <span class="badge bg-danger-subtle text-danger px-2 py-1" style="font-size:0.7rem;" title="Instant SMS on SOS">
+                    <i class="bi bi-chat-dots-fill me-1"></i>SMS
+                  </span>
+                  {% endif %}
+                  {% if tc.alert_whatsapp %}
+                  <span class="badge bg-success-subtle text-success px-2 py-1" style="font-size:0.7rem;" title="WhatsApp Dispatch Enabled">
+                    <i class="bi bi-whatsapp me-1"></i>WhatsApp
+                  </span>
+                  {% endif %}
+                  {% if tc.alert_call %}
+                  <span class="badge bg-warning-subtle text-dark px-2 py-1" style="font-size:0.7rem;" title="Automated Voice Call Escalation">
+                    <i class="bi bi-telephone-outbound-fill me-1"></i>Voice Call
+                  </span>
+                  {% endif %}
+                  {% if tc.can_view_location %}
+                  <span class="badge bg-info-subtle text-info px-2 py-1" style="font-size:0.7rem;" title="Can track live GPS during SOS">
+                    <i class="bi bi-geo-alt-fill me-1"></i>Live GPS
+                  </span>
+                  {% endif %}
+                </div>
+
+                <!-- Test Drill Status -->
+                <div class="small mb-3" style="font-size:0.78rem;">
+                  {% if tc.last_tested_at %}
+                  <span class="text-success fw-semibold">
+                    <i class="bi bi-check-circle-fill me-1"></i>Connection verified (Tested {{ tc.last_tested_at|timesince }} ago)
+                  </span>
+                  {% else %}
+                  <span class="text-muted">
+                    <i class="bi bi-clock-history me-1"></i>Drill not tested yet &middot; <a href="{% url 'test_trusted_contact' tc.id %}" class="text-danger fw-semibold text-decoration-none">Send test drill</a>
+                  </span>
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- Bottom Action Toolbar -->
+              <div class="pt-2 border-top d-flex justify-content-between align-items-center gap-1">
+                <div class="d-flex gap-1">
+                  {% if tc.display_phone %}
+                  <a href="tel:{{ tc.display_phone }}" class="btn btn-outline-dark btn-sm px-2 py-1 rounded-3" title="Call {{ tc.display_name }}">
+                    <i class="bi bi-telephone-fill text-danger"></i> Call
+                  </a>
+                  <a href="https://wa.me/{{ tc.display_phone|cut:' '|cut:'+'|cut:'-' }}?text=Hello%20{{ tc.display_name }}%2C%20this%20is%20a%20message%20from%20my%20Women%20Safety%20Shield%20app."
+                     target="_blank" rel="noopener noreferrer" class="btn btn-outline-success btn-sm px-2 py-1 rounded-3" title="Message on WhatsApp">
+                    <i class="bi bi-whatsapp"></i> Chat
+                  </a>
+                  {% endif %}
+                  <a href="{% url 'test_trusted_contact' tc.id %}" class="btn btn-outline-secondary btn-sm px-2 py-1 rounded-3" style="border-color:#cbd5e1; color:#334155;" title="Simulate safety ping">
+                    <i class="bi bi-broadcast text-danger"></i> Test Ping
+                  </a>
+                </div>
+
+                <!-- More Options Dropdown -->
+                <div class="dropdown">
+                  <button class="btn btn-light btn-sm rounded-circle px-2 py-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-three-dots-vertical"></i>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end shadow-sm rounded-3 border-0 py-2">
+                    <li>
+                      <a class="dropdown-item py-2 small" href="{% url 'toggle_primary_contact' tc.id %}">
+                        {% if tc.is_primary %}
+                        <i class="bi bi-star me-2 text-muted"></i>Remove as Primary
+                        {% else %}
+                        <i class="bi bi-star-fill me-2 text-warning"></i>Set as Primary Guardian
+                        {% endif %}
+                      </a>
+                    </li>
+                    <li>
+                      <button class="dropdown-item py-2 small" type="button" data-bs-toggle="modal" data-bs-target="#editModal{{ tc.id }}">
+                        <i class="bi bi-gear-fill me-2 text-secondary"></i>Edit Contact &amp; Channels
+                      </button>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                      <a class="dropdown-item py-2 small text-danger fw-semibold" href="{% url 'remove_trusted_contact' tc.id %}"
+                         onclick="return confirm('Remove {{ tc.display_name }} from your trusted circle?')">
+                        <i class="bi bi-trash3-fill me-2"></i>Remove Contact
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+            </div>
+          </div>
         </div>
 
-        <!-- Add Contact Form -->
-        <div class="col-lg-5">
-            <div class="card border-0 shadow-sm rounded-4 sticky-top" style="top:80px;">
-                <div class="card-header bg-danger text-white py-3 border-0 rounded-top-4">
-                    <h6 class="fw-700 mb-0"><i class="bi bi-person-plus-fill me-2"></i>Add Trusted Contact</h6>
-                </div>
-                <div class="card-body">
-                    <form method="post" action="{% url 'add_trusted_contact' %}">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <label class="form-label fw-600">Select Person</label>
-                            <select name="contact_id" class="form-select" required id="contactSelect">
-                                <option value="">Search and select user...</option>
-                                {% for user in all_users %}
-                                <option value="{{ user.id }}">{{ user.full_name }} (@{{ user.username }}) - {{ user.phone }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-600">Relation</label>
-                            <select name="relation" class="form-select">
-                                <option value="family">👨‍👩‍👧 Family</option>
-                                <option value="friend">👫 Friend</option>
-                                <option value="colleague">💼 Colleague</option>
-                                <option value="neighbor">🏠 Neighbor</option>
-                                <option value="other">👤 Other</option>
-                            </select>
-                        </div>
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-danger fw-600">
-                                <i class="bi bi-person-plus-fill me-2"></i>Add to Trusted Circle
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+        <!-- Edit Modal for this contact -->
+        <div class="modal fade" id="editModal{{ tc.id }}" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow">
+              <div class="modal-header border-bottom py-3" style="background:var(--cream);">
+                <h6 class="modal-title fw-bold" style="color:var(--maroon);font-family:'Plus Jakarta Sans',sans-serif;">
+                  <i class="bi bi-pencil-square me-2"></i>Edit {{ tc.display_name }}
+                </h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <form method="post" action="{% url 'edit_trusted_contact' tc.id %}">
+                {% csrf_token %}
+                <div class="modal-body p-4">
+                  <div class="mb-3">
+                    <label class="form-label small fw-bold">Contact Name / Nickname</label>
+                    <input type="text" name="name" class="form-control" value="{{ tc.display_name }}" required>
+                  </div>
+                  {% if not tc.contact %}
+                  <div class="mb-3">
+                    <label class="form-label small fw-bold">Mobile Phone</label>
+                    <input type="text" name="phone" class="form-control" value="{{ tc.phone }}" required>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label small fw-bold">Email (Optional)</label>
+                    <input type="email" name="email" class="form-control" value="{{ tc.email }}">
+                  </div>
+                  {% endif %}
 
-            <!-- Info box -->
-            <div class="card border-0 shadow-sm rounded-4 mt-3">
-                <div class="card-body">
-                    <h6 class="fw-700"><i class="bi bi-info-circle-fill text-primary me-2"></i>How it works</h6>
-                    <ul class="text-muted small mb-0 ps-3">
-                        <li class="mb-1">When you press SOS, all trusted contacts get instant notifications</li>
-                        <li class="mb-1">They can see your live location on the map</li>
-                        <li class="mb-1">They receive updates as the emergency progresses</li>
-                        <li>They can contact you or emergency services</li>
-                    </ul>
+                  <div class="mb-3">
+                    <label class="form-label small fw-bold">Relationship</label>
+                    <select name="relation" class="form-select">
+                      {% for val, label in relation_choices %}
+                      <option value="{{ val }}" {% if tc.relation == val %}selected{% endif %}>{{ label }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+
+                  <h6 class="fw-bold small text-uppercase text-muted mt-3 mb-2" style="letter-spacing:0.04em;">Emergency Notification Channels</h6>
+                  <div class="form-check form-switch mb-2">
+                    <input class="form-check-input" type="checkbox" name="alert_sms" id="sms{{ tc.id }}" {% if tc.alert_sms %}checked{% endif %}>
+                    <label class="form-check-label small fw-semibold" for="sms{{ tc.id }}">Receive SMS with live GPS on SOS trigger</label>
+                  </div>
+                  <div class="form-check form-switch mb-2">
+                    <input class="form-check-input" type="checkbox" name="alert_whatsapp" id="wa{{ tc.id }}" {% if tc.alert_whatsapp %}checked{% endif %}>
+                    <label class="form-check-label small fw-semibold" for="wa{{ tc.id }}">Allow WhatsApp dispatch</label>
+                  </div>
+                  <div class="form-check form-switch mb-2">
+                    <input class="form-check-input" type="checkbox" name="alert_call" id="call{{ tc.id }}" {% if tc.alert_call %}checked{% endif %}>
+                    <label class="form-check-label small fw-semibold" for="call{{ tc.id }}">Trigger automated voice escalation if unanswered</label>
+                  </div>
+                  <div class="form-check form-switch mb-2">
+                    <input class="form-check-input" type="checkbox" name="can_view_location" id="loc{{ tc.id }}" {% if tc.can_view_location %}checked{% endif %}>
+                    <label class="form-check-label small fw-semibold" for="loc{{ tc.id }}">Grant live tracker access during emergency</label>
+                  </div>
                 </div>
+                <div class="modal-footer border-top py-2 bg-light rounded-bottom-4">
+                  <button type="button" class="btn btn-sm btn-light border px-3" data-bs-dismiss="modal">Cancel</button>
+                  <button type="submit" class="btn btn-sm btn-trusted-submit fw-semibold px-3">Save Changes</button>
+                </div>
+              </form>
             </div>
+          </div>
         </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <!-- Empty State -->
+      <div class="card border-0 shadow-sm rounded-4 text-center py-5 px-4" style="background:#fff;">
+        <div class="mb-3">
+          <div style="width:72px; height:72px; background:var(--cream); color:var(--crimson); border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:2.2rem;">
+            <i class="bi bi-shield-x"></i>
+          </div>
+        </div>
+        <h4 class="fw-bold" style="color:var(--maroon);font-family:'Plus Jakarta Sans',sans-serif;">No Trusted Contacts Added Yet</h4>
+        <p class="text-muted mx-auto mb-4" style="max-width:480px; font-size:0.92rem;">
+          In an emergency, every second counts. Add your mother, father, sister, partner, or close friend to your circle now so they are immediately alerted with your live location during an SOS.
+        </p>
+        <div>
+          <button type="button" class="btn btn-trusted-submit fw-bold px-4 py-2 rounded-3 shadow-sm hover-lift" onclick="document.getElementById('contactNameInput').focus();">
+            <i class="bi bi-person-plus-fill me-1"></i>Add First Guardian
+          </button>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- 24/7 National Emergency Helplines Horizontal Bar -->
+      <div class="card border-0 shadow-sm rounded-4 mt-4 p-3" style="background:#ffffff; border-left: 4px solid var(--gold) !important;">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="fw-bold mb-0 text-dark" style="font-family:'Plus Jakarta Sans',sans-serif;">
+            <i class="bi bi-telephone-fill text-warning me-2"></i>Official 24/7 Women Helplines (Direct Tap)
+          </h6>
+          <span class="badge bg-warning-subtle text-dark border small fw-semibold">Toll-Free &middot; Immediate</span>
+        </div>
+        <div class="row g-2 mt-1">
+          <div class="col-6 col-md-3">
+            <a href="tel:112" class="btn btn-light border w-100 text-start p-2 rounded-3 text-decoration-none hover-lift">
+              <span class="d-block fw-bold text-danger fs-6">🚨 112</span>
+              <span class="text-muted small" style="font-size:0.75rem;">National Emergency</span>
+            </a>
+          </div>
+          <div class="col-6 col-md-3">
+            <a href="tel:1091" class="btn btn-light border w-100 text-start p-2 rounded-3 text-decoration-none hover-lift">
+              <span class="d-block fw-bold text-danger fs-6">👩 1091</span>
+              <span class="text-muted small" style="font-size:0.75rem;">Women Helpline</span>
+            </a>
+          </div>
+          <div class="col-6 col-md-3">
+            <a href="tel:181" class="btn btn-light border w-100 text-start p-2 rounded-3 text-decoration-none hover-lift">
+              <span class="d-block fw-bold text-primary fs-6">🛡️ 181</span>
+              <span class="text-muted small" style="font-size:0.75rem;">Women in Distress</span>
+            </a>
+          </div>
+          <div class="col-6 col-md-3">
+            <a href="tel:100" class="btn btn-light border w-100 text-start p-2 rounded-3 text-decoration-none hover-lift">
+              <span class="d-block fw-bold text-dark fs-6">🚔 100</span>
+              <span class="text-muted small" style="font-size:0.75rem;">Police Control</span>
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
+
+    <!-- Right Column: Add Contact Form & Rules -->
+    <div class="col-lg-5 col-xl-4">
+      <div class="card border-0 shadow-sm rounded-4 sticky-top" style="top:90px;">
+        <div class="card-header border-0 rounded-top-4 p-3 text-white" style="background: linear-gradient(135deg, var(--maroon, #7A1F2B) 0%, var(--crimson, #C41E3D) 100%) !important;">
+          <div class="d-flex justify-content-between align-items-center">
+            <h6 class="fw-bold mb-0 text-white" style="font-family:'Plus Jakarta Sans',sans-serif;">
+              <i class="bi bi-person-plus-fill me-2"></i>Add to Trusted Circle
+            </h6>
+            <span class="badge rounded-pill fw-bold px-2 py-1" style="background: rgba(255,255,255,0.22); color: #ffffff; backdrop-filter: blur(4px); font-size: 0.72rem; letter-spacing: 0.04em;">UNIVERSAL ADD</span>
+          </div>
+        </div>
+
+        <div class="card-body p-3">
+          <!-- Dual Add Tabs -->
+          <ul class="nav nav-pills nav-fill mb-3" id="addContactTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active small fw-bold py-2" id="phone-tab" data-bs-toggle="pill" data-bs-target="#phoneAddPane" type="button" role="tab">
+                <i class="bi bi-phone me-1"></i>Direct Contact
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link small fw-bold py-2" id="user-tab" data-bs-toggle="pill" data-bs-target="#userAddPane" type="button" role="tab">
+                <i class="bi bi-person-badge me-1"></i>Search User
+              </button>
+            </li>
+          </ul>
+
+          <div class="tab-content" id="addContactTabContent">
+            <!-- Pane 1: Direct Phone Contact -->
+            <div class="tab-pane fade show active" id="phoneAddPane" role="tabpanel">
+              <form method="post" action="{% url 'add_trusted_contact' %}">
+                {% csrf_token %}
+                <input type="hidden" name="add_type" value="phone">
+
+                <div class="mb-3">
+                  <label class="form-label small fw-bold">Full Name <span class="text-danger">*</span></label>
+                  <input type="text" name="name" id="contactNameInput" class="form-control rounded-3" placeholder="e.g. Papa, Sunita Sharma, Priya" required>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small fw-bold">Mobile Phone Number <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0 small fw-semibold">+91</span>
+                    <input type="tel" name="phone" class="form-control rounded-end-3" placeholder="10-digit mobile number" required>
+                  </div>
+                  <small class="text-muted" style="font-size:0.75rem;">Will receive SMS alert &amp; voice calls during SOS.</small>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small fw-bold">Relationship <span class="text-danger">*</span></label>
+                  <select name="relation" class="form-select rounded-3">
+                    <option value="parent">🛡️ Parent / Guardian</option>
+                    <option value="family" selected>👨‍👩‍👧 Family</option>
+                    <option value="sibling">👫 Sister / Brother</option>
+                    <option value="spouse">💍 Spouse / Partner</option>
+                    <option value="friend">🤝 Friend / Roommate</option>
+                    <option value="colleague">💼 Colleague / Work</option>
+                    <option value="neighbor">🏠 Local Neighbor</option>
+                    <option value="other">👤 Other</option>
+                  </select>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small fw-bold">Email Address <span class="text-muted fw-normal">(Optional)</span></label>
+                  <input type="email" name="email" class="form-control rounded-3" placeholder="guardian@domain.com">
+                </div>
+
+                <div class="form-check p-3 rounded-3 bg-light border mb-3">
+                  <input class="form-check-input ms-0 me-2" type="checkbox" name="is_primary" id="isPrimaryCheckPhone" {% if not primary_contact %}checked{% endif %}>
+                  <label class="form-check-label small fw-bold text-dark" for="isPrimaryCheckPhone">
+                    ⭐ Designate as Primary Emergency Guardian
+                  </label>
+                  <small class="text-muted d-block mt-1" style="font-size:0.73rem;">
+                    First person to receive automated voice call and instant priority SMS.
+                  </small>
+                </div>
+
+                <div class="d-grid">
+                  <button type="submit" class="btn btn-trusted-submit py-2 rounded-3 shadow-sm">
+                    <i class="bi bi-shield-plus me-1"></i>Add Emergency Contact
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <!-- Pane 2: Registered Platform User -->
+            <div class="tab-pane fade" id="userAddPane" role="tabpanel">
+              <form method="post" action="{% url 'add_trusted_contact' %}">
+                {% csrf_token %}
+                <input type="hidden" name="add_type" value="user">
+
+                <div class="mb-3">
+                  <label class="form-label small fw-bold">Select Shield User <span class="text-danger">*</span></label>
+                  <select name="contact_id" class="form-select rounded-3" required id="userContactSelect">
+                    <option value="">Choose registered user...</option>
+                    {% for u in all_users %}
+                    <option value="{{ u.id }}">{{ u.full_name|default:u.username }}{% if u.username %} (@{{ u.username|cut:"@" }}){% endif %}</option>
+                    {% endfor %}
+                  </select>
+                  <small class="text-muted" style="font-size:0.75rem;">Connects to their Women Safety Shield app account.</small>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small fw-bold">Relationship <span class="text-danger">*</span></label>
+                  <select name="relation" class="form-select rounded-3">
+                    <option value="family">👨‍👩‍👧 Family</option>
+                    <option value="parent">🛡️ Parent / Guardian</option>
+                    <option value="sibling">👫 Sister / Brother</option>
+                    <option value="spouse">💍 Spouse / Partner</option>
+                    <option value="friend" selected>🤝 Friend</option>
+                    <option value="colleague">💼 Colleague</option>
+                    <option value="neighbor">🏠 Neighbor</option>
+                    <option value="other">👤 Other</option>
+                  </select>
+                </div>
+
+                <div class="form-check p-3 rounded-3 bg-light border mb-3">
+                  <input class="form-check-input ms-0 me-2" type="checkbox" name="is_primary" id="isPrimaryCheckUser">
+                  <label class="form-check-label small fw-bold text-dark" for="isPrimaryCheckUser">
+                    ⭐ Designate as Primary Emergency Guardian
+                  </label>
+                  <small class="text-muted d-block mt-1" style="font-size:0.73rem;">
+                    First person to receive automated voice call and priority notification.
+                  </small>
+                </div>
+
+                <div class="d-grid">
+                  <button type="submit" class="btn btn-trusted-submit py-2 rounded-3 shadow-sm">
+                    <i class="bi bi-person-check-fill me-1"></i>Connect Platform User
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Safety Circle Protocol Information -->
+        <div class="p-3 border-top bg-light rounded-bottom-4">
+          <h6 class="fw-bold small mb-2 text-dark">
+            <i class="bi bi-shield-check text-success me-1"></i>How Circle Alerts Work During SOS
+          </h6>
+          <ul class="text-muted small ps-3 mb-0" style="font-size:0.78rem; line-height: 1.5;">
+            <li class="mb-1"><strong>Instant Parallel SMS:</strong> Dispatched immediately to all contact mobile phones with exact GPS map link.</li>
+            <li class="mb-1"><strong>Automated Voice Escalation:</strong> Calls Primary Guardian if alert is unacknowledged within 30 seconds.</li>
+            <li class="mb-1"><strong>Live Map Radar:</strong> Circle members can see your moving GPS path in real time.</li>
+            <li><strong>Safe Arrival Confirmation:</strong> Use the "I Reached Safely" button to reassure your circle with one tap.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
 </div>
+
+<!-- MODAL 1: Safe Check-in ("I Reached Safely") -->
+<div class="modal fade" id="safeCheckinModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 border-0 shadow">
+      <div class="modal-header border-bottom py-3" style="background:var(--cream);">
+        <h6 class="modal-title fw-bold" style="color:var(--maroon);font-family:'Plus Jakarta Sans',sans-serif;">
+          <i class="bi bi-geo-alt-fill text-danger me-2"></i>Send "I Reached Safely" Check-in
+        </h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form method="post" action="{% url 'send_safe_checkin' %}">
+        {% csrf_token %}
+        <div class="modal-body p-4">
+          <p class="text-muted small mb-3">
+            Broadcast an instant reassuring update to all {{ contact_count }} contacts in your trusted circle.
+          </p>
+
+          <label class="form-label small fw-bold">Choose or customize arrival message</label>
+          <div class="d-flex flex-wrap gap-2 mb-3">
+            <button type="button" class="btn btn-outline-secondary btn-sm quick-msg-btn rounded-pill" onclick="document.getElementById('checkinMsgInput').value='Reached home safely. All is well!';">
+              🏠 Reached Home Safely
+            </button>
+            <button type="button" class="btn btn-outline-secondary btn-sm quick-msg-btn rounded-pill" onclick="document.getElementById('checkinMsgInput').value='Reached college / hostel room safely!';">
+              🎓 Reached Hostel / Campus
+            </button>
+            <button type="button" class="btn btn-outline-secondary btn-sm quick-msg-btn rounded-pill" onclick="document.getElementById('checkinMsgInput').value='Safely reached office/work.';">
+              💼 Reached Office
+            </button>
+            <button type="button" class="btn btn-outline-secondary btn-sm quick-msg-btn rounded-pill" onclick="document.getElementById('checkinMsgInput').value='Boarded metro/cab safely. On my way!';">
+              🚕 Boarded Transit Safely
+            </button>
+          </div>
+
+          <textarea name="message" id="checkinMsgInput" class="form-control rounded-3 mb-3" rows="3" placeholder="I have reached my destination safely. All is well!"></textarea>
+
+          <div class="alert alert-info py-2 px-3 small border-0 rounded-3 mb-0">
+            <i class="bi bi-info-circle-fill me-1"></i>Will be dispatched via in-app notifications and simulated SMS to your trusted network.
+          </div>
+        </div>
+        <div class="modal-footer border-top py-2 bg-light rounded-bottom-4">
+          <button type="button" class="btn btn-sm btn-light border px-3" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-sm btn-trusted-submit fw-bold px-3">
+            <i class="bi bi-send-fill me-1"></i>Broadcast Check-in
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL 2: Fake Escape Call Simulator -->
+<div class="modal fade" id="fakeCallModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 border-0 shadow">
+      <div class="modal-header border-bottom py-3" style="background:var(--cream);">
+        <h6 class="modal-title fw-bold" style="color:var(--maroon);font-family:'Plus Jakarta Sans',sans-serif;">
+          <i class="bi bi-telephone-inbound-fill text-danger me-2"></i>Fake Escape Call Trigger
+        </h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4 text-center">
+        <p class="text-muted small mb-3">
+          Simulate an urgent incoming call on your screen to excuse yourself safely from uncomfortable or threatening situations without raising suspicion.
+        </p>
+
+        <div class="mb-3 text-start">
+          <label class="form-label small fw-bold">Select Caller Display</label>
+          <select id="fakeCallerSelect" class="form-select rounded-3">
+            <option value="Dad (Papa)">👨 Dad (Papa)</option>
+            <option value="Mom (Maa)">👩 Mom (Maa)</option>
+            <option value="Police Inspector">👮 Police Control / Inspector</option>
+            <option value="Hostel Warden">🏢 Hostel Warden</option>
+            <option value="Pooja (Emergency)">📞 Pooja (Emergency)</option>
+          </select>
+        </div>
+
+        <div class="mb-4 text-start">
+          <label class="form-label small fw-bold">Trigger Delay</label>
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-outline-danger flex-fill active py-2 rounded-3" onclick="triggerFakeCall(2);">
+              ⚡ In 2 Seconds
+            </button>
+            <button type="button" class="btn btn-outline-secondary flex-fill py-2 rounded-3" onclick="triggerFakeCall(15);">
+              ⏱️ In 15 Seconds
+            </button>
+            <button type="button" class="btn btn-outline-secondary flex-fill py-2 rounded-3" onclick="triggerFakeCall(30);">
+              ⏱️ In 30 Seconds
+            </button>
+          </div>
+        </div>
+
+        <div class="small text-muted">
+          <i class="bi bi-lightbulb-fill text-warning me-1"></i>Tip: Keep your phone volume audible so onlookers can hear it ringing.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FULLSCREEN FAKE CALL OVERLAY -->
+<div id="fakeCallScreen" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:#111111; z-index:999999; color:#ffffff; font-family:'Inter',sans-serif; text-align:center; padding: 60px 20px;">
+  <div style="max-width:380px; margin: 0 auto; display:flex; flex-column; justify-content:space-between; height:100%;">
+    <div>
+      <div class="mb-3" style="width:90px; height:90px; border-radius:50%; background:#2B2320; border:2px solid #555; margin:0 auto; display:flex; align-items:center; justify-content:center; font-size:2.5rem;">
+        <i class="bi bi-person-fill text-light"></i>
+      </div>
+      <h3 id="fakeCallDisplayName" class="fw-bold mb-1" style="font-size:1.8rem;">Dad (Papa)</h3>
+      <p id="fakeCallStatusText" class="text-secondary small mb-2" style="letter-spacing:0.05em;">INCOMING CALL...</p>
+      <div id="fakeCallTimer" class="fw-bold text-success" style="display:none; font-size:1.2rem;">00:01</div>
+    </div>
+
+    <!-- Incoming Buttons -->
+    <div id="fakeCallIncomingControls" class="d-flex justify-content-around align-items-center mb-5">
+      <div onclick="rejectFakeCall();" style="cursor:pointer;">
+        <div style="width:70px; height:70px; border-radius:50%; background:#e74c3c; display:flex; align-items:center; justify-content:center; font-size:1.8rem; margin:0 auto 8px;">
+          <i class="bi bi-telephone-x-fill text-white"></i>
+        </div>
+        <span class="small text-white">Decline</span>
+      </div>
+      <div onclick="acceptFakeCall();" style="cursor:pointer;">
+        <div style="width:70px; height:70px; border-radius:50%; background:#27ae60; display:flex; align-items:center; justify-content:center; font-size:1.8rem; margin:0 auto 8px; animation: pulseCall 1.2s infinite;">
+          <i class="bi bi-telephone-fill text-white"></i>
+        </div>
+        <span class="small text-white">Accept</span>
+      </div>
+    </div>
+
+    <!-- Active Call Buttons -->
+    <div id="fakeCallActiveControls" style="display:none; margin-bottom: 40px;">
+      <div class="row g-3 mb-4 text-center">
+        <div class="col-4"><i class="bi bi-mic-mute fs-3"></i><div class="small text-secondary">Mute</div></div>
+        <div class="col-4"><i class="bi bi-grid-3x3 fs-3"></i><div class="small text-secondary">Keypad</div></div>
+        <div class="col-4"><i class="bi bi-volume-up fs-3 text-warning"></i><div class="small text-secondary">Speaker</div></div>
+      </div>
+      <div onclick="rejectFakeCall();" style="cursor:pointer; display:inline-block;">
+        <div style="width:70px; height:70px; border-radius:50%; background:#e74c3c; display:flex; align-items:center; justify-content:center; font-size:1.8rem; margin:0 auto 8px;">
+          <i class="bi bi-telephone-x-fill text-white"></i>
+        </div>
+        <span class="small text-white">End Call</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+@keyframes pulseCall {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(39, 174, 96, 0.7); }
+  70% { transform: scale(1.08); box-shadow: 0 0 0 16px rgba(39, 174, 96, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(39, 174, 96, 0); }
+}
+.transition-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.transition-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08) !important;
+}
+.hover-lift:hover {
+  background: var(--cream) !important;
+  border-color: var(--crimson) !important;
+  transform: translateY(-2px);
+}
+</style>
+
+<script>
+let fakeCallAudioCtx = null;
+let fakeCallInterval = null;
+let fakeCallTimerInterval = null;
+let fakeCallSeconds = 0;
+
+function triggerFakeCall(delaySeconds) {
+  const modalEl = document.getElementById('fakeCallModal');
+  const modal = bootstrap.Modal.getInstance(modalEl);
+  if (modal) modal.hide();
+
+  const callerName = document.getElementById('fakeCallerSelect').value;
+  document.getElementById('fakeCallDisplayName').innerText = callerName;
+  document.getElementById('fakeCallStatusText').innerText = "INCOMING CALL...";
+  document.getElementById('fakeCallIncomingControls').style.display = 'flex';
+  document.getElementById('fakeCallActiveControls').style.display = 'none';
+  document.getElementById('fakeCallTimer').style.display = 'none';
+
+  setTimeout(() => {
+    document.getElementById('fakeCallScreen').style.display = 'block';
+    startRingtone();
+  }, delaySeconds * 1000);
+}
+
+function startRingtone() {
+  try {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (AudioContext) {
+      fakeCallAudioCtx = new AudioContext();
+      playBeep();
+      fakeCallInterval = setInterval(playBeep, 3000);
+    }
+  } catch (e) {
+    // AudioContext not supported on device
+  }
+}
+
+function playBeep() {
+  if (!fakeCallAudioCtx) return;
+  try {
+    const osc = fakeCallAudioCtx.createOscillator();
+    const gain = fakeCallAudioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(440, fakeCallAudioCtx.currentTime);
+    gain.gain.setValueAtTime(0.2, fakeCallAudioCtx.currentTime);
+    osc.connect(gain);
+    gain.connect(fakeCallAudioCtx.destination);
+    osc.start();
+    osc.stop(fakeCallAudioCtx.currentTime + 1.2);
+  } catch (e) {}
+}
+
+function stopRingtone() {
+  if (fakeCallInterval) {
+    clearInterval(fakeCallInterval);
+    fakeCallInterval = null;
+  }
+  if (fakeCallAudioCtx) {
+    fakeCallAudioCtx.close().catch(()=>{});
+    fakeCallAudioCtx = null;
+  }
+}
+
+function acceptFakeCall() {
+  stopRingtone();
+  document.getElementById('fakeCallIncomingControls').style.display = 'none';
+  document.getElementById('fakeCallActiveControls').style.display = 'block';
+  document.getElementById('fakeCallStatusText').innerText = "CONNECTED";
+  document.getElementById('fakeCallTimer').style.display = 'block';
+  fakeCallSeconds = 0;
+  fakeCallTimerInterval = setInterval(() => {
+    fakeCallSeconds++;
+    const mins = String(Math.floor(fakeCallSeconds / 60)).padStart(2, '0');
+    const secs = String(fakeCallSeconds % 60).padStart(2, '0');
+    document.getElementById('fakeCallTimer').innerText = `${mins}:${secs}`;
+  }, 1000);
+}
+
+function rejectFakeCall() {
+  stopRingtone();
+  if (fakeCallTimerInterval) {
+    clearInterval(fakeCallTimerInterval);
+    fakeCallTimerInterval = null;
+  }
+  document.getElementById('fakeCallScreen').style.display = 'none';
+}
+</script>
+
 {% endblock %}

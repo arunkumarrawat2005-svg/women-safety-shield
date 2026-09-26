@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+{% block title %}Organizations Governance - Admin Control Panel{% endblock %}
+
+{% block content %}
+<div class="container-fluid my-4 px-3 px-md-4">
+
+  <!-- Header -->
+  <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+      <div>
+        <div class="d-flex align-items-center gap-2 mb-1">
+          <a href="{% url 'admin_dashboard' %}" class="btn btn-xs btn-outline-secondary py-0 px-2">&larr; Dashboard</a>
+          <span class="badge bg-danger">GOVERNANCE</span>
+        </div>
+        <h3 class="fw-bold mb-1" style="color:var(--maroon);">
+          🏢 Organization Safety Network Management
+        </h3>
+        <p class="text-muted small mb-0">Review, verify, and monitor institutional partners (Colleges, Hospitals, Tech Parks, NGOs)</p>
+      </div>
+      <div class="d-flex gap-2">
+        <a href="{% url 'org_list' %}" class="btn btn-outline-secondary btn-sm fw-semibold" target="_blank">
+          <i class="bi bi-box-arrow-up-right me-1"></i>Public Directory
+        </a>
+        <a href="{% url 'org_register' %}" class="btn btn-danger btn-sm fw-bold">
+          <i class="bi bi-building-add me-1"></i>Register Organization
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stat Cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <div class="text-muted small fw-bold text-uppercase">TOTAL ORGANIZATIONS</div>
+            <div class="fs-2 fw-bold text-dark">{{ total_orgs }}</div>
+          </div>
+          <i class="bi bi-building fs-2 text-muted"></i>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <div class="text-muted small fw-bold text-uppercase">VERIFIED PARTNERS</div>
+            <div class="fs-2 fw-bold text-success">{{ verified_orgs }}</div>
+          </div>
+          <i class="bi bi-patch-check-fill fs-2 text-success"></i>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <div class="text-muted small fw-bold text-uppercase">PENDING REVIEW</div>
+            <div class="fs-2 fw-bold text-warning">{{ pending_orgs }}</div>
+          </div>
+          <i class="bi bi-hourglass-split fs-2 text-warning"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters & Search -->
+  <div class="card border-0 shadow-sm rounded-4 p-3 mb-4 bg-white">
+    <form method="GET" action="{% url 'admin_organizations' %}" class="row g-2 align-items-center">
+      <div class="col-md-5">
+        <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Search organization, address, city, hotline...">
+      </div>
+      <div class="col-md-3">
+        <select name="type" class="form-select">
+          <option value="all" {% if type_filter == 'all' %}selected{% endif %}>All Types</option>
+          <option value="college" {% if type_filter == 'college' %}selected{% endif %}>Colleges & Campuses</option>
+          <option value="company" {% if type_filter == 'company' %}selected{% endif %}>Companies & Tech Parks</option>
+          <option value="hospital" {% if type_filter == 'hospital' %}selected{% endif %}>Hospitals & Medical</option>
+          <option value="ngo" {% if type_filter == 'ngo' %}selected{% endif %}>NGOs & Shelters</option>
+          <option value="government" {% if type_filter == 'government' %}selected{% endif %}>Government</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <select name="status" class="form-select">
+          <option value="all" {% if status_filter == 'all' %}selected{% endif %}>All Status</option>
+          <option value="verified" {% if status_filter == 'verified' %}selected{% endif %}>Verified</option>
+          <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-danger w-100 fw-bold">Filter</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Organizations Table -->
+  <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Organization Name</th>
+            <th>Type</th>
+            <th>Location</th>
+            <th>24/7 Hotline</th>
+            <th>Responders</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for org in organizations %}
+          <tr>
+            <td>
+              <div class="fw-bold text-dark">{{ org.name }}</div>
+              <small class="text-muted">Registered by {{ org.user.username }} ({{ org.user.email }})</small>
+            </td>
+            <td>
+              <span class="badge {{ org.get_badge_class }}">
+                <i class="bi {{ org.get_icon }} me-1"></i>{{ org.get_org_type_display }}
+              </span>
+            </td>
+            <td>
+              <div>{{ org.city|default:"Campus" }}</div>
+              <small class="text-muted text-truncate d-inline-block" style="max-width:180px;">{{ org.address }}</small>
+            </td>
+            <td>
+              <span class="font-monospace fw-bold text-danger">{{ org.hotline_display }}</span>
+            </td>
+            <td>
+              <span class="badge bg-light text-dark border">
+                <i class="bi bi-people me-1"></i>{{ org.volunteers.count }}
+              </span>
+            </td>
+            <td>
+              {% if org.is_verified %}
+              <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Verified</span>
+              {% else %}
+              <span class="badge bg-warning text-dark"><i class="bi bi-hourglass me-1"></i>Pending</span>
+              {% endif %}
+            </td>
+            <td>
+              <div class="d-flex gap-1 flex-wrap">
+                {% if not org.is_verified %}
+                <a href="{% url 'admin_verify_organization' org.id %}" class="btn btn-xs btn-success py-1 px-2" style="font-size:0.75rem;" onclick="return confirm('Accredit this organization?')">
+                  Verify
+                </a>
+                {% else %}
+                <a href="{% url 'admin_revoke_organization' org.id %}" class="btn btn-xs btn-outline-warning py-1 px-2" style="font-size:0.75rem;" onclick="return confirm('Revoke verification for this organization?')">
+                  Revoke
+                </a>
+                {% endif %}
+                <a href="{% url 'org_detail' org.id %}" target="_blank" class="btn btn-xs btn-outline-secondary py-1 px-2" style="font-size:0.75rem;">
+                  View
+                </a>
+                <a href="{% url 'admin_delete_organization' org.id %}" class="btn btn-xs btn-outline-danger py-1 px-2" style="font-size:0.75rem;" onclick="return confirm('Permanently delete this organization?')">
+                  Delete
+                </a>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="7" class="text-center py-5 text-muted">
+              No organizations found matching criteria.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

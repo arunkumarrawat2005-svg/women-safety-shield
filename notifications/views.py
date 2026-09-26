@@ -33,14 +33,13 @@ def notification_count(request):
 
 @login_required
 def save_token(request):
-
-    data=json.loads(request.body)
-
-    request.user.fcm_token=data["token"]
-
-    request.user.save()
-
-
-    return JsonResponse({
-        "status":"saved"
-    })
+    try:
+        data = json.loads(request.body.decode('utf-8') or '{}')
+        token = data.get("token")
+        if token:
+            request.user.fcm_token = token
+            request.user.save(update_fields=['fcm_token'])
+            return JsonResponse({"status": "saved"})
+        return JsonResponse({"status": "error", "message": "token missing"}, status=400)
+    except Exception as e:
+        return JsonResponse({"status": "error", "message": str(e)}, status=400)

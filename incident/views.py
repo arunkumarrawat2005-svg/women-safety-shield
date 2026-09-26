@@ -23,11 +23,15 @@ def incident_report(request, emergency_id):
     except IncidentReport.DoesNotExist:
         report = None
 
+    from incident_records.services import IncidentRecordService
+    masked_responder = IncidentRecordService.get_masked_responder_info(emergency, request.user)
+
     return render(request, 'incident/report.html', {
         'emergency': emergency,
         'events': events,
         'locations': locations,
         'report': report,
+        'masked_responder': masked_responder,
     })
 
 

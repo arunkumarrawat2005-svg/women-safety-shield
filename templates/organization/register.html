@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Register Organization - Women Safety Shield{% endblock %}
+
+{% block extra_css %}
+<style>
+  .register-card {
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 10px 30px rgba(122, 31, 43, 0.06);
+  }
+  .section-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--crimson);
+    margin-bottom: 0.75rem;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 0.35rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-5" style="max-width:860px;">
+
+  <div class="text-center mb-4">
+    <span class="badge bg-danger text-white px-3 py-1 mb-2"><i class="bi bi-building-add me-1"></i>PARTNER ONBOARDING</span>
+    <h2 class="fw-bold" style="color:var(--maroon);">Register Your Organization</h2>
+    <p class="text-muted" style="max-width:600px;margin:0 auto;">
+      Partner educational institutions, tech parks, hospitals, hostels, and NGOs: Join the Women Safety Shield Network to protect your campus and coordinate rapid response.
+    </p>
+  </div>
+
+  <div class="register-card">
+    <form method="POST" action="{% url 'org_register' %}">
+      {% csrf_token %}
+
+      {% if not user.is_authenticated %}
+      <!-- Section 1: User Account Details -->
+      <div class="section-label">1. Primary Contact &amp; Security Administrator Account</div>
+      <div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <label class="form-label fw-bold small">First Name *</label>
+          {{ form.first_name }}
+          {% if form.first_name.errors %}<div class="text-danger small">{{ form.first_name.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-bold small">Last Name *</label>
+          {{ form.last_name }}
+          {% if form.last_name.errors %}<div class="text-danger small">{{ form.last_name.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="col-md-12">
+          <label class="form-label fw-bold small">Username *</label>
+          {{ form.username }}
+          {% if form.username.errors %}<div class="text-danger small">{{ form.username.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-bold small">Password *</label>
+          {{ form.password }}
+          {% if form.password.errors %}<div class="text-danger small">{{ form.password.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-bold small">Confirm Password *</label>
+          {{ form.password_confirm }}
+          {% if form.password_confirm.errors %}<div class="text-danger small">{{ form.password_confirm.errors.0 }}</div>{% endif %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Section 2: Organization Profile -->
+      <div class="section-label">{% if not user.is_authenticated %}2.{% else %}1.{% endif %} Organization &amp; Campus Information</div>
+      <div class="row g-3 mb-4">
+        <div class="col-md-8">
+          <label class="form-label fw-bold small">Organization / Campus Name *</label>
+          {{ form.name }}
+          {% if form.name.errors %}<div class="text-danger small">{{ form.name.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-bold small">Category *</label>
+          {{ form.org_type }}
+          {% if form.org_type.errors %}<div class="text-danger small">{{ form.org_type.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="col-md-12">
+          <label class="form-label fw-bold small">Campus / Facility Address *</label>
+          {{ form.address }}
+          {% if form.address.errors %}<div class="text-danger small">{{ form.address.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-bold small">City</label>
+          {{ form.city }}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-bold small">State</label>
+          {{ form.state }}
+        </div>
+      </div>
+
+      <!-- Section 3: Geolocation -->
+      <div class="section-label">{% if not user.is_authenticated %}3.{% else %}2.{% endif %} Campus Geolocation Coordinates (For Radius Dispatch &amp; Radar Map)</div>
+      <div class="row g-3 mb-4">
+        <div class="col-md-5">
+          <label class="form-label fw-bold small">Latitude</label>
+          {{ form.latitude }}
+        </div>
+        <div class="col-md-5">
+          <label class="form-label fw-bold small">Longitude</label>
+          {{ form.longitude }}
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+          <button type="button" class="btn btn-outline-secondary w-100" onclick="detectGPS()">
+            <i class="bi bi-crosshair"></i> GPS
+          </button>
+        </div>
+        <div class="col-12">
+          <small class="text-muted"><i class="bi bi-info-circle me-1"></i>Tip: Click 'GPS' to auto-detect your current campus coordinates, or enter latitude and longitude from Google Maps.</small>
+        </div>
+      </div>
+
+      <!-- Section 4: Security Contacts & Facilities -->
+      <div class="section-label">{% if not user.is_authenticated %}4.{% else %}3.{% endif %} 24/7 Security Desk &amp; Safety Facilities</div>
+      <div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <label class="form-label fw-bold small">24/7 Security Desk Hotline *</label>
+          {{ form.emergency_helpline }}
+          <small class="text-muted">Direct phone line for campus control room</small>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-bold small">Official Contact Email *</label>
+          {{ form.contact_email }}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-bold small">Official Contact Phone *</label>
+          {{ form.contact_phone }}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-bold small">Operating Hours</label>
+          {{ form.operating_hours }}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-bold small">Active Security Guard Count</label>
+          {{ form.security_guards_count }}
+        </div>
+
+        <div class="col-12 mt-3">
+          <div class="p-3 bg-light rounded-3 border">
+            <div class="fw-bold small mb-2 text-dark">Safety Amenities Offered on Campus:</div>
+            <div class="form-check form-switch mb-2">
+              {{ form.has_safe_haven }}
+              <label class="form-check-label fw-semibold" for="{{ form.has_safe_haven.id_for_label }}">
+                Designated Safe Haven Shelter (Provides a secure room/shelter for women in distress)
+              </label>
+            </div>
+            <div class="form-check form-switch">
+              {{ form.cctv_monitored }}
+              <label class="form-check-label fw-semibold" for="{{ form.cctv_monitored.id_for_label }}">
+                24/7 CCTV Camera Perimeter Monitoring
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <label class="form-label fw-bold small">Safety Measures &amp; Protocol Description</label>
+          {{ form.description }}
+        </div>
+      </div>
+
+      <div class="d-grid gap-2 pt-2">
+        <button type="submit" class="btn btn-danger btn-lg fw-bold shadow-sm">
+          <i class="bi bi-shield-check me-2"></i>Register &amp; Launch Campus Operations
+        </button>
+      </div>
+    </form>
+  </div>
+
+</div>
+
+<script>
+  function detectGPS() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          document.getElementById('id_latitude').value = pos.coords.latitude.toFixed(6);
+          document.getElementById('id_longitude').value = pos.coords.longitude.toFixed(6);
+        },
+        err => {
+          alert('Could not retrieve GPS location: ' + err.message);
+        }
+      );
+    } else {
+      alert('Geolocation is not supported by your browser.');
+    }
+  }
+</script>
+{% endblock %}

@@ -73,11 +73,33 @@
                         {% if emergency.address %}
                         <tr><td class="text-muted fw-600">Address</td><td>{{ emergency.address }}</td></tr>
                         {% endif %}
-                        {% if emergency.assigned_guardian %}
-                        <tr><td class="text-muted fw-600">Guardian</td><td class="text-success fw-600">{{ emergency.assigned_guardian.full_name }}</td></tr>
-                        <tr><td class="text-muted fw-600">Guardian Phone</td><td>{{ emergency.assigned_guardian.phone|default:"—" }}</td></tr>
+                        {% if masked_responder %}
+                        <tr>
+                            <td class="text-muted fw-600">Dispatched Responder</td>
+                            <td>
+                                {% if masked_responder.is_masked %}
+                                <span class="badge bg-dark me-1"><i class="bi bi-shield-lock-fill me-1"></i>{{ masked_responder.name }}</span>
+                                <small class="text-muted d-block">Identity Protected (Dispatch Record #IR-{{ masked_responder.record.id }})</small>
+                                {% else %}
+                                <strong class="text-success">{{ masked_responder.name }}</strong>
+                                <span class="badge bg-success small">Consented Reveal</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted fw-600">Responder Contact</td>
+                            <td>
+                                {% if masked_responder.is_masked %}
+                                <code>{{ masked_responder.phone }}</code> <small class="text-muted">(Virtual Relay)</small>
+                                {% else %}
+                                <span>{{ masked_responder.phone|default:"—" }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% elif emergency.assigned_guardian %}
+                        <tr><td class="text-muted fw-600">Responder</td><td>Verified Responder</td></tr>
                         {% else %}
-                        <tr><td class="text-muted fw-600">Guardian</td><td class="text-muted">No guardian assigned</td></tr>
+                        <tr><td class="text-muted fw-600">Responder</td><td class="text-muted">No responder assigned</td></tr>
                         {% endif %}
                         <tr><td class="text-muted fw-600">Location Points</td><td>{{ locations.count }} tracked</td></tr>
                     </table>

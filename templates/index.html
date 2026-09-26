@@ -1,0 +1,1670 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Women Safety Shield — Help finds you, from every direction.</title>
+<!-- PWA & Mobile Web App Meta -->
+<link rel="manifest" href="{% url 'manifest_json' %}">
+<meta name="theme-color" content="#7A1F2B">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<!-- Bootstrap 5 & Icons -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<!-- Fonts: Plus Jakarta Sans & Inter -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<!-- Custom Styles -->
+<link href="{% static 'css/main.css' %}?v=4.0" rel="stylesheet">
+</head>
+<body>
+
+<!-- 1. NAVBAR (WITH TAGLINE & CLEAN 5 LINKS, NO DASHBOARD NAV LINK) -->
+<nav class="navbar navbar-expand-lg sticky-top" id="mainNav">
+  <div class="container">
+    <a class="navbar-brand d-flex flex-column align-items-start justify-content-center" href="{% url 'home' %}">
+      <span class="brand-title">
+        <i class="bi bi-shield-fill-check"></i> Women Safety Shield
+      </span>
+      <span class="brand-tagline">Help finds you, from every direction.</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu" aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
+        <!-- 1. Home -->
+        <li class="nav-item">
+          <a class="nav-link fw-semibold" style="color:var(--crimson) !important;" href="{% url 'home' %}">
+            <i class="bi bi-house-door me-1"></i>Home
+          </a>
+        </li>
+
+        <!-- 2. AI Safe Routes & Map -->
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'safe_routes_compare' %}">
+            <i class="bi bi-signpost-split me-1"></i>AI Safe Routes &amp; Map
+          </a>
+        </li>
+
+        <!-- 3. Local Resident -->
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'resident_list' %}">
+            <i class="bi bi-people me-1"></i>Local Resident
+          </a>
+        </li>
+
+        <!-- 4. Trusted Contacts -->
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'trusted_contacts' %}">
+            <i class="bi bi-person-heart me-1"></i>Trusted Contacts
+          </a>
+        </li>
+
+        {% if user.is_staff or user.is_superuser %}
+        <!-- 5. Admin -->
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'admin_dashboard' %}">
+            <i class="bi bi-shield-lock me-1"></i>Admin
+          </a>
+        </li>
+        {% endif %}
+
+        {% if user.is_authenticated %}
+        <!-- Notification Bell -->
+        <li class="nav-item me-1">
+          <a class="nav-link position-relative px-2" href="{% url 'notifications' %}">
+            <i class="bi bi-bell fs-5"></i>
+            <span class="notification-badge" id="notifCount" style="display:none"></span>
+          </a>
+        </li>
+
+        <!-- User Dropdown -->
+        <li class="nav-item dropdown ms-lg-1 me-lg-2">
+          <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" data-bs-toggle="dropdown">
+            <div class="avatar-circle-sm me-1">{{ user.first_name|first|default:user.username|first }}</div>
+            <span class="d-none d-md-inline small fw-semibold">{{ user.full_name|default:user.username }}</span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="border:1px solid var(--line);border-radius:12px;">
+            <li><a class="dropdown-item py-2" href="{% url 'profile' %}"><i class="bi bi-person me-2"></i>My Profile</a></li>
+            <li><a class="dropdown-item py-2" href="{% url 'emergency_list' %}"><i class="bi bi-clock-history me-2"></i>My Emergencies</a></li>
+            <li><a class="dropdown-item py-2" href="{% url 'trusted_contacts' %}"><i class="bi bi-people me-2"></i>Trusted Circle</a></li>
+            {% if user.role == 'local_resident' or user.role == 'guardian' %}
+            <li><a class="dropdown-item py-2" href="{% url 'resident_profile' %}"><i class="bi bi-shield-check me-2"></i>Resident Profile</a></li>
+            {% endif %}
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item py-2 text-danger fw-bold" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+          </ul>
+        </li>
+
+        <!-- SOS Active Button -->
+        <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+          <a class="btn-nav-sos" href="javascript:void(0)" onclick="openSosModal('nav')">
+            <i class="bi bi-broadcast"></i> SOS Active
+          </a>
+        </li>
+        {% else %}
+        <!-- Unauthenticated links -->
+        <li class="nav-item">
+          <a class="nav-link fw-semibold" href="{% url 'login' %}">
+            <i class="bi bi-box-arrow-in-right me-1"></i>Log in
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link fw-semibold" href="{% url 'register' %}">
+            <i class="bi bi-person-plus me-1"></i>Register
+          </a>
+        </li>
+        <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+          <a class="btn-nav-sos" href="javascript:void(0)" onclick="openSosModal('nav')">
+            <i class="bi bi-broadcast"></i> SOS Active
+          </a>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- 2. EXACT HERO UI (MATCHES IMAGE 1 media_1789713066591.png) -->
+<header class="hero-exact">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      
+      <!-- LEFT: EYEBROW + HEADLINE + DESCRIPTION + CTAS + TRUST ROW -->
+      <div class="col-lg-7">
+        <div class="hero-eyebrow">Community-powered safety, built for real emergencies</div>
+        <h1>Help finds you, from every direction.</h1>
+        <p class="lead">One alert reaches verified people nearby, trained responders at local institutions, and the police — all at once. No single point of failure, when it matters most.</p>
+        <div class="hero-ctas">
+          <button type="button" class="btn-hero-primary" onclick="openAppModal()">
+            Download for Android
+          </button>
+          <!-- Exact button from Image 1: See how it works with play circle icon -->
+          <button type="button" class="btn-hero-outline" onclick="toggleHowItWorks(true)">
+            See how it works <i class="bi bi-play-circle ms-1"></i>
+          </button>
+        </div>
+        <div class="hero-trust-row">
+          <span><i class="bi bi-patch-check-fill"></i> Aadhaar-verified responders</span>
+          <span><i class="bi bi-geo-alt-fill"></i> Live location sharing</span>
+          <span><i class="bi bi-telephone-fill"></i> Police alerted automatically (112 ERSS)</span>
+        </div>
+      </div>
+
+      <!-- RIGHT: FLOATING WHITE CARD WITH GLOWING SOS DIAL -->
+      <div class="col-lg-5">
+        <div class="sos-panel-card" id="sos">
+          <!-- The Glowing Pulse SOS Dial Button -->
+          <div class="sos-dial-btn" id="heroSosDial" role="button" tabindex="0" aria-label="Trigger SOS alert" onclick="openSosModal('hero_dial')">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span class="sos-label">SEND SOS</span>
+          </div>
+
+          <p class="sos-subtext">Press, say "help", or shake your phone</p>
+
+          <div class="sos-mode-selector">
+            <span class="sos-mode-box selected" id="modeBtn" onclick="selectMode('button')">
+              <i class="bi bi-hand-index-thumb"></i>
+              <span>Button</span>
+            </span>
+            <span class="sos-mode-box" id="modeVoice" onclick="selectMode('voice')">
+              <i class="bi bi-mic-fill"></i>
+              <span>Voice</span>
+            </span>
+            <span class="sos-mode-box" id="modeShake" onclick="selectMode('shake')">
+              <i class="bi bi-phone-vibrate"></i>
+              <span>Shake</span>
+            </span>
+          </div>
+
+          <div class="gps-status-badge">
+            <i class="bi bi-geo-alt-fill"></i>
+            <span id="locDisplay">GPS Ready (28.4703, 77.4939)</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</header>
+
+<!-- 3. LIVE SAFETY COMMAND STATION (ORGANIZED DEDICATED SECTION) -->
+<section class="command-station-section" id="command-station">
+  <div class="container">
+
+    {% if active_emergencies and active_emergencies > 0 %}
+    <!-- Active Emergency In Progress Banner -->
+    <div class="alert mb-4 border-0 shadow-sm rounded-4 p-3 d-flex align-items-center justify-content-between flex-wrap gap-2 text-white" style="background:var(--crimson);border-left:6px solid var(--gold)!important;">
+      <div class="d-flex align-items-center gap-3">
+        <span class="spinner-grow spinner-grow-sm text-warning" role="status"></span>
+        <div>
+          <strong class="d-block fs-6">⚠️ Active Emergency Dispatch In Progress!</strong>
+          <small>You have {{ active_emergencies }} unresolved SOS broadcast actively tracked by responders.</small>
+        </div>
+      </div>
+      <a href="{% url 'emergency_list' %}" class="btn btn-warning btn-sm px-3 fw-bold rounded-pill text-dark">
+        <i class="bi bi-geo-alt-fill me-1"></i>View Live Dispatch →
+      </a>
+    </div>
+    {% endif %}
+
+    <!-- Status Ribbon & Greeting -->
+    <div class="station-title-box d-flex justify-content-between align-items-center flex-wrap gap-3 p-3 bg-white rounded-4 border shadow-sm">
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <span class="status-pulse-dot"></span>
+        <strong style="color:var(--maroon);font-size:1.02rem;">Shield Protection Active</strong>
+        <span class="text-muted">|</span>
+        {% if user.is_authenticated %}
+        <span>Welcome, <strong class="text-danger">{{ user.full_name|default:user.username }}</strong></span>
+        <span class="badge bg-danger-subtle text-danger rounded-pill">{{ user.get_role_display|default:'User' }}</span>
+        {% else %}
+        <span>Community Safety Radar &bull; Public Mode</span>
+        {% endif %}
+      </div>
+
+      <div class="d-flex align-items-center gap-3 small">
+        <span class="text-muted d-none d-sm-inline">
+          <i class="bi bi-geo-alt-fill text-danger me-1"></i><span id="ribbonLoc">28.4703, 77.4939</span>
+        </span>
+        <button type="button" class="btn btn-outline-secondary btn-sm py-1 px-2" onclick="syncUserLocation()">
+          <i class="bi bi-arrow-repeat me-1"></i>Sync GPS
+        </button>
+        {% if user.is_staff %}
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-danger btn-sm py-1 px-2 fw-semibold">
+          <i class="bi bi-shield-lock me-1"></i>Admin Command
+        </a>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- 4 Core Stat Cards -->
+    <div class="row g-3 mb-4">
+      <!-- Stat 1: Active SOS -->
+      <div class="col-6 col-md-3">
+        <div class="dash-stat-card">
+          <div>
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <span class="small fw-bold text-muted text-uppercase" style="font-size:0.75rem;">Active SOS</span>
+              <i class="bi bi-exclamation-circle-fill text-danger fs-5"></i>
+            </div>
+            <div class="stat-val text-danger">{{ active_emergencies|default:0 }}</div>
+            <div class="small text-muted">Current alerts</div>
+          </div>
+          <div class="mt-3 pt-2 border-top">
+            <a href="{% url 'emergency_list' %}" class="small text-danger fw-semibold text-decoration-none">
+              View Alerts &rarr;
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stat 2: Trusted Contacts -->
+      <div class="col-6 col-md-3">
+        <div class="dash-stat-card">
+          <div>
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <span class="small fw-bold text-muted text-uppercase" style="font-size:0.75rem;">Trusted Circle</span>
+              <i class="bi bi-people-fill text-success fs-5"></i>
+            </div>
+            <div class="stat-val text-success">{{ trusted_contacts|default:0 }}</div>
+            <div class="small text-muted">Emergency contacts</div>
+          </div>
+          <div class="mt-3 pt-2 border-top">
+            <a href="{% url 'trusted_contacts' %}" class="small text-success fw-semibold text-decoration-none">
+              Manage Circle &rarr;
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stat 3: Resident Radius -->
+      <div class="col-6 col-md-3">
+        <div class="dash-stat-card">
+          <div>
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <span class="small fw-bold text-muted text-uppercase" style="font-size:0.75rem;">Resident Radius</span>
+              <i class="bi bi-broadcast-pin fs-5" style="color:var(--maroon);"></i>
+            </div>
+            <div class="stat-val" style="color:var(--maroon);">3 KM</div>
+            <div class="small text-muted">Local citizen scan</div>
+          </div>
+          <div class="mt-3 pt-2 border-top">
+            <a href="{% url 'resident_list' %}" class="small fw-semibold text-decoration-none" style="color:var(--maroon);">
+              Find Citizens &rarr;
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stat 4: Protection Status -->
+      <div class="col-6 col-md-3">
+        <div class="dash-stat-card">
+          <div>
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <span class="small fw-bold text-muted text-uppercase" style="font-size:0.75rem;">Protection</span>
+              <i class="bi bi-shield-check text-warning fs-5"></i>
+            </div>
+            <div class="stat-val text-dark">24/7</div>
+            <div class="small text-muted">Police 112 + Campus</div>
+          </div>
+          <div class="mt-3 pt-2 border-top">
+            <a href="{% url 'safe_routes_compare' %}" class="small text-muted fw-semibold text-decoration-none">
+              Safe Routes &rarr;
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions Console (4 Responsive Columns) -->
+    <div class="row g-3 mb-4">
+      <div class="col-sm-6 col-lg-3">
+        <a href="{% url 'safe_routes_compare' %}" class="action-feature-card">
+          <div>
+            <strong class="d-block text-dark"><i class="bi bi-signpost-split-fill text-warning me-1"></i>Safe Routes</strong>
+            <small class="text-muted" style="font-size:0.78rem;">Illumination &amp; safety scores</small>
+          </div>
+          <i class="bi bi-chevron-right text-muted"></i>
+        </a>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <a href="{% url 'trusted_contacts' %}" class="action-feature-card">
+          <div>
+            <strong class="d-block text-dark"><i class="bi bi-person-heart text-success me-1"></i>Trusted Circle</strong>
+            <small class="text-muted" style="font-size:0.78rem;">SMS &amp; push recipients</small>
+          </div>
+          <i class="bi bi-chevron-right text-muted"></i>
+        </a>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <a href="{% url 'resident_list' %}" class="action-feature-card">
+          <div>
+            <strong class="d-block text-dark"><i class="bi bi-people-fill text-primary me-1"></i>Find Citizens</strong>
+            <small class="text-muted" style="font-size:0.78rem;">Verified neighbors nearby</small>
+          </div>
+          <i class="bi bi-chevron-right text-muted"></i>
+        </a>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <a href="{% url 'incident_list' %}" class="action-feature-card">
+          <div>
+            <strong class="d-block text-dark"><i class="bi bi-file-earmark-text-fill text-secondary me-1"></i>Incident Records</strong>
+            <small class="text-muted" style="font-size:0.78rem;">Tamper-proof logs</small>
+          </div>
+          <i class="bi bi-chevron-right text-muted"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Resident Responder Console (If user has resident profile) -->
+    {% if resident %}
+    <div class="card p-3 mb-4 border-0 shadow-sm rounded-4 bg-white" style="border:1px solid var(--line)!important;">
+      <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-shield-fill-check text-success fs-5"></i>
+          <h6 class="mb-0 fw-bold">Resident Responder Status</h6>
+        </div>
+        <span class="badge {% if resident.is_verified %}bg-success{% else %}bg-warning text-dark{% endif %} rounded-pill">
+          {% if resident.is_verified %}Aadhaar Verified by Admin{% else %}Pending Admin Approval{% endif %}
+        </span>
+      </div>
+
+      <div class="row g-2 mb-3">
+        <div class="col-sm-4">
+          <div class="p-2 bg-light rounded-3 border text-center">
+            <span class="small text-muted d-block" style="font-size:0.75rem;">Response Radius:</span>
+            <strong class="text-dark">{{ resident.radius_km }} KM</strong>
+          </div>
+        </div>
+        <div class="col-sm-4">
+          <div class="p-2 bg-light rounded-3 border text-center">
+            <span class="small text-muted d-block" style="font-size:0.75rem;">Trust Score:</span>
+            <strong class="text-success">{{ resident.trust_score }}%</strong>
+          </div>
+        </div>
+        <div class="col-sm-4">
+          <div class="p-2 bg-light rounded-3 border text-center">
+            <span class="small text-muted d-block" style="font-size:0.75rem;">Duty Availability:</span>
+            <strong class="{% if resident.is_available %}text-success{% else %}text-muted{% endif %}">
+              {% if resident.is_available %}🟢 On-Call{% else %}⚪ Standby{% endif %}
+            </strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex gap-2 flex-wrap">
+        <a href="{% url 'toggle_availability' %}?next={{ request.path }}" class="btn btn-outline-danger btn-sm">
+          <i class="bi bi-power me-1"></i>Toggle Active Duty
+        </a>
+        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="syncUserLocation()">
+          <i class="bi bi-geo-alt me-1"></i>Sync Current GPS
+        </button>
+        <a href="{% url 'resident_profile' %}" class="btn btn-light btn-sm text-muted">
+          <i class="bi bi-gear me-1"></i>Responder Profile
+        </a>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Official Emergency Helplines (India) -->
+    <div class="card p-3 border-0 shadow-sm rounded-4 bg-white" style="border:1px solid var(--line)!important;">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-telephone-inbound-fill text-danger"></i>
+          <strong class="small fw-bold text-dark">Official Emergency Helplines (India) — Direct Dial</strong>
+        </div>
+        <small class="text-muted" style="font-size:0.75rem;">Immediate National Dispatch</small>
+      </div>
+      <div class="d-flex gap-2 flex-wrap">
+        <a href="tel:112" class="hotline-pill"><i class="bi bi-telephone-fill"></i> 112 National Police</a>
+        <a href="tel:1091" class="hotline-pill"><i class="bi bi-telephone-fill"></i> 1091 Women Helpline</a>
+        <a href="tel:1090" class="hotline-pill"><i class="bi bi-telephone-fill"></i> 1090 Women Powerline</a>
+        <a href="tel:181" class="hotline-pill"><i class="bi bi-telephone-fill"></i> 181 Domestic Abuse</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- 4. EXPANDABLE "SEE HOW IT WORKS" WRAPPER -->
+<!-- CONTAINS: SIMULATOR, RADAR & SCANNER (IMAGES 2-3), NETWORKS (IMAGE 4), FEATURES (IMAGE 5) -->
+<!-- HIDDEN BY DEFAULT, EXPANDS WHEN USER CLICKS "SEE HOW IT WORKS ▷" -->
+<section class="how-section-wrapper" id="how">
+  <div class="container">
+    
+    <!-- Clickable Header Teaser Banner -->
+    <div class="how-teaser-banner d-flex justify-content-between align-items-center flex-wrap gap-3" onclick="toggleHowItWorks()">
+      <div class="d-flex align-items-center gap-3">
+        <div class="how-icon-circle">
+          <i class="bi bi-play-circle-fill"></i>
+        </div>
+        <div>
+          <h4 class="fw-bold mb-1" style="color:var(--maroon);">
+            See How It Works — Interactive Safety &amp; Rescue Deep Dive
+          </h4>
+          <p class="text-muted small mb-0">
+            Click to explore the step-by-step emergency escalation simulator, safety radar, defense networks &amp; features.
+          </p>
+        </div>
+      </div>
+      <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3 py-2 fw-bold" id="howToggleBtn" onclick="event.stopPropagation(); toggleHowItWorks();">
+        <i class="bi bi-chevron-down me-1" id="howToggleIcon"></i><span id="howToggleText">Show Details</span>
+      </button>
+    </div>
+
+    <!-- COLLAPSIBLE ZONE (CONTAINS ALL 4 DEEP DIVE SECTIONS FROM USER'S IMAGES) -->
+    <div class="collapse" id="howItWorksCollapse">
+      
+      <!-- SUB-SECTION A: INTERACTIVE 4-STEP RESCUE SIMULATOR -->
+      <div class="simulator-container">
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom flex-wrap gap-2">
+          <div>
+            <h5 class="fw-bold mb-0" style="color:var(--maroon);">Live Rescue Escalation Simulator</h5>
+            <small class="text-muted">Click each step or click 'Auto-Play Simulation' to experience the real-time response sequence.</small>
+          </div>
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-danger btn-sm fw-bold" onclick="runSimAutoPlay()">
+              <i class="bi bi-play-fill me-1"></i>Auto-Play Simulation
+            </button>
+            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="resetSimulator()">
+              <i class="bi bi-arrow-counterclockwise me-1"></i>Reset
+            </button>
+          </div>
+        </div>
+
+        <div class="row g-4">
+          <!-- Step Selector Column (4 Steps) -->
+          <div class="col-lg-4">
+            <div class="d-flex flex-column gap-2">
+              <button type="button" class="step-tab-btn active" id="simStepBtn1" onclick="setSimStep(1)">
+                <span class="step-badge">1</span>
+                <div>
+                  <strong class="d-block">SOS Triggers</strong>
+                  <small class="text-muted" style="font-size:0.75rem;">Button, voice, or shake</small>
+                </div>
+              </button>
+
+              <button type="button" class="step-tab-btn" id="simStepBtn2" onclick="setSimStep(2)">
+                <span class="step-badge">2</span>
+                <div>
+                  <strong class="d-block">Three Alerts Fire at Once</strong>
+                  <small class="text-muted" style="font-size:0.75rem;">Residents, Campus &amp; Police 112</small>
+                </div>
+              </button>
+
+              <button type="button" class="step-tab-btn" id="simStepBtn3" onclick="setSimStep(3)">
+                <span class="step-badge">3</span>
+                <div>
+                  <strong class="d-block">A Responder Confirms</strong>
+                  <small class="text-muted" style="font-size:0.75rem;">Real-time acceptance &amp; ETA</small>
+                </div>
+              </button>
+
+              <button type="button" class="step-tab-btn" id="simStepBtn4" onclick="setSimStep(4)">
+                <span class="step-badge">4</span>
+                <div>
+                  <strong class="d-block">Live Location, The Whole Way</strong>
+                  <small class="text-muted" style="font-size:0.75rem;">Continuous radar escort &amp; docket</small>
+                </div>
+              </button>
+            </div>
+
+            <!-- Interactive Quick Try Box -->
+            <div class="p-3 bg-white rounded-3 border mt-3 small">
+              <strong class="d-block text-dark mb-1"><i class="bi bi-joystick me-1 text-danger"></i>Interactive Sensor Testing:</strong>
+              <div class="d-flex flex-column gap-2 mt-2">
+                <button type="button" class="btn btn-sm btn-outline-danger text-start py-1" onclick="simulateTriggerTest('button')">
+                  <i class="bi bi-hand-index-thumb me-1"></i>Test Button Trigger Tone
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-danger text-start py-1" onclick="simulateTriggerTest('voice')">
+                  <i class="bi bi-mic-fill me-1"></i>Test Voice "Help" Keyword
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-danger text-start py-1" onclick="simulateTriggerTest('shake')">
+                  <i class="bi bi-phone-vibrate me-1"></i>Test Shake Motion Detection
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dynamic Simulation Viewport -->
+          <div class="col-lg-8">
+            <div class="sim-viewport" id="simViewport">
+              
+              <!-- Dynamic Content Display Area -->
+              <div id="simDisplayArea"></div>
+
+              <!-- Live Simulation Terminal / Event Log -->
+              <div>
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <small class="fw-bold text-muted" style="font-size:0.75rem;"><i class="bi bi-terminal me-1"></i>TELEMETRY &amp; DISPATCH LOG</small>
+                  <span class="badge bg-success-subtle text-success" style="font-size:0.7rem;" id="simStatusPill">SIMULATOR READY</span>
+                </div>
+                <div class="sim-log-box" id="simLogBox">
+                  <div>[00:00.00] System standing by. Select a step or trigger to simulate emergency flow.</div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUB-SECTION B: INTERACTIVE SAFETY RADAR & RESIDENT SCANNER (MATCHES IMAGES 2 & 3) -->
+      <div class="radar-section-inner" id="safe-routes">
+        <div class="section-head">
+          <h2>Interactive Safety Radar &amp; Resident Scanner</h2>
+          <p>Compare paths evaluated by illumination and crime index, and dynamically scan for verified citizens within your radius.</p>
+        </div>
+        <div class="row g-4">
+          <div class="col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white" style="border:1px solid var(--line) !important;">
+              <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <div>
+                  <h5 class="fw-bold mb-0" style="color:var(--maroon);">🗺️ Live Safety Route Map</h5>
+                  <small class="text-muted">Interactive street-level illumination and risk index</small>
+                </div>
+                <a href="{% url 'safe_routes_compare' %}" class="btn btn-sm btn-outline-danger fw-semibold">Compare All Routes &rarr;</a>
+              </div>
+
+              <!-- Interactive Route Selector Buttons -->
+              <div class="row g-2 mb-3">
+                <div class="col-6">
+                  <div class="route-pill-btn selected" id="btnRouteA" onclick="switchRoute('A')">
+                    <div>
+                      <strong class="d-block text-success small"><i class="bi bi-shield-check me-1"></i>Route A: Main Blvd</strong>
+                      <small class="text-muted" style="font-size:0.75rem;">Illuminated • CCTV Coverage</small>
+                    </div>
+                    <span class="badge bg-success-subtle text-success">9.4/10</span>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="route-pill-btn" id="btnRouteB" onclick="switchRoute('B')">
+                    <div>
+                      <strong class="d-block text-warning small"><i class="bi bi-exclamation-triangle me-1"></i>Route B: Back Alley</strong>
+                      <small class="text-muted" style="font-size:0.75rem;">Dimly Lit • Isolated</small>
+                    </div>
+                    <span class="badge bg-warning-subtle text-warning">4.8/10</span>
+                  </div>
+                </div>
+              </div>
+
+              <div id="routeMap"></div>
+
+              <div class="mt-3 p-3 bg-light rounded-3 border d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div>
+                  <span class="small text-muted d-block">ROUTE ASSESSMENT</span>
+                  <strong id="routeScoreText" class="text-success"><i class="bi bi-check-circle-fill me-1"></i>Safest Path Recommended</strong>
+                </div>
+                <div class="d-flex gap-3 small">
+                  <div><i class="bi bi-lightbulb-fill text-warning me-1"></i>Lighting: <strong id="routeLighting">94%</strong></div>
+                  <div><i class="bi bi-shield-fill-check text-primary me-1"></i>Police Post: <strong id="routePolice">220m</strong></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-5">
+            <div class="scanner-box">
+              <div>
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                  <h5 class="fw-bold mb-0" style="color:var(--maroon);">📡 Citizen Resident Radius</h5>
+                  <span class="badge bg-danger-subtle text-danger">LIVE RADAR</span>
+                </div>
+                <p class="text-muted small mb-3">Adjust detection range to dynamically scan for verified resident protectors near you.</p>
+
+                <div class="p-3 bg-white rounded-3 border mb-3">
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="small fw-bold text-muted">SCAN DISTANCE:</span>
+                    <span id="radVal" class="fw-bold text-danger fs-6">3 KM</span>
+                  </div>
+                  <input type="range" class="form-range" min="1" max="10" value="3" id="radSlider" oninput="updateRadius(this.value)">
+                  <div class="d-flex justify-content-between small text-muted" style="font-size:0.75rem;">
+                    <span>1 KM (Immediate)</span>
+                    <span>5 KM</span>
+                    <span>10 KM (Wider Sector)</span>
+                  </div>
+                </div>
+
+                <div class="p-3 bg-white rounded-3 border mb-3">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <strong class="d-block text-dark" id="responderCountText">3 Verified Citizens Active</strong>
+                      <small class="text-muted">Aadhaar verified &bull; Avg. Response Time: <strong class="text-success" id="responderEtaText">4 mins</strong></small>
+                    </div>
+                    <div class="rounded-circle bg-success text-white p-2 d-flex align-items-center justify-content-center" style="width:36px;height:36px;">
+                      <i class="bi bi-people-fill"></i>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Legal Good Samaritan Badge (Matches Image 3) -->
+                <div class="p-2 px-3 rounded-3 mb-3 small" style="background:#FFF5F5;border:1px dashed var(--crimson);">
+                  <i class="bi bi-shield-check text-danger me-1"></i>
+                  <strong>Good Samaritan Legal Shield:</strong> Dispatched responders receive cryptographic identity protection &amp; legal immunity record dockets.
+                </div>
+              </div>
+
+              <!-- Buttons from Image 3 -->
+              <div class="d-grid gap-2">
+                <a href="{% url 'resident_list' %}" class="btn btn-outline-danger fw-semibold">
+                  <i class="bi bi-search me-1"></i>Find Citizens in Radius
+                </a>
+                <a href="{% url 'resident_register' %}" class="btn btn-danger fw-semibold">
+                  <i class="bi bi-shield-plus me-1"></i>Become a Resident Protector
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUB-SECTION C: THREE DEFENSE NETWORKS (MATCHES IMAGE 4) -->
+      <div class="networks-section-inner" id="networks">
+        <div class="section-head">
+          <h2>Help reaches you from three directions at once</h2>
+          <p>No single channel has to work perfectly — because you're never relying on just one.</p>
+        </div>
+        <div class="row g-4">
+          <div class="col-lg-4">
+            <div class="network-card local">
+              <div class="feature-icon"><i class="bi bi-people-fill"></i></div>
+              <h3>Local Resident Network</h3>
+              <p>Verified people near you right now — not contacts you added, but whoever is close enough to actually reach you fast.</p>
+              <ul>
+                <li>Found by real-time proximity search</li>
+                <li>Aadhaar-verified by the platform</li>
+                <li>Must accept before being marked as responding</li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="network-card org">
+              <div class="feature-icon"><i class="bi bi-building-fill-check"></i></div>
+              <h3>Organization Network</h3>
+              <p>Colleges, hospitals, and offices with designated, trained volunteers ready to respond — regardless of your affiliation with them.</p>
+              <ul>
+                <li>Approved directly by each organization</li>
+                <li>Institutional dashboard alert, in parallel</li>
+                <li>Security staff, students, and hospital personnel</li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="network-card local">
+              <div class="feature-icon"><i class="bi bi-shield-lock-fill"></i></div>
+              <h3>Government Emergency Bodies</h3>
+              <p>Police are alerted the moment SOS fires — automatically, and without waiting to see if a volunteer responds first.</p>
+              <ul>
+                <li>Fires in parallel, every time</li>
+                <li>No dependency on volunteer response</li>
+                <li>Official emergency response, always in motion</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUB-SECTION D: EVERYTHING YOU NEED FEATURES (MATCHES IMAGE 5) -->
+      <div class="features-section-inner" id="features">
+        <div class="section-head">
+          <h2>Everything you need, before and during an emergency</h2>
+          <p>Built as a complete safety system — not just a panic button.</p>
+        </div>
+        <div class="row g-4">
+          <div class="col-md-4">
+            <div class="feature-card">
+              <div class="feature-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
+              <h3>Triple SOS trigger</h3>
+              <p>Activate an alert by button, voice command, or shake gesture — built for moments when reaching for your phone isn't easy.</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <!-- Exact Image 5: Live GPS tracking has highlighted border -->
+            <div class="feature-card highlighted-card">
+              <div class="feature-icon"><i class="bi bi-broadcast-pin"></i></div>
+              <h3>Live GPS tracking</h3>
+              <p>Your location streams to responders in real time, so help can navigate straight to you as you move.</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="feature-card">
+              <div class="feature-icon"><i class="bi bi-signpost-split-fill"></i></div>
+              <h3>Safe route predictor</h3>
+              <p>See a safety score for every route between two points, built from community reports and official crime data — you choose the path.</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="feature-card">
+              <div class="feature-icon"><i class="bi bi-telephone-outbound-fill"></i></div>
+              <h3>Automatic call escalation</h3>
+              <p>If a push alert goes unanswered, a direct call follows — so a quiet notification never becomes a missed emergency.</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="feature-card">
+              <div class="feature-icon"><i class="bi bi-map-fill"></i></div>
+              <h3>Live safety map</h3>
+              <p>See your location, nearby responders, and route safety data together on one map.</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="feature-card">
+              <div class="feature-icon"><i class="bi bi-patch-check-fill"></i></div>
+              <h3>Verified responders only</h3>
+              <p>Every responder — resident or institutional — is Aadhaar-verified before they can see your location or respond.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<!-- 8. CTA BAND -->
+<section class="cta-band" style="background: linear-gradient(135deg, #1c0b0f 0%, #380d16 50%, #52111d 100%); padding: 5rem 1rem; text-align: center; border-top: 1px solid rgba(255,255,255,0.08);">
+  <div class="container">
+    <h2 style="color: #ffffff !important; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: clamp(2rem, 3.5vw, 2.75rem); letter-spacing: -0.025em; margin-bottom: 1rem; text-shadow: 0 2px 10px rgba(0,0,0,0.35);">
+      Your safety shouldn't depend on being lucky.
+    </h2>
+    <p style="color: rgba(255, 255, 255, 0.9) !important; font-size: clamp(1.02rem, 1.8vw, 1.15rem); max-width: 680px; margin: 0 auto 2.25rem; line-height: 1.65; text-shadow: 0 1px 4px rgba(0,0,0,0.25);">
+      Download Women Safety Shield and know that help is already looking for you, from three directions, the moment you need it.
+    </p>
+    <div class="d-flex justify-content-center align-items-center gap-3 flex-wrap">
+      <a href="{% url 'download_apk' %}" class="btn-cta-download" onclick="triggerAppDownload(event)" style="background: #ffffff !important; color: #1e293b !important; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; padding: 0.85rem 2rem; border-radius: 9999px; border: 1px solid rgba(255,255,255,0.2); text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; transition: all 0.2s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.15);">
+        <i class="bi bi-download me-2"></i>Download for Android (.apk)
+      </a>
+      <button type="button" class="btn-cta" onclick="openSosModal('cta')" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important; color: #ffffff !important; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; padding: 0.85rem 2rem; border-radius: 9999px; border: none; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s ease; box-shadow: 0 6px 20px rgba(220,38,38,0.45);">
+        <i class="bi bi-broadcast me-2"></i>Launch Emergency SOS
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- 9. FOOTER -->
+<footer style="background:var(--charcoal);color:#cfc5c1;padding:3.5rem 0 1.5rem;font-size:0.9rem;" class="mt-auto">
+  <div class="container-fluid px-3 px-xl-4">
+    <div class="row g-4">
+      <!-- Col 1: Brand & 24/7 Helplines -->
+      <div class="col-lg-4 col-md-6">
+        <h5 style="color:#fff;font-weight:700;" class="mb-2">
+          <i class="bi bi-shield-fill-check" style="color:var(--gold);"></i> Women Safety Shield
+        </h5>
+        <p class="text-white-50 small mb-2" style="font-size:0.8rem; letter-spacing:0.02em;">
+          Help finds you, from every direction.
+        </p>
+        <p style="max-width:34ch;font-size:0.88rem;line-height:1.6;color:rgba(255,255,255,0.78)!important;" class="mb-2">
+          Community-powered emergency response network with verified residents, institutional safe havens, and automated police dispatch.
+        </p>
+        <p class="small text-white-50 mb-3" style="font-size:0.8rem;">
+          <i class="bi bi-cpu me-1" style="color:var(--gold);"></i>Developed by <strong>Team Shield Matrix</strong>
+        </p>
+        <div class="d-flex gap-2 flex-wrap">
+          <a href="tel:112" class="badge rounded-pill bg-danger text-white px-3 py-2 text-decoration-none shadow-sm" title="National Emergency Response">
+            <i class="bi bi-telephone-fill me-1"></i>112 Police
+          </a>
+          <a href="tel:1091" class="badge rounded-pill bg-danger text-white px-3 py-2 text-decoration-none shadow-sm" title="Women Helpline">
+            <i class="bi bi-telephone-fill me-1"></i>1091 Women
+          </a>
+          <a href="tel:181" class="badge rounded-pill bg-danger text-white px-3 py-2 text-decoration-none shadow-sm" title="Women in Distress">
+            <i class="bi bi-telephone-fill me-1"></i>181 Helpline
+          </a>
+        </div>
+      </div>
+
+      <!-- Col 2: Platform Services -->
+      <div class="col-lg-2 col-md-3 col-6">
+        <h6 style="color:#fff;font-weight:700;" class="mb-3">Safety Services</h6>
+        <p class="mb-2"><a href="{% url 'safe_routes_compare' %}" style="color:#cfc5c1;" class="text-decoration-none hover-underline"><i class="bi bi-signpost-split me-1 text-danger"></i>Safe Routes &amp; Map</a></p>
+        <p class="mb-2"><a href="{% url 'resident_list' %}" style="color:#cfc5c1;" class="text-decoration-none hover-underline"><i class="bi bi-people me-1 text-success"></i>Local Residents</a></p>
+        <p class="mb-2"><a href="{% url 'org_list' %}" style="color:#cfc5c1;" class="text-decoration-none hover-underline"><i class="bi bi-building me-1 text-warning"></i>Organizations</a></p>
+        <p class="mb-2"><a href="{% url 'trusted_contacts' %}" style="color:#cfc5c1;" class="text-decoration-none hover-underline"><i class="bi bi-person-heart me-1 text-danger"></i>Trusted Circle</a></p>
+        <p class="mb-2"><a href="javascript:void(0)" onclick="toggleHowItWorks(true)" style="color:#cfc5c1;" class="text-decoration-none hover-underline"><i class="bi bi-info-circle me-1 text-info"></i>How It Works</a></p>
+      </div>
+
+      <!-- Col 3: Quick Action Tools -->
+      <div class="col-lg-3 col-md-3 col-6">
+        <h6 style="color:#fff;font-weight:700;" class="mb-3">Quick Action Tools</h6>
+        <p class="mb-2"><a href="javascript:void(0)" onclick="openSosModal('footer')" style="color:#fff;" class="text-decoration-none fw-semibold"><i class="bi bi-broadcast text-danger me-1"></i>Emergency SOS Trigger</a></p>
+        <p class="mb-2"><a href="{% url 'resident_list' %}" style="color:#cfc5c1;" class="text-decoration-none hover-underline"><i class="bi bi-person-walking me-1"></i>Request Safe Walk Escort</a></p>
+        <p class="mb-2"><a href="{% url 'trusted_contacts' %}" style="color:#cfc5c1;" class="text-decoration-none hover-underline"><i class="bi bi-geo-alt-fill me-1"></i>"I Reached Safely" Check-in</a></p>
+        <p class="mb-2"><a href="{% url 'org_register' %}" style="color:#cfc5c1;" class="text-decoration-none hover-underline"><i class="bi bi-shield-plus me-1"></i>Campus Partner Signup</a></p>
+        <p class="mb-2"><a href="{% url 'resident_register' %}" style="color:#cfc5c1;" class="text-decoration-none hover-underline"><i class="bi bi-person-badge me-1"></i>Become Local Guardian</a></p>
+        {% if user.is_staff %}
+        <p class="mb-2"><a href="{% url 'admin_dashboard' %}" style="color:var(--gold);" class="text-decoration-none fw-semibold"><i class="bi bi-shield-lock me-1"></i>Admin Control Panel</a></p>
+        {% endif %}
+      </div>
+
+      <!-- Col 4: Trust, Security & Legal -->
+      <div class="col-lg-3 col-md-12">
+        <h6 style="color:#fff;font-weight:700;" class="mb-3">Legal &amp; Trust</h6>
+        <p style="font-size:0.84rem;line-height:1.55;" class="mb-2 text-white-50">
+          Safety predictions and route ratings are statistical estimates to assist personal mobility decisions and do not guarantee complete crime immunity.
+        </p>
+        <p style="font-size:0.84rem;line-height:1.55;" class="mb-2 text-white-50">
+          All responder interactions, emergency logs, and community escorts are cryptographically timestamped for Good Samaritan legal protection.
+        </p>
+        <div class="d-flex align-items-center gap-2 mt-2 pt-2 border-top" style="border-color:#423934 !important;">
+          <i class="bi bi-shield-check text-success fs-5"></i>
+          <span class="small text-white-50" style="font-size:0.78rem;">Aadhaar &amp; PAN statutory verification standards</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="footer-bottom d-flex justify-content-between align-items-center flex-wrap gap-2 pt-3 mt-4 border-top" style="border-color:#423934 !important; font-size:0.82rem; color:#9a8f8a;">
+      <div>© 2026 Women Safety Shield — Team Shield Matrix. All rights reserved. Help finds you, from every direction.</div>
+      <div class="d-flex align-items-center gap-2">
+        <span class="badge bg-dark border border-secondary text-white-50 px-2 py-1">ERSS 112 Integrated</span>
+        <span>Emergency Dispatch Protocol v2.5</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ======================================================== -->
+<!-- INTERACTIVE EMERGENCY DISPATCH MODAL -->
+<!-- ======================================================== -->
+<div class="modal fade" id="sosModal" tabindex="-1" aria-labelledby="sosModalLabel" aria-hidden="true" data-bs-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden">
+      <div class="modal-header bg-danger text-white py-3">
+        <h5 class="modal-title fw-bold" id="sosModalLabel">
+          <i class="bi bi-exclamation-octagon-fill me-2"></i>CONFIRM DISTRESS SOS
+        </h5>
+        <button type="button" class="btn-close btn-close-white" onclick="cancelSosCountdown()"></button>
+      </div>
+      <div class="modal-body p-4 text-center">
+        <!-- Circular Countdown Timer -->
+        <div class="sos-countdown-dial" id="countdownNum">3</div>
+        <h4 class="fw-bold mb-1" style="color:var(--maroon);">DISPATCHING RESCUE BROADCAST</h4>
+        <p class="text-muted small mb-4">Immediate multi-channel dispatch will initiate when the timer ends.</p>
+
+        <!-- Dispatch Channels Progress -->
+        <div class="text-start bg-light p-3 rounded-3 border mb-4">
+          <div class="d-flex align-items-center gap-2 mb-2 small">
+            <span class="spinner-grow spinner-grow-sm text-danger" role="status"></span>
+            <strong>Police 112 ERSS:</strong> Auto-dispatching live coordinates
+          </div>
+          <div class="d-flex align-items-center gap-2 mb-2 small">
+            <span class="spinner-grow spinner-grow-sm text-danger" role="status"></span>
+            <strong>Local Resident Network:</strong> Alerting citizens in radius
+          </div>
+          <div class="d-flex align-items-center gap-2 small">
+            <span class="spinner-grow spinner-grow-sm text-danger" role="status"></span>
+            <strong>Trusted Circle:</strong> Sending emergency alert SMS
+          </div>
+        </div>
+
+        <form id="sosDirectForm" method="POST" action="{% url 'trigger_sos' %}">
+          {% csrf_token %}
+          <input type="hidden" name="latitude" id="modalLat" value="28.4703">
+          <input type="hidden" name="longitude" id="modalLng" value="77.4939">
+          <input type="hidden" name="trigger_type" id="modalTriggerType" value="button">
+          
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-danger btn-lg fw-bold py-3">
+              <i class="bi bi-broadcast me-2"></i>DISPATCH IMMEDIATELY (BYPASS TIMER)
+            </button>
+            <button type="button" class="btn btn-outline-secondary" onclick="cancelSosCountdown()">
+              Cancel (False Alarm)
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================================================== -->
+<!-- APP DOWNLOAD / PWA MODAL -->
+<!-- ======================================================== -->
+<div class="modal fade" id="appModal" tabindex="-1" aria-labelledby="appModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 rounded-4 shadow-lg">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold" style="color:var(--maroon);" id="appModalLabel">
+          <i class="bi bi-phone-fill text-danger me-2"></i>Get Women Safety Shield
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4 text-center">
+        <div class="mb-3 text-center">
+          <div class="p-3 bg-light rounded-4 d-inline-block border">
+            <i class="bi bi-qr-code text-danger" style="font-size:5rem;"></i>
+          </div>
+        </div>
+        <h6 class="fw-bold mb-1">Scan to Install on Mobile</h6>
+        <p class="text-muted small mb-4">Install Women Safety Shield directly as an offline-capable Progressive Web App (PWA) or download the Android APK.</p>
+
+        <div class="d-grid gap-2">
+          <a href="{% url 'download_apk' %}" class="btn btn-danger fw-bold py-2 shadow-sm" onclick="trackDownloadEvent('apk')">
+            <i class="bi bi-download me-2"></i>Download Android APK (.apk)
+          </a>
+          <button type="button" class="btn btn-outline-dark fw-semibold py-2" id="pwaInstallBtn" onclick="promptInstallPWA()">
+            <i class="bi bi-phone-fill me-2"></i>Add to Mobile Home Screen (PWA)
+          </button>
+          <button type="button" class="btn btn-outline-secondary fw-semibold py-2" onclick="openSosModal('pwa')">
+            <i class="bi bi-play-circle-fill me-1"></i>Launch Web Emergency SOS
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden form for resident GPS sync -->
+{% if resident %}
+<form id="syncGpsForm" method="POST" action="{% url 'resident_update_location' %}" style="display:none;">
+  {% csrf_token %}
+  <input type="hidden" name="latitude" id="syncLat" value="28.4703">
+  <input type="hidden" name="longitude" id="syncLng" value="77.4939">
+  <input type="hidden" name="next" value="{{ request.path }}">
+</form>
+{% endif %}
+
+<!-- Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/google-maps-shield.js' %}?v=6.0"></script>
+{% if GOOGLE_MAPS_API_KEY and GOOGLE_MAPS_API_KEY != 'your_real_google_maps_key' %}
+<script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places,geometry,marker&loading=async&callback=__initGoogleMapsShield"></script>
+{% endif %}
+<script>
+let currentLat = 28.4703;
+let currentLng = 77.4939;
+let routeMap = null;
+let radiusCircle = null;
+let currentRouteLayer = null;
+let countdownTimer = null;
+let countdownSeconds = 3;
+let audioCtx = null;
+let shakeActive = false;
+let speechRecognizer = null;
+
+// Audio beep synthesizer
+function playBeep(freq = 850, duration = 0.15) {
+    try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!audioCtx) audioCtx = new AudioContext();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+    } catch(e) {}
+}
+
+// TOGGLE HOW IT WORKS SECTION (OPENS NESTED RADAR, SCANNER, NETWORKS, FEATURES)
+function toggleHowItWorks(forceOpen = false) {
+    const collapseElem = document.getElementById('howItWorksCollapse');
+    if (!collapseElem) return;
+    const toggleIcon = document.getElementById('howToggleIcon');
+    const toggleText = document.getElementById('howToggleText');
+
+    const isOpen = collapseElem.classList.contains('show');
+
+    if (forceOpen || !isOpen) {
+        if (window.bootstrap && bootstrap.Collapse) {
+            const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseElem, { toggle: false });
+            bsCollapse.show();
+        } else {
+            collapseElem.classList.add('show');
+            collapseElem.style.display = 'block';
+        }
+        if (toggleText) toggleText.textContent = 'Hide Details';
+        if (toggleIcon) toggleIcon.className = 'bi bi-chevron-up me-1';
+        try { setSimStep(1); } catch(e) {}
+        setTimeout(() => {
+            if (window.routeMap) {
+                try { window.routeMap.invalidateSize(); } catch(e) {}
+            }
+            const howElem = document.getElementById('how');
+            if (howElem) howElem.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 250);
+    } else {
+        if (window.bootstrap && bootstrap.Collapse) {
+            const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseElem, { toggle: false });
+            bsCollapse.hide();
+        } else {
+            collapseElem.classList.remove('show');
+            collapseElem.style.display = 'none';
+        }
+        if (toggleText) toggleText.textContent = 'Show Details';
+        if (toggleIcon) toggleIcon.className = 'bi bi-chevron-down me-1';
+    }
+}
+
+// SIMULATOR LOGIC
+let currentSimStep = 1;
+let autoPlayTimer = null;
+
+const simStepData = {
+    1: {
+        title: "Step 1: SOS Triggers Instantly",
+        subtitle: "The user activates an emergency distress beacon using their preferred trigger mode.",
+        html: `
+          <div class="mb-3">
+            <h5 class="fw-bold text-danger mb-2"><i class="bi bi-broadcast me-2"></i>Multi-Modal Activation</h5>
+            <p class="text-muted small">In high-stress situations, touching a small screen button isn't always possible. Women Safety Shield arms 3 distinct activation channels:</p>
+            <div class="row g-2">
+              <div class="col-sm-4">
+                <div class="p-3 bg-white rounded-3 border text-center">
+                  <i class="bi bi-hand-index-thumb fs-3 text-danger d-block mb-1"></i>
+                  <strong>Direct Touch</strong>
+                  <div class="small text-muted" style="font-size:0.75rem;">1-tap radial dial</div>
+                </div>
+              </div>
+              <div class="col-sm-4">
+                <div class="p-3 bg-white rounded-3 border text-center">
+                  <i class="bi bi-mic-fill fs-3 text-danger d-block mb-1"></i>
+                  <strong>Voice Recognition</strong>
+                  <div class="small text-muted" style="font-size:0.75rem;">"Help!", "Bachao"</div>
+                </div>
+              </div>
+              <div class="col-sm-4">
+                <div class="p-3 bg-white rounded-3 border text-center">
+                  <i class="bi bi-phone-vibrate fs-3 text-danger d-block mb-1"></i>
+                  <strong>Shake Gesture</strong>
+                  <div class="small text-muted" style="font-size:0.75rem;">35 m/s² accel threshold</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `,
+        log: "[00:00.00] SOS trigger initialized via hardware sensor / user action. Live coordinates locked: 28.4703, 77.4939."
+    },
+    2: {
+        title: "Step 2: Three Alerts Fire Simultaneously",
+        subtitle: "No single point of failure — parallel broadcast dispatched across all 3 response networks.",
+        html: `
+          <div class="mb-3">
+            <h5 class="fw-bold" style="color:var(--maroon);"><i class="bi bi-bezier2 me-2"></i>Parallel Triple-Channel Fanout</h5>
+            <p class="text-muted small">Rather than waiting for a single entity, the platform initiates immediate 3-way distribution:</p>
+            <div class="d-flex flex-column gap-2">
+              <div class="p-3 bg-white border rounded-3 d-flex align-items-center justify-content-between">
+                <div>
+                  <strong class="text-danger"><i class="bi bi-shield-lock-fill me-2"></i>Government 112 ERSS Police CAD</strong>
+                  <div class="small text-muted">Auto-injected coordinates into national dispatch queue.</div>
+                </div>
+                <span class="badge bg-danger">SENT</span>
+              </div>
+              <div class="p-3 bg-white border rounded-3 d-flex align-items-center justify-content-between">
+                <div>
+                  <strong class="text-primary"><i class="bi bi-people-fill me-2"></i>Verified Local Residents (3 KM Radius)</strong>
+                  <div class="small text-muted">Real-time proximity push to Aadhaar-verified neighbors.</div>
+                </div>
+                <span class="badge bg-primary">3 NOTIFIED</span>
+              </div>
+              <div class="p-3 bg-white border rounded-3 d-flex align-items-center justify-content-between">
+                <div>
+                  <strong class="text-success"><i class="bi bi-person-heart me-2"></i>Personal Trusted Circle</strong>
+                  <div class="small text-muted">Emergency SMS and instant tracking links to guardians.</div>
+                </div>
+                <span class="badge bg-success">DELIVERED</span>
+              </div>
+            </div>
+          </div>
+        `,
+        log: "[00:00.32] Triple broadcast fanout complete: 112 CAD packet transmitted, 3 nearest citizen websockets pinged, SMS gateway triggered."
+    },
+    3: {
+        title: "Step 3: A Responder Confirms & Responds",
+        subtitle: "Only an acknowledged alert counts as help on the way — silence escalates automatically.",
+        html: `
+          <div class="mb-3">
+            <h5 class="fw-bold text-success"><i class="bi bi-person-check-fill me-2"></i>Verified Protector Accepted</h5>
+            <div class="p-3 bg-white rounded-3 border mb-3">
+              <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="avatar-circle-sm bg-success">R</div>
+                  <div>
+                    <strong class="d-block text-dark">Rajesh K. (Aadhaar Verified)</strong>
+                    <small class="text-muted">450 meters away &bull; Trust Score: 9.8/10</small>
+                  </div>
+                </div>
+                <span class="badge bg-success py-2 px-3"><i class="bi bi-check-circle me-1"></i>En Route</span>
+              </div>
+              <div class="p-2 bg-light rounded-2 small text-muted d-flex justify-content-between">
+                <span>ESTIMATED ARRIVAL TIME:</span>
+                <strong class="text-danger fs-6" id="simEtaCounter">2 mins 45 secs</strong>
+              </div>
+            </div>
+            <p class="text-muted small mb-0"><i class="bi bi-shield-check text-success me-1"></i>Responders receive legal Good Samaritan statutory immunity and cryptographic audit dockets.</p>
+          </div>
+        `,
+        log: "[00:00.85] Local Resident responder #LR-491 accepted distress call. Turn-by-turn navigation engaged. ETA: 2m 45s."
+    },
+    4: {
+        title: "Step 4: Live Location Tracking The Whole Way",
+        subtitle: "Continuous encrypted telemetry streaming until victim safely confirms resolution.",
+        html: `
+          <div class="mb-3">
+            <h5 class="fw-bold text-primary"><i class="bi bi-geo-alt-fill me-2"></i>Real-Time Telemetry Stream &amp; Audit Docket</h5>
+            <div class="p-3 bg-white rounded-3 border mb-3">
+              <div class="row g-2 text-center small mb-2">
+                <div class="col-4 p-2 bg-light rounded">
+                  <span class="text-muted d-block">LAT / LNG</span>
+                  <strong class="text-dark">28.4703, 77.4939</strong>
+                </div>
+                <div class="col-4 p-2 bg-light rounded">
+                  <span class="text-muted d-block">SPEED / HEADING</span>
+                  <strong class="text-dark">3.8 km/h &bull; North</strong>
+                </div>
+                <div class="col-4 p-2 bg-light rounded">
+                  <span class="text-muted d-block">BATTERY</span>
+                  <strong class="text-success">86% Normal</strong>
+                </div>
+              </div>
+              <div class="p-2 rounded bg-light border small">
+                <span class="text-muted d-block" style="font-size:0.75rem;">CRYPTOGRAPHIC EVIDENCE DOCKET:</span>
+                <code class="text-danger" style="font-size:0.75rem;">SHA256: 9b2d8f4a1c6e7...7b3e (Tamper-Proof)</code>
+              </div>
+            </div>
+            <div class="alert alert-success py-2 px-3 small rounded-3 mb-0">
+              <i class="bi bi-check-circle-fill me-1"></i>Victim and responder coordinates synchronized at 1-second intervals until secured.
+            </div>
+          </div>
+        `,
+        log: "[00:01.40] Telemetry active: 100% position continuity maintained. Cryptographic docket written for legal verification."
+    }
+};
+
+function setSimStep(step) {
+    currentSimStep = step;
+    document.querySelectorAll('.step-tab-btn').forEach((btn, idx) => {
+        btn.classList.toggle('active', (idx + 1) === step);
+    });
+
+    const data = simStepData[step];
+    const display = document.getElementById('simDisplayArea');
+    if (display && data) {
+        display.innerHTML = `
+          <div class="mb-2">
+            <span class="badge bg-danger-subtle text-danger mb-1" style="font-size:0.7rem;">STEP ${step} OF 4</span>
+            <h4 class="fw-bold mb-1" style="color:var(--maroon);">${data.title}</h4>
+            <p class="text-muted small">${data.subtitle}</p>
+          </div>
+          ${data.html}
+        `;
+    }
+
+    const logBox = document.getElementById('simLogBox');
+    if (logBox && data) {
+        const line = document.createElement('div');
+        line.innerHTML = `<span class="log-highlight">[STEP ${step}]</span> ${data.log}`;
+        logBox.appendChild(line);
+        logBox.scrollTop = logBox.scrollHeight;
+    }
+
+    const statusPill = document.getElementById('simStatusPill');
+    if (statusPill) {
+        statusPill.textContent = `STEP ${step} ACTIVE`;
+    }
+}
+
+function runSimAutoPlay() {
+    clearInterval(autoPlayTimer);
+    let step = 1;
+    setSimStep(step);
+    playBeep(900, 0.1);
+
+    autoPlayTimer = setInterval(() => {
+        step++;
+        if (step <= 4) {
+            setSimStep(step);
+            playBeep(900 + step * 100, 0.12);
+        } else {
+            clearInterval(autoPlayTimer);
+            const statusPill = document.getElementById('simStatusPill');
+            if (statusPill) statusPill.textContent = 'SIMULATION COMPLETE';
+            playBeep(1300, 0.25);
+        }
+    }, 2800);
+}
+
+function resetSimulator() {
+    clearInterval(autoPlayTimer);
+    setSimStep(1);
+    const logBox = document.getElementById('simLogBox');
+    if (logBox) {
+        logBox.innerHTML = '<div>[00:00.00] Simulator reset. Ready for interactive testing.</div>';
+    }
+    const statusPill = document.getElementById('simStatusPill');
+    if (statusPill) statusPill.textContent = 'SIMULATOR READY';
+}
+
+function simulateTriggerTest(type) {
+    playBeep(1000, 0.2);
+    setSimStep(1);
+    const logBox = document.getElementById('simLogBox');
+    if (logBox) {
+        const line = document.createElement('div');
+        line.innerHTML = `<span class="text-warning">[TEST EVENT]</span> ${type.toUpperCase()} sensor simulated successfully. Trigger threshold satisfied.`;
+        logBox.appendChild(line);
+        logBox.scrollTop = logBox.scrollHeight;
+    }
+}
+
+function openSosModal(source = 'button') {
+    {% if not user.is_authenticated %}
+    window.location.href = "{% url 'login' %}?next={% url 'home' %}";
+    return;
+    {% endif %}
+
+    document.getElementById('modalTriggerType').value = source;
+    document.getElementById('modalLat').value = currentLat;
+    document.getElementById('modalLng').value = currentLng;
+
+    const modalElem = document.getElementById('sosModal');
+    const modal = new bootstrap.Modal(modalElem);
+    modal.show();
+
+    countdownSeconds = 3;
+    const countDisplay = document.getElementById('countdownNum');
+    countDisplay.textContent = countdownSeconds;
+    playBeep(900, 0.2);
+
+    clearInterval(countdownTimer);
+    countdownTimer = setInterval(() => {
+        countdownSeconds--;
+        if (countdownSeconds > 0) {
+            countDisplay.textContent = countdownSeconds;
+            playBeep(900 + (3 - countdownSeconds) * 150, 0.18);
+        } else {
+            clearInterval(countdownTimer);
+            countDisplay.textContent = "🚨";
+            playBeep(1400, 0.4);
+            document.getElementById('sosDirectForm').submit();
+        }
+    }, 1000);
+}
+
+function cancelSosCountdown() {
+    clearInterval(countdownTimer);
+    const modalElem = document.getElementById('sosModal');
+    const modal = bootstrap.Modal.getInstance(modalElem);
+    if (modal) modal.hide();
+}
+
+function openAppModal() {
+    const modal = new bootstrap.Modal(document.getElementById('appModal'));
+    modal.show();
+}
+
+// PWA & DOWNLOAD HANDLERS
+let deferredInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    const pwaBtn = document.getElementById('pwaInstallBtn');
+    if (pwaBtn) {
+        pwaBtn.classList.remove('btn-outline-dark');
+        pwaBtn.classList.add('btn-dark');
+    }
+});
+
+function triggerAppDownload(e) {
+    showDownloadToast();
+}
+
+function trackDownloadEvent(type) {
+    showDownloadToast();
+}
+
+function showDownloadToast() {
+    let toast = document.getElementById('downloadToast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'downloadToast';
+        toast.className = 'position-fixed bottom-0 start-50 translate-middle-x mb-4 p-3 bg-dark text-white rounded-4 shadow-lg d-flex align-items-center gap-3';
+        toast.style.zIndex = '9999';
+        toast.style.transition = 'all 0.3s ease';
+        toast.innerHTML = `
+            <div class="rounded-circle bg-success text-white p-2 d-flex align-items-center justify-content-center" style="width:36px;height:36px;flex-shrink:0;">
+                <i class="bi bi-check2-circle fs-5"></i>
+            </div>
+            <div>
+                <strong class="d-block text-white" style="font-size:0.9rem;">Starting Download: Women Safety Shield</strong>
+                <small class="text-white-50" style="font-size:0.75rem;">women-safety-shield-v2.4.apk &bull; Open file once downloaded to install.</small>
+            </div>
+            <button type="button" class="btn-close btn-close-white ms-auto" onclick="this.parentElement.remove()"></button>
+        `;
+        document.body.appendChild(toast);
+    }
+    setTimeout(() => {
+        if (toast && toast.parentElement) {
+            toast.remove();
+        }
+    }, 5000);
+}
+
+function promptInstallPWA() {
+    if (deferredInstallPrompt) {
+        deferredInstallPrompt.prompt();
+        deferredInstallPrompt.userChoice.then(() => {
+            deferredInstallPrompt = null;
+        });
+    } else {
+        alert(`To install on your phone:
+1. Open browser menu (⋮ or Share)
+2. Tap "Add to Home Screen"
+3. Quick 1-tap SOS is ready!`);
+    }
+}
+
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+    });
+}
+
+function selectMode(mode) {
+    document.querySelectorAll('.sos-mode-box').forEach(el => el.classList.remove('selected'));
+    if (mode === 'button') {
+        document.getElementById('modeBtn').classList.add('selected');
+    } else if (mode === 'voice') {
+        document.getElementById('modeVoice').classList.add('selected');
+        startVoiceListener();
+    } else if (mode === 'shake') {
+        document.getElementById('modeShake').classList.add('selected');
+        startShakeListener();
+    }
+}
+
+function startVoiceListener() {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        alert('Voice keyword detection is not supported in this browser. Please use the button trigger.');
+        return;
+    }
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    speechRecognizer = new SpeechRecognition();
+    speechRecognizer.continuous = true;
+    speechRecognizer.interimResults = false;
+    speechRecognizer.lang = 'en-US';
+
+    document.getElementById('locDisplay').innerHTML = '<span class="text-danger fw-bold"><i class="bi bi-mic-fill me-1"></i>Listening for "Help" or "Emergency"...</span>';
+
+    speechRecognizer.onresult = function(event) {
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+            let phrase = event.results[i][0].transcript.toLowerCase();
+            if (phrase.includes('help') || phrase.includes('bachao') || phrase.includes('emergency') || phrase.includes('save me')) {
+                speechRecognizer.stop();
+                openSosModal('voice');
+                break;
+            }
+        }
+    };
+    try {
+        speechRecognizer.start();
+    } catch(e) {}
+}
+
+let lastX, lastY, lastZ;
+function startShakeListener() {
+    shakeActive = true;
+    document.getElementById('locDisplay').innerHTML = '<span class="text-danger fw-bold"><i class="bi bi-phone-vibrate me-1"></i>Shake Trigger Armed: Shake phone vigorously</span>';
+
+    if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+        DeviceMotionEvent.requestPermission()
+            .then(res => {
+                if (res === 'granted') window.addEventListener('devicemotion', handleMotion);
+            });
+    } else {
+        window.addEventListener('devicemotion', handleMotion);
+    }
+}
+
+function handleMotion(e) {
+    if (!shakeActive) return;
+    const acc = e.accelerationIncludingGravity;
+    if (!acc) return;
+    const delta = Math.abs(acc.x - (lastX||0)) + Math.abs(acc.y - (lastY||0));
+    if (delta > 35) {
+        shakeActive = false;
+        window.removeEventListener('devicemotion', handleMotion);
+        openSosModal('shake');
+    }
+    lastX = acc.x; lastY = acc.y; lastZ = acc.z;
+}
+
+function syncUserLocation() {
+    if (!navigator.geolocation) {
+        alert('Geolocation is not supported by your device/browser.');
+        return;
+    }
+    const locDisp = document.getElementById('locDisplay');
+    const ribLoc = document.getElementById('ribbonLoc');
+    if (locDisp) locDisp.innerHTML = '<span class="spinner-border spinner-border-sm text-danger"></span> Acquiring GPS...';
+    
+    navigator.geolocation.getCurrentPosition(pos => {
+        currentLat = pos.coords.latitude;
+        currentLng = pos.coords.longitude;
+        const coordsStr = `${currentLat.toFixed(4)}, ${currentLng.toFixed(4)}`;
+        if (locDisp) locDisp.textContent = `GPS Ready (${coordsStr})`;
+        if (ribLoc) ribLoc.textContent = coordsStr;
+        if (document.getElementById('modalLat')) document.getElementById('modalLat').value = currentLat;
+        if (document.getElementById('modalLng')) document.getElementById('modalLng').value = currentLng;
+        
+        if (routeMap) {
+            routeMap.setView([currentLat, currentLng], 14);
+            if (radiusCircle) radiusCircle.setLatLng([currentLat, currentLng]);
+        }
+
+        const syncForm = document.getElementById('syncGpsForm');
+        if (syncForm) {
+            document.getElementById('syncLat').value = currentLat;
+            document.getElementById('syncLng').value = currentLng;
+            syncForm.submit();
+        }
+    }, err => {
+        alert('GPS sync error: ' + err.message);
+        if (locDisp) locDisp.textContent = 'GPS Ready (28.4703, 77.4939)';
+    });
+}
+
+// ROUTE MAP & RADIUS SCANNER LOGIC
+const routeCoordinates = {
+    'A': [
+        { lat: 28.4703, lng: 77.4939 },
+        { lat: 28.4740, lng: 77.4990 },
+        { lat: 28.4780, lng: 77.5050 },
+        { lat: 28.4815, lng: 77.5110 }
+    ],
+    'B': [
+        { lat: 28.4703, lng: 77.4939 },
+        { lat: 28.4715, lng: 77.4980 },
+        { lat: 28.4750, lng: 77.5010 },
+        { lat: 28.4790, lng: 77.5060 },
+        { lat: 28.4815, lng: 77.5110 }
+    ]
+};
+
+function switchRoute(route) {
+    const btnA = document.getElementById('btnRouteA');
+    const btnB = document.getElementById('btnRouteB');
+    if (btnA) btnA.classList.toggle('selected', route === 'A');
+    if (btnB) btnB.classList.toggle('selected', route === 'B');
+
+    if (currentRouteLayer) {
+        currentRouteLayer.setMap(null);
+        currentRouteLayer = null;
+    }
+
+    if (!routeMap || !window.google || !window.google.maps) return;
+
+    if (route === 'A') {
+        currentRouteLayer = new google.maps.Polyline({
+            path: routeCoordinates['A'],
+            geodesic: true,
+            strokeColor: '#27ae60',
+            strokeOpacity: 0.9,
+            strokeWeight: 6,
+            map: routeMap
+        });
+
+        const scoreEl = document.getElementById('routeScoreText');
+        if (scoreEl) {
+            scoreEl.className = 'text-success';
+            scoreEl.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i>Safest Path Recommended';
+        }
+        const lightEl = document.getElementById('routeLighting');
+        if (lightEl) lightEl.textContent = '94%';
+        const polEl = document.getElementById('routePolice');
+        if (polEl) polEl.textContent = '220m';
+    } else {
+        const lineSymbol = {
+            path: 'M 0,-1 0,1',
+            strokeOpacity: 1,
+            scale: 3
+        };
+        currentRouteLayer = new google.maps.Polyline({
+            path: routeCoordinates['B'],
+            geodesic: true,
+            strokeColor: '#e67e22',
+            strokeOpacity: 0,
+            strokeWeight: 5,
+            icons: [{
+                icon: lineSymbol,
+                offset: '0',
+                repeat: '12px'
+            }],
+            map: routeMap
+        });
+
+        const scoreEl = document.getElementById('routeScoreText');
+        if (scoreEl) {
+            scoreEl.className = 'text-warning';
+            scoreEl.innerHTML = '<i class="bi bi-exclamation-triangle-fill me-1"></i>Caution: Dimly Lit Path (Score 4.8/10)';
+        }
+        const lightEl = document.getElementById('routeLighting');
+        if (lightEl) lightEl.textContent = '42%';
+        const polEl = document.getElementById('routePolice');
+        if (polEl) polEl.textContent = '1.2 km';
+    }
+}
+
+function updateRadius(val) {
+    const radValEl = document.getElementById('radVal');
+    if (radValEl) radValEl.textContent = val + ' KM';
+    const meters = parseInt(val) * 1000;
+
+    if (radiusCircle && radiusCircle.setRadius) {
+        radiusCircle.setRadius(meters);
+    }
+
+    const countElem = document.getElementById('responderCountText');
+    const etaElem = document.getElementById('responderEtaText');
+
+    if (countElem && etaElem) {
+        if (val <= 2) {
+            countElem.textContent = '1 Verified Citizen Active';
+            etaElem.textContent = '2 mins';
+        } else if (val <= 4) {
+            countElem.textContent = '3 Verified Citizens Active';
+            etaElem.textContent = '4 mins';
+        } else if (val <= 7) {
+            countElem.textContent = '8 Verified Citizens Active';
+            etaElem.textContent = '7 mins';
+        } else {
+            countElem.textContent = '18 Verified Citizens Active';
+            etaElem.textContent = '12 mins';
+        }
+    }
+}
+
+let routeUserMarker = null;
+let routeCitizenMarker = null;
+
+function initRouteMap() {
+    const mapEl = document.getElementById('routeMap');
+    if (!mapEl) return;
+
+    function renderRoute() {
+        if (!routeMap) {
+            routeMap = GoogleMapsShield.createMap(mapEl, {
+                center: { lat: currentLat, lng: currentLng },
+                zoom: 14,
+                mapId: 'DEMO_MAP_ID'
+            });
+        }
+
+        if (!routeUserMarker) {
+            routeUserMarker = GoogleMapsShield.createCustomMarker(routeMap, {
+                lat: currentLat,
+                lng: currentLng,
+                title: 'Your Current Location',
+                color: '#B3243A',
+                scale: 9,
+                popupContent: '<b>Your Current Location</b>'
+            });
+        } else {
+            routeUserMarker.setPosition(currentLat, currentLng);
+        }
+
+        if (!radiusCircle) {
+            radiusCircle = GoogleMapsShield.createRadiusCircle(routeMap, currentLat, currentLng, 3000, {
+                strokeColor: '#B3243A',
+                strokeOpacity: 0.8,
+                strokeWeight: 1.5,
+                fillColor: '#B3243A',
+                fillOpacity: 0.1
+            });
+        } else {
+            radiusCircle.setCenter({ lat: currentLat, lng: currentLng });
+        }
+
+        switchRoute('A');
+
+        if (!routeCitizenMarker) {
+            routeCitizenMarker = GoogleMapsShield.createCustomMarker(routeMap, {
+                lat: currentLat + 0.005,
+                lng: currentLng + 0.006,
+                title: 'Verified Resident Protector',
+                color: '#D9A441',
+                scale: 8,
+                popupContent: '<b>Verified Resident Protector</b><br>450m away &bull; ETA 3 mins'
+            });
+        }
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(pos => {
+                currentLat = pos.coords.latitude;
+                currentLng = pos.coords.longitude;
+                const coordsStr = `${currentLat.toFixed(4)}, ${currentLng.toFixed(4)}`;
+                const locDisp = document.getElementById('locDisplay');
+                const ribLoc = document.getElementById('ribbonLoc');
+                if (locDisp) locDisp.textContent = `GPS Ready (${coordsStr})`;
+                if (ribLoc) ribLoc.textContent = coordsStr;
+                if (document.getElementById('modalLat')) document.getElementById('modalLat').value = currentLat;
+                if (document.getElementById('modalLng')) document.getElementById('modalLng').value = currentLng;
+                if (routeMap) {
+                    routeMap.setCenter({ lat: currentLat, lng: currentLng });
+                    if (routeUserMarker) routeUserMarker.setPosition(currentLat, currentLng);
+                    if (radiusCircle) radiusCircle.setCenter({ lat: currentLat, lng: currentLng });
+                }
+            });
+        }
+
+        setSimStep(1);
+    }
+
+    if (window.GoogleMapsShield) {
+        window.GoogleMapsShield.load("{{ GOOGLE_MAPS_API_KEY|default:'' }}", renderRoute);
+    } else {
+        renderRoute();
+    }
+}
+
+document.addEventListener('DOMContentLoaded', initRouteMap);
+</script>
+</body>
+</html>

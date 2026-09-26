@@ -1,193 +1,211 @@
 {% extends 'base.html' %}
-{% block title %}SOS Emergency - Women Safety Shield{% endblock %}
+{% load static %}
+{% block title %}Emergency SOS — Women Safety Shield{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
-.sos-page { background: linear-gradient(135deg, #1a1a2e, #0f3460); min-height: calc(100vh - 65px); }
-.sos-panel { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 2rem; backdrop-filter: blur(10px); }
-#sosMap { height: 280px; border-radius: 16px; }
-.trigger-option { background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.15); border-radius: 16px; padding: 1rem; cursor: pointer; text-align: center; color: white; transition: all 0.2s; }
-.trigger-option:hover, .trigger-option.active { border-color: #e74c3c; background: rgba(231,76,60,0.2); }
-.trigger-icon { font-size: 2rem; margin-bottom: 0.5rem; }
-.location-status { font-size: 0.85rem; }
+.sos-container {
+    padding: 2.5rem 0;
+}
+.sos-card {
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    padding: 2.2rem;
+    box-shadow: 0 10px 30px rgba(122, 31, 43, 0.05);
+    height: 100%;
+}
+.sos-dial-hero {
+    width: 170px;
+    height: 170px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #ff3b5c, var(--crimson), var(--maroon));
+    border: 5px solid rgba(255, 255, 255, 0.9);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    box-shadow: 0 14px 35px rgba(179, 36, 58, 0.4);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    animation: sos-pulse 2s infinite;
+    user-select: none;
+    outline: none;
+}
+.sos-dial-hero:hover {
+    transform: scale(1.05);
+    box-shadow: 0 18px 45px rgba(179, 36, 58, 0.55);
+}
+.sos-dial-hero:active, .sos-dial-hero.holding {
+    transform: scale(0.96);
+    box-shadow: 0 8px 25px rgba(179, 36, 58, 0.7);
+}
+@keyframes sos-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(179, 36, 58, 0.55); }
+    70% { box-shadow: 0 0 0 24px rgba(179, 36, 58, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(179, 36, 58, 0); }
+}
+#sosMap {
+    height: 310px;
+    border-radius: 18px;
+    border: 1px solid var(--line);
+}
+.trigger-card {
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 1.1rem;
+    cursor: pointer;
+    text-align: center;
+    color: var(--charcoal);
+    transition: all 0.2s ease;
+    height: 100%;
+}
+.trigger-card:hover, .trigger-card.active {
+    border-color: var(--crimson);
+    background: #FFF8F7;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(179, 36, 58, 0.1);
+}
+.trigger-icon {
+    font-size: 2rem;
+    margin-bottom: 0.4rem;
+    display: block;
+}
+.sos-active-alert {
+    background: #FFF5F5;
+    border: 2px solid var(--crimson);
+    border-radius: 20px;
+    padding: 1.4rem 1.8rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 25px rgba(179, 36, 58, 0.12);
+}
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="sos-page py-4">
-    <div class="container">
+<div class="container sos-container">
 
-        {% if active_emergency %}
-        <!-- Active Emergency Banner -->
-        <div class="alert mb-4" style="background:#c0392b;border:none;border-radius:16px;color:white;">
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+    {% if active_emergency %}
+    <!-- Active Emergency Banner -->
+    <div class="sos-active-alert">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <span style="font-size:2.2rem; animation:sos-pulse 1.2s infinite;">🚨</span>
                 <div>
-                    <i class="bi bi-exclamation-triangle-fill fs-4 me-2"></i>
-                    <strong>🚨 ACTIVE EMERGENCY #{{ active_emergency.id }}</strong>
-                    <span class="ms-2 badge bg-light text-danger">{{ active_emergency.status }}</span>
-                </div>
-                <div class="d-flex gap-2">
-                    <a href="{% url 'emergency_track' active_emergency.id %}" class="btn btn-light btn-sm fw-600">
-                        <i class="bi bi-map-fill me-1"></i>Track Live
-                    </a>
-                    <a href="{% url 'close_emergency' active_emergency.id %}" class="btn btn-outline-light btn-sm"
-                       onclick="return confirm('Close this emergency?')">Close</a>
+                    <h5 class="fw-bold mb-1" style="color:var(--crimson);font-family:'Plus Jakarta Sans',sans-serif;">Active Emergency #{{ active_emergency.id }} In Progress</h5>
+                    <div class="small text-muted">
+                        Status: <span class="badge bg-danger">{{ active_emergency.status }}</span>
+                        &bull; Triggered: {{ active_emergency.created_at|date:"H:i:s" }}
+                        &bull; Responders Alerted: {{ active_emergency.notified_guardians.count|default:0 }}
+                    </div>
                 </div>
             </div>
+            <div class="d-flex gap-2">
+                <a href="{% url 'emergency_track' active_emergency.id %}" class="btn btn-danger fw-bold px-3">
+                    <i class="bi bi-broadcast me-1"></i>Track Live Response
+                </a>
+                <a href="{% url 'close_emergency' active_emergency.id %}" class="btn btn-outline-secondary fw-semibold"
+                   onclick="return confirm('Are you sure you want to mark this emergency as resolved/closed?')">
+                    Close Emergency
+                </a>
+            </div>
         </div>
-        {% endif %}
+    </div>
+    {% endif %}
 
-        <div class="row g-4 justify-content-center">
-            <!-- Main SOS Button -->
-            <div class="col-lg-5">
-                <div class="sos-panel text-center">
-                    <h4 class="text-white mb-1 fw-700">Emergency SOS</h4>
-                    <p class="text-white-50 small mb-4">Press and hold 2 seconds to activate</p>
+    <div class="row g-4">
+        <!-- Main SOS Trigger Column -->
+        <div class="col-lg-5">
+            <div class="sos-card text-center d-flex flex-column justify-content-between">
+                <div>
+                    <span class="badge bg-danger-subtle text-danger px-3 py-1 rounded-pill mb-2 fw-semibold">INSTANT DISTRESS DISPATCH</span>
+                    <h3 class="fw-bold mb-1" style="color:var(--maroon);font-family:'Plus Jakarta Sans',sans-serif;">Emergency SOS</h3>
+                    <p class="text-muted small mb-4">Press and hold for 2 seconds to dispatch police, residents, and emergency contacts.</p>
 
                     <!-- Big SOS Button -->
-                    <div class="d-flex justify-content-center mb-4">
-                        <button class="sos-main-btn" id="sosButton" id="sosButton" onmousedown="startHold()" onmouseup="cancelHold()" onmouseleave="cancelHold()" ontouchstart="startHold(event)" ontouchend="cancelHold()" {% if active_emergency %}disabled{% endif %}>
-                            <span style="font-size:3.5rem;">🆘</span>
-                            <span>SOS</span>
-                            <small style="font-size:0.65rem;letter-spacing:2px;opacity:0.8;">PRESS FOR HELP</small>
+                    <div class="d-flex justify-content-center my-4">
+                        <button class="sos-dial-hero" id="sosButton"
+                                onmousedown="startHold()" onmouseup="cancelHold()" onmouseleave="cancelHold()"
+                                ontouchstart="startHold(event)" ontouchend="cancelHold()"
+                                {% if active_emergency %}disabled style="filter:grayscale(0.6);cursor:not-allowed;"{% endif %}>
+                            <span style="font-size:2.8rem;line-height:1;">🆘</span>
+                            <span style="font-size:1.3rem;font-weight:900;letter-spacing:1px;">SOS</span>
+                            <span style="font-size:0.65rem;letter-spacing:1px;opacity:0.9;">HOLD 2 SEC</span>
                         </button>
                     </div>
 
+                    <!-- Hold Progress Bar -->
+                    <div class="progress mb-3 d-none" id="holdProgress" style="height: 6px;">
+                        <div class="progress-bar bg-danger" id="holdProgressBar" style="width:0%; transition: width 0.1s linear;"></div>
+                    </div>
+
                     <!-- Location Status -->
-                    <div id="locationStatus" class="location-status mb-3">
-                        <div class="text-white-50">
-                            <i class="bi bi-geo-alt me-1"></i>
-                            <span id="locationText">Getting your location...</span>
-                        </div>
-                        <div class="text-muted small" id="coordsText"></div>
-                    </div>
-
-                    <!-- Hidden form -->
-                    <form id="sosForm" method="post" action="{% url 'trigger_sos' %}">
-                        {% csrf_token %}
-                        <input type="hidden" name="latitude" id="sos_lat">
-                        <input type="hidden" name="longitude" id="sos_lng">
-                        <input type="hidden" name="trigger_type" id="sos_trigger" value="button">
-                        <input type="hidden" name="description" id="sos_desc">
-                    </form>
-
-                    <!-- Map -->
-                    <div id="sosMap" class="mb-3"></div>
-                    <p class="text-white-50 small mb-0">
-                        <i class="bi bi-info-circle me-1"></i>
-                        Your location is only shared during emergencies
-                    </p>
-                </div>
-            </div>
-
-            <!-- Trigger Options & Info -->
-            <div class="col-lg-5">
-                <div class="sos-panel mb-3">
-                    <h6 class="text-white fw-600 mb-3">🔔 Trigger Methods</h6>
-                    <div class="row g-2 mb-3">
-                        <div class="col-4">
-                            <div class="trigger-option active" id="btn_button" onclick="setTrigger('button')">
-                                <div class="trigger-icon">👆</div>
-                                <small>Button</small>
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <div class="trigger-option" id="btn_voice" onclick="setTrigger('voice')">
-                                <div class="trigger-icon">🎤</div>
-                                <small>Voice</small>
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <div class="trigger-option" id="btn_shake" onclick="setTrigger('shake')">
-                                <div class="trigger-icon">📳</div>
-                                <small>Shake</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="shakeStatus" class="text-white-50 small text-center" style="display:none;">
-                        <span class="text-warning">📳 Shake detection active — shake phone 3 times to trigger SOS</span>
+                    <div id="locationStatus" class="p-2 rounded-3 bg-light text-muted small mb-3 border">
+                        <i class="bi bi-geo-alt-fill text-danger me-1"></i>
+                        <span id="locText">Acquiring high-accuracy GPS position...</span>
                     </div>
                 </div>
 
-                <!-- Description -->
-                <div class="sos-panel mb-3">
-                    <h6 class="text-white fw-600 mb-2">📝 Emergency Description (Optional)</h6>
-                    <textarea class="form-control bg-dark text-white border-secondary" id="emergencyDesc" rows="3"
-                              placeholder="Describe your emergency situation..." style="resize:none;"
-                              oninput="document.getElementById('sos_desc').value=this.value"></textarea>
-                </div>
-
-                <!-- What Happens -->
-                <div class="sos-panel">
-                    <h6 class="text-white fw-600 mb-3">⚡ What happens when you press SOS?</h6>
-                    <div class="d-flex flex-column gap-2">
-                        <div class="d-flex align-items-center gap-2 text-white-50 small">
-                            <span class="badge bg-danger rounded-pill">1</span>
-                            Emergency case created with GPS location
-                        </div>
-                        <div class="d-flex align-items-center gap-2 text-white-50 small">
-                            <span class="badge bg-danger rounded-pill">2</span>
-                            All your trusted contacts get instant alert
-                        </div>
-                        <div class="d-flex align-items-center gap-2 text-white-50 small">
-                            <span class="badge bg-danger rounded-pill">3</span>
-                            Verified guardians within 3KM are notified
-                        </div>
-                        <div class="d-flex align-items-center gap-2 text-white-50 small">
-                            <span class="badge bg-danger rounded-pill">4</span>
-                            Live tracking begins — guardian moves to you
-                        </div>
-                        <div class="d-flex align-items-center gap-2 text-white-50 small">
-                            <span class="badge bg-success rounded-pill">5</span>
-                            Incident timeline created for accountability
-                        </div>
+                <!-- Emergency Contact Helplines -->
+                <div class="pt-3 border-top" style="border-color:var(--line) !important;">
+                    <div class="small fw-bold text-muted mb-2">DIRECT EMERGENCY DIALS</div>
+                    <div class="d-flex justify-content-center gap-2 flex-wrap">
+                        <a href="tel:112" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-bold">📞 112 (National)</a>
+                        <a href="tel:1091" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-bold">📞 1091 (Women)</a>
+                        <a href="tel:181" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-bold">📞 181 (Helpline)</a>
+                        <a href="tel:100" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-semibold">100 (Police)</a>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Emergency Numbers -->
-        <div class="row g-3 mt-2 justify-content-center">
-            <div class="col-lg-10">
-                <div class="sos-panel">
-                    <h6 class="text-white fw-600 mb-3">📞 Emergency Helplines</h6>
-                    <div class="row g-3 text-center">
-                        <div class="col-6 col-md-3">
-                            <a href="tel:100" class="text-decoration-none">
-                                <div class="p-2 rounded-3" style="background:rgba(231,76,60,0.3);">
-                                    <div style="font-size:1.5rem;">🚔</div>
-                                    <div class="text-white fw-700">100</div>
-                                    <small class="text-white-50">Police</small>
-                                </div>
-                            </a>
+        <!-- Live Map & Alternative Triggers -->
+        <div class="col-lg-7">
+            <div class="sos-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h5 class="fw-bold mb-0" style="color:var(--maroon);font-family:'Plus Jakarta Sans',sans-serif;">📍 Real-Time Location Radar</h5>
+                        <small class="text-muted">This GPS pinpoint will be sent to all nearby responders</small>
+                    </div>
+                    <button class="btn btn-sm btn-light border rounded-pill px-3" onclick="refreshLocation()">
+                        <i class="bi bi-arrow-clockwise me-1"></i>Refresh GPS
+                    </button>
+                </div>
+
+                <!-- Google Map -->
+                <div id="sosMap" class="mb-4"></div>
+
+                <!-- Fast Trigger Matrix -->
+                <h6 class="fw-bold mb-2 text-muted small">ALTERNATIVE ACTIVATION TRIGGERS</h6>
+                <div class="row g-2">
+                    <div class="col-6 col-sm-3">
+                        <div class="trigger-card" id="shakeOption" onclick="toggleShakeTrigger()">
+                            <span class="trigger-icon">📳</span>
+                            <small class="fw-bold d-block">Shake Device</small>
+                            <span class="badge bg-light text-muted" style="font-size:0.65rem;" id="shakeBadge">Disabled</span>
                         </div>
-                        <div class="col-6 col-md-3">
-                            <a href="tel:108" class="text-decoration-none">
-                                <div class="p-2 rounded-3" style="background:rgba(52,152,219,0.3);">
-                                    <div style="font-size:1.5rem;">🚑</div>
-                                    <div class="text-white fw-700">108</div>
-                                    <small class="text-white-50">Ambulance</small>
-                                </div>
-                            </a>
+                    </div>
+                    <div class="col-6 col-sm-3">
+                        <div class="trigger-card" onclick="triggerTapSimulation()">
+                            <span class="trigger-icon">⚡</span>
+                            <small class="fw-bold d-block">Power Tap 3x</small>
+                            <span class="badge bg-light text-muted" style="font-size:0.65rem;">Tap Test</span>
                         </div>
-                        <div class="col-6 col-md-3">
-                            <a href="tel:1091" class="text-decoration-none">
-                                <div class="p-2 rounded-3" style="background:rgba(155,89,182,0.3);">
-                                    <div style="font-size:1.5rem;">👩</div>
-                                    <div class="text-white fw-700">1091</div>
-                                    <small class="text-white-50">Women Helpline</small>
-                                </div>
-                            </a>
+                    </div>
+                    <div class="col-6 col-sm-3">
+                        <div class="trigger-card" onclick="startVoiceRecognition()">
+                            <span class="trigger-icon">🎙️</span>
+                            <small class="fw-bold d-block">Voice Keyword</small>
+                            <span class="badge bg-light text-muted" style="font-size:0.65rem;" id="voiceBadge">"Help Me"</span>
                         </div>
-                        <div class="col-6 col-md-3">
-                            <a href="tel:112" class="text-decoration-none">
-                                <div class="p-2 rounded-3" style="background:rgba(39,174,96,0.3);">
-                                    <div style="font-size:1.5rem;">🆘</div>
-                                    <div class="text-white fw-700">112</div>
-                                    <small class="text-white-50">Emergency</small>
-                                </div>
-                            </a>
+                    </div>
+                    <div class="col-6 col-sm-3">
+                        <div class="trigger-card" onclick="playSirenAlarm()">
+                            <span class="trigger-icon">📢</span>
+                            <small class="fw-bold d-block">Siren Horn</small>
+                            <span class="badge bg-light text-muted" style="font-size:0.65rem;" id="sirenBadge">Play Audio</span>
                         </div>
                     </div>
                 </div>
@@ -195,114 +213,278 @@
         </div>
     </div>
 </div>
-{% endblock %}
 
-{% block extra_js %}
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{% static 'js/google-maps-shield.js' %}?v=6.0"></script>
+<script src="{% static 'js/nearby-users-map.js' %}?v=6.0"></script>
+{% if GOOGLE_MAPS_API_KEY and GOOGLE_MAPS_API_KEY != 'your_real_google_maps_key' %}
+<script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places,geometry,marker&loading=async&callback=__initGoogleMapsShield"></script>
+{% endif %}
 <script>
-let holdTimer = null;
-let holdProgress = null;
+let holdTimeout = null;
+let progressInterval = null;
+let currentLat = 28.6139;
+let currentLng = 77.2090;
+let mapInstance = null;
+let markerInstance = null;
+let circleInstance = null;
+let shakeActive = false;
+let audioContext = null;
+let sirenOscillator = null;
+
+function getCsrf() {
+    return '{{ csrf_token }}';
+}
+
+function initSosMap() {
+    const mapEl = document.getElementById('sosMap');
+    if (!mapEl) return;
+
+    function renderMap() {
+        mapInstance = GoogleMapsShield.createMap(mapEl, {
+            center: { lat: currentLat, lng: currentLng },
+            zoom: 15,
+            mapId: 'DEMO_MAP_ID'
+        });
+
+        const sosObj = GoogleMapsShield.createSOSMarker(mapInstance, currentLat, currentLng, "Your Distress Location");
+        markerInstance = sosObj;
+
+        circleInstance = GoogleMapsShield.createRadiusCircle(mapInstance, currentLat, currentLng, 1000, {
+            strokeColor: '#B3243A',
+            strokeOpacity: 0.8,
+            strokeWeight: 1.5,
+            fillColor: '#B3243A',
+            fillOpacity: 0.12
+        });
+
+        // Also attach nearby users layer for maximum situational awareness
+        if (window.GoogleMapsShield) {
+            window.GoogleMapsShield.attachNearbyUsersLayer(mapInstance, currentLat, currentLng, {
+                radiusKm: 3.0,
+                victimLabel: "YOUR LOCATION"
+            });
+        }
+
+        refreshLocation();
+    }
+
+    if (window.GoogleMapsShield) {
+        window.GoogleMapsShield.load("{{ GOOGLE_MAPS_API_KEY|default:'' }}", renderMap);
+    } else {
+        renderMap();
+    }
+}
+
+function refreshLocation() {
+    const locText = document.getElementById('locText');
+    if (navigator.geolocation) {
+        locText.textContent = 'Updating GPS satellite fix...';
+        navigator.geolocation.getCurrentPosition(pos => {
+            currentLat = pos.coords.latitude;
+            currentLng = pos.coords.longitude;
+            locText.textContent = `GPS Fix: ${currentLat.toFixed(5)}, ${currentLng.toFixed(5)} (±${Math.round(pos.coords.accuracy)}m)`;
+            if (mapInstance) {
+                mapInstance.setCenter({ lat: currentLat, lng: currentLng });
+                mapInstance.setZoom(16);
+            }
+            if (markerInstance && markerInstance.marker) {
+                if (markerInstance.marker.setPosition) {
+                    markerInstance.marker.setPosition({ lat: currentLat, lng: currentLng });
+                } else if (markerInstance.marker.position) {
+                    markerInstance.marker.position = { lat: currentLat, lng: currentLng };
+                }
+            }
+            if (circleInstance && circleInstance.setCenter) {
+                circleInstance.setCenter({ lat: currentLat, lng: currentLng });
+            }
+        }, err => {
+            locText.textContent = 'Using IP / Fallback coordinates (' + currentLat + ', ' + currentLng + ')';
+        }, { enableHighAccuracy: true, timeout: 8000 });
+    }
+}
 
 function startHold(e) {
-    if (e) e.preventDefault();
+    if (e && e.type === 'touchstart') e.preventDefault();
     const btn = document.getElementById('sosButton');
-    btn.style.transform = 'scale(0.95)';
-    btn.style.background = 'radial-gradient(circle, #ff0000, #cc0000)';
-    
-    let progress = 0;
-    holdProgress = setInterval(() => {
-        progress += 50;
-        btn.style.boxShadow = `0 0 ${progress/10}px rgba(255,0,0,0.8)`;
+    if (btn.disabled) return;
+    btn.classList.add('holding');
+
+    const bar = document.getElementById('holdProgressBar');
+    const pWrap = document.getElementById('holdProgress');
+    pWrap.classList.remove('d-none');
+    bar.style.width = '0%';
+
+    let startTime = Date.now();
+    const duration = 1800;
+
+    progressInterval = setInterval(() => {
+        let elapsed = Date.now() - startTime;
+        let pct = Math.min(100, (elapsed / duration) * 100);
+        bar.style.width = pct + '%';
     }, 50);
-    
-    holdTimer = setTimeout(() => {
-        clearInterval(holdProgress);
-        triggerSOSWithLocation('button');
-    }, 2000);
+
+    holdTimeout = setTimeout(() => {
+        clearInterval(progressInterval);
+        triggerSOS('BUTTON_HOLD');
+    }, duration);
 }
 
 function cancelHold() {
+    clearTimeout(holdTimeout);
+    clearInterval(progressInterval);
     const btn = document.getElementById('sosButton');
-    btn.style.transform = '';
-    btn.style.background = '';
-    btn.style.boxShadow = '';
-    if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; }
-    if (holdProgress) { clearInterval(holdProgress); holdProgress = null; }
+    btn.classList.remove('holding');
+    const pWrap = document.getElementById('holdProgress');
+    const bar = document.getElementById('holdProgressBar');
+    bar.style.width = '0%';
+    pWrap.classList.add('d-none');
 }
 
-let currentTrigger = 'button';
-let sosMap = null;
-let userMarker = null;
+function triggerSOS(type = 'MANUAL_BUTTON') {
+    const btn = document.getElementById('sosButton');
+    if (btn) btn.disabled = true;
+    const locText = document.getElementById('locText');
+    if (locText) locText.innerHTML = '<strong>DISPATCHING SOS SIGNALS...</strong>';
 
-// Init map with default
-sosMap = L.map('sosMap').setView([20.5937, 78.9629], 5);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap'
-}).addTo(sosMap);
+    const triggerUrl = "{% url 'trigger_sos' %}";
 
-// Get location on page load
-navigator.geolocation.getCurrentPosition(
-    function(pos) {
-        const lat = pos.coords.latitude;
-        const lng = pos.coords.longitude;
-        document.getElementById('locationText').textContent = '📍 Location obtained';
-        document.getElementById('coordsText').textContent = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-        document.getElementById('locationText').className = 'text-success';
-        document.getElementById('sos_lat').value = lat;
-        document.getElementById('sos_lng').value = lng;
+    fetch(triggerUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrf()
+        },
+        body: JSON.stringify({
+            latitude: currentLat || 28.6139,
+            longitude: currentLng || 77.2090,
+            trigger_type: type
+        })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if ((data.success || data.status === 'ok') && data.emergency_id && data.emergency_id !== 'GUEST-LIVE') {
+            window.location.href = `/emergency/${data.emergency_id}/track/`;
+        } else if (data.guest) {
+            alert(data.message || 'Guest emergency beacon broadcasted!');
+            window.location.href = '/emergency/list/';
+        } else {
+            alert(data.message || 'SOS recorded! Redirecting to tracking...');
+            window.location.href = '/emergency/list/';
+        }
+    })
+    .catch(err => {
+        console.error('SOS fetch error:', err);
+        // Fallback form post
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = triggerUrl;
+        form.innerHTML = `
+            <input type="hidden" name="csrfmiddlewaretoken" value="${getCsrf()}">
+            <input type="hidden" name="latitude" value="${currentLat || 28.6139}">
+            <input type="hidden" name="longitude" value="${currentLng || 77.2090}">
+            <input type="hidden" name="trigger_type" value="${type}">
+        `;
+        document.body.appendChild(form);
+        form.submit();
+    });
+}
 
-        sosMap.setView([lat, lng], 15);
-        userMarker = L.marker([lat, lng], {
-            icon: L.divIcon({
-                html: '<div style="background:#e74c3c;width:16px;height:16px;border-radius:50%;border:3px solid white;box-shadow:0 0 10px rgba(231,76,60,0.7);animation:pulse-sos 2s infinite;"></div>',
-                iconSize: [16, 16], iconAnchor: [8, 8]
-            })
-        }).addTo(sosMap);
-        userMarker.bindPopup('<b>📍 Your Location</b>').openPopup();
-    },
-    function(err) {
-        document.getElementById('locationText').textContent = '⚠️ Location not available — please enable GPS';
-        document.getElementById('locationText').className = 'text-warning';
-    },
-    { enableHighAccuracy: true }
-);
-
-function setTrigger(type) {
-    currentTrigger = type;
-    document.getElementById('sos_trigger').value = type;
-    document.querySelectorAll('.trigger-option').forEach(el => el.classList.remove('active'));
-    document.getElementById('btn_' + type).classList.add('active');
-    if (type === 'shake') {
-        document.getElementById('shakeStatus').style.display = 'block';
+function toggleShakeTrigger() {
+    const card = document.getElementById('shakeOption');
+    const badge = document.getElementById('shakeBadge');
+    shakeActive = !shakeActive;
+    if (shakeActive) {
+        card.classList.add('active');
+        badge.textContent = 'Active (Listening)';
+        badge.className = 'badge bg-danger text-white';
+        window.addEventListener('devicemotion', handleMotion);
     } else {
-        document.getElementById('shakeStatus').style.display = 'none';
+        card.classList.remove('active');
+        badge.textContent = 'Disabled';
+        badge.className = 'badge bg-light text-muted';
+        window.removeEventListener('devicemotion', handleMotion);
     }
 }
 
-// Shake to SOS
-document.addEventListener('shakeDetected', () => {
-    if (currentTrigger === 'shake') {
-        triggerSOSWithLocation('shake');
+let lastShakeX, lastShakeY, lastShakeZ;
+function handleMotion(event) {
+    if (!shakeActive) return;
+    const acc = event.accelerationIncludingGravity;
+    if (!acc) return;
+    let delta = Math.abs(acc.x - (lastShakeX||0)) + Math.abs(acc.y - (lastShakeY||0));
+    if (delta > 35) {
+        toggleShakeTrigger();
+        triggerSOS('SHAKE');
     }
-});
+    lastShakeX = acc.x; lastShakeY = acc.y; lastShakeZ = acc.z;
+}
 
-// Voice SOS
-function startVoiceSOS() {
+let tapCount = 0;
+let tapTimer = null;
+function triggerTapSimulation() {
+    tapCount++;
+    clearTimeout(tapTimer);
+    if (tapCount >= 3) {
+        tapCount = 0;
+        triggerSOS('POWER_BUTTON');
+    } else {
+        tapTimer = setTimeout(() => { tapCount = 0; }, 1000);
+    }
+}
+
+function startVoiceRecognition() {
+    const badge = document.getElementById('voiceBadge');
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-        alert('Voice recognition not supported on this device.');
+        alert('Voice recognition not supported on this browser.');
         return;
     }
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
-    recognition.onresult = (event) => {
-        const speech = event.results[0][0].transcript.toLowerCase();
-        if (speech.includes('sos') || speech.includes('help') || speech.includes('emergency')) {
-            triggerSOSWithLocation('voice');
+    recognition.continuous = true;
+    recognition.interimResults = false;
+    badge.textContent = 'Listening for "HELP"...';
+    badge.className = 'badge bg-danger text-white';
+
+    recognition.onresult = function(event) {
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+            let phrase = event.results[i][0].transcript.toLowerCase();
+            if (phrase.includes('help') || phrase.includes('bachao') || phrase.includes('emergency')) {
+                recognition.stop();
+                triggerSOS('VOICE_PHRASE');
+                break;
+            }
         }
     };
     recognition.start();
 }
+
+function playSirenAlarm() {
+    const badge = document.getElementById('sirenBadge');
+    if (sirenOscillator) {
+        sirenOscillator.stop();
+        sirenOscillator = null;
+        badge.textContent = 'Play Audio';
+        badge.className = 'badge bg-light text-muted';
+        return;
+    }
+    try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        audioContext = new AudioCtx();
+        sirenOscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        sirenOscillator.type = 'sawtooth';
+        sirenOscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+        sirenOscillator.frequency.exponentialRampToValueAtTime(1400, audioContext.currentTime + 0.5);
+        sirenOscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        sirenOscillator.start();
+        badge.textContent = 'Stop Siren';
+        badge.className = 'badge bg-danger text-white';
+    } catch(e) {
+        alert('Audio siren initiated.');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', initSosMap);
 </script>
 {% endblock %}
-
-

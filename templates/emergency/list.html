@@ -75,6 +75,32 @@
         </div>
         {% endfor %}
     </div>
+
+    {% if emergencies.has_other_pages %}
+    <nav class="mt-4" aria-label="Emergencies pagination">
+        <ul class="pagination justify-content-center">
+            {% if emergencies.has_previous %}
+            <li class="page-item"><a class="page-link text-danger" href="?page={{ emergencies.previous_page_number }}">&laquo; Previous</a></li>
+            {% else %}
+            <li class="page-item disabled"><span class="page-link text-muted">&laquo; Previous</span></li>
+            {% endif %}
+
+            {% for num in emergencies.paginator.page_range %}
+                {% if emergencies.number == num %}
+                <li class="page-item active"><span class="page-link bg-danger border-danger text-white fw-bold">{{ num }}</span></li>
+                {% else %}
+                <li class="page-item"><a class="page-link text-dark" href="?page={{ num }}">{{ num }}</a></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if emergencies.has_next %}
+            <li class="page-item"><a class="page-link text-danger" href="?page={{ emergencies.next_page_number }}">Next &raquo;</a></li>
+            {% else %}
+            <li class="page-item disabled"><span class="page-link text-muted">Next &raquo;</span></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
     {% else %}
     <div class="text-center py-5">
         <div style="font-size:5rem;">✅</div>

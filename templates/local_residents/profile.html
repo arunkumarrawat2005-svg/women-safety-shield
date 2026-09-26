@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% block title %}Local Resident Profile - Women Safety Shield{% endblock %}
+{% block content %}
+<div class="container my-4" style="max-width:750px;">
+    <div class="page-header mb-4">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div>
+                <h4 class="fw-800 mb-1">&#128737; My Local Resident Profile</h4>
+                <p class="mb-0 opacity-75">{{ resident.get_local_resident_type_display }}</p>
+            </div>
+            <div class="d-flex gap-2">
+                {% if resident.is_verified or guardian.is_verified %}
+                <a href="{% url 'toggle_availability' %}" class="btn btn-{% if resident.is_available or guardian.is_available %}warning{% else %}success{% endif %} btn-sm fw-600">
+                    {% if resident.is_available or guardian.is_available %}Go Offline{% else %}Go Available{% endif %}
+                </a>
+                {% else %}
+                <button type="button" class="btn btn-outline-warning btn-sm fw-600" disabled title="Pending verification">
+                    <i class="bi bi-clock me-1"></i>Verification Pending
+                </button>
+                {% endif %}
+                <a href="{% url 'guardian_emergencies' %}" class="btn btn-danger btn-sm fw-600">Active SOS</a>
+            </div>
+        </div>
+    </div>
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body p-4">
+            <div class="d-flex align-items-center gap-4 mb-4">
+                <div class="avatar-circle flex-shrink-0" style="width:80px;height:80px;font-size:2.2rem;background:{% if resident.is_verified or guardian.is_verified %}#27ae60{% else %}#f39c12{% endif %};">
+                    {{ request.user.first_name|first|default:request.user.username|first }}
+                </div>
+                <div>
+                    <h4 class="fw-800 mb-1">{{ request.user.full_name }}</h4>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% if resident.is_verified or guardian.is_verified %}<span class="badge bg-success">Verified Resident</span>{% else %}<span class="badge bg-warning text-dark">Pending Verification</span>{% endif %}
+                        <span class="badge {% if resident.is_available or guardian.is_available %}bg-success{% else %}bg-secondary{% endif %}">{% if resident.is_available or guardian.is_available %}Available{% else %}Offline{% endif %}</span>
+                    </div>
+                    {% if resident.organization_name %}<div class="mt-1 text-muted small">{{ resident.organization_name }}</div>{% endif %}
+                </div>
+            </div>
+            <div class="row g-3 mb-4">
+                <div class="col-3"><div class="text-center p-3 bg-light rounded-3"><div class="fw-800 fs-4 text-danger">{{ resident.trust_score|default:guardian.trust_score }}</div><small class="text-muted">Trust Score</small></div></div>
+                <div class="col-3"><div class="text-center p-3 bg-light rounded-3"><div class="fw-800 fs-4">{{ resident.total_responses|default:guardian.total_responses }}</div><small class="text-muted">Total</small></div></div>
+                <div class="col-3"><div class="text-center p-3 bg-light rounded-3"><div class="fw-800 fs-4 text-success">{{ resident.successful_responses|default:guardian.successful_responses }}</div><small class="text-muted">Successful</small></div></div>
+                <div class="col-3"><div class="text-center p-3 bg-light rounded-3"><div class="fw-800 fs-4">{{ resident.response_rate|default:guardian.response_rate }}%</div><small class="text-muted">Rate</small></div></div>
+            </div>
+            {% if resident.description %}<div class="alert alert-light border mb-3"><small>{{ resident.description }}</small></div>{% endif %}
+            <h6 class="fw-700 mb-2">Update My Location</h6>
+            <form method="post" action="{% url 'resident_update_location' %}">
+                {% csrf_token %}
+                <input type="hidden" name="latitude" id="g_lat">
+                <input type="hidden" name="longitude" id="g_lng">
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="getAndSetLocation()">Use Current Location</button>
+                    <button type="submit" class="btn btn-success btn-sm" id="saveLocBtn" disabled>Save Location</button>
+                </div>
+                <div id="locStatus" class="mt-2 small text-muted">
+                    {% if resident.latitude %}Location saved: {{ resident.latitude|floatformat:4 }}, {{ resident.longitude|floatformat:4 }}{% else %}No location saved yet.{% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+    {% if not resident.is_verified and not guardian.is_verified %}
+    <div class="alert alert-warning rounded-4 shadow-sm p-4 mb-4 border-0">
+        <div class="d-flex align-items-start gap-3">
+            <i class="bi bi-shield-exclamation fs-2 text-warning"></i>
+            <div>
+                <h6 class="fw-bold mb-1" style="color:#b45309;">Identity Verification &amp; Safety Assessment Required</h6>
+                <p class="mb-3 small text-muted">
+                    Only verified community members can respond to active emergency alerts and accompany women on safe walks. Please complete your Aadhaar / PAN verification and safety assessment.
+                </p>
+                <a href="{% url 'verification_status' %}" class="btn btn-warning btn-sm fw-bold px-3 py-2 shadow-sm text-dark">
+                    <i class="bi bi-patch-check-fill me-1"></i>Proceed to Verification Process &rarr;
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+<script>
+function getAndSetLocation() {
+    const status = document.getElementById('locStatus');
+    const saveBtn = document.getElementById('saveLocBtn');
+    status.innerText = 'Acquiring GPS location...';
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            pos => {
+                document.getElementById('g_lat').value = pos.coords.latitude;
+                document.getElementById('g_lng').value = pos.coords.longitude;
+                status.innerText = `Acquired: ${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`;
+                saveBtn.disabled = false;
+            },
+            err => {
+                status.innerText = 'Failed to get location: ' + err.message;
+            },
+            { enableHighAccuracy: true }
+        );
+    } else {
+        status.innerText = 'Geolocation not supported by browser.';
+    }
+}
+</script>
+{% endblock %}
