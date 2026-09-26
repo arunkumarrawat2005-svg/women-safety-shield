@@ -211,14 +211,24 @@ else:
         'http://localhost:8000',
         'http://127.0.0.1:8000',
         'https://*.onrender.com',
+        'https://women-safety-shield.onrender.com',
+        'http://women-safety-shield.onrender.com',
         'https://*.vercel.app',
         'https://*.fly.dev'
     ]
 
 if render_hostname:
-    render_origin = f"https://{render_hostname}"
-    if render_origin not in CSRF_TRUSTED_ORIGINS:
-        CSRF_TRUSTED_ORIGINS.append(render_origin)
+    render_origin_https = f"https://{render_hostname}"
+    render_origin_http = f"http://{render_hostname}"
+    if render_origin_https not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(render_origin_https)
+    if render_origin_http not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(render_origin_http)
+
+# Proxy and SSL configuration for PaaS (Render, Fly, Vercel)
+USE_X_FORWARDED_HOST = True
+USE_X_FORWARDED_PORT = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # External Service Credentials
 GOOGLE_MAPS_API_KEY = os.getenv('GOOGLE_MAPS_API_KEY', '')

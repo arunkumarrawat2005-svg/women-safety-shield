@@ -8,7 +8,7 @@ services:
     plan: free
     region: singapore # or oregon, frankfurt, ohio
     buildCommand: "./build.sh"
-    startCommand: "daphne -b 0.0.0.0 -p $PORT women_safety_shield.women_safety_shield.asgi:application"
+    startCommand: "daphne --proxy-headers -b 0.0.0.0 -p $PORT women_safety_shield.women_safety_shield.asgi:application"
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.9
@@ -21,7 +21,7 @@ services:
           name: wss-postgres
           property: connectionString
       - key: SECURE_SSL_REDIRECT
-        value: "True"
+        value: "False"
       - key: GOOGLE_MAPS_API_KEY
         sync: false
       - key: FCM_SERVER_KEY
