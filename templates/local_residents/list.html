@@ -455,9 +455,12 @@
       <!-- Category Filter Pills -->
       <div class="col-lg-8">
         <div class="d-flex flex-wrap gap-2 justify-content-lg-end align-items-center">
-          <a href="{% url 'resident_list' %}" class="category-pill {% if not selected_type and not selected_avail %}active{% endif %}">
+          <a href="{% url 'resident_list' %}" class="category-pill {% if not selected_type and not selected_avail and not user_lat %}active{% endif %}">
             <i class="bi bi-grid-fill"></i> All ({{ total_verified }})
           </a>
+          <button type="button" class="category-pill {% if user_lat %}active{% endif %}" id="pillNearMe" onclick="centerOnUserLocation();">
+            <i class="bi bi-crosshair text-danger"></i> Near Me (GPS)
+          </button>
           <a href="{% url 'resident_list' %}?availability=available" class="category-pill {% if selected_avail == 'available' %}active{% endif %}">
             <span class="pulse-online"></span> Active Now ({{ available_count }})
           </a>
@@ -488,11 +491,28 @@
     </div>
   </div>
 
+  <!-- Active GPS Status Banner (Revealed when Near Me is clicked or GPS is active) -->
+  <div id="gpsStatusBanner" class="alert py-2.5 px-3 rounded-4 shadow-sm border-0 {% if not user_lat %}d-none{% endif %} mb-3 d-flex align-items-center justify-content-between flex-wrap gap-2" style="background:#fff1f2; border-left:5px solid #dc2626 !important;">
+    <div class="d-flex align-items-center gap-2">
+      <span class="pulse-online"></span>
+      <span class="small fw-bold text-danger" id="gpsStatusText">
+        {% if user_lat %}
+        📍 Showing verified guardians near GPS ({{ user_lat|floatformat:4 }}, {{ user_lng|floatformat:4 }}) &middot; 3 KM Safety Circle Active
+        {% else %}
+        📍 Showing verified community guardians within 3 km of your GPS location
+        {% endif %}
+      </span>
+    </div>
+    <button type="button" class="btn btn-sm btn-outline-danger py-1 px-3 fw-semibold rounded-pill" onclick="resetToDefaultArea();">
+      <i class="bi bi-arrow-counterclockwise me-1"></i>Reset Neighborhood
+    </button>
+  </div>
+
   <!-- 7. Verified Guardians Directory Header -->
   <div class="d-flex justify-content-between align-items-center mb-3">
     <div>
       <h5 class="fw-bold mb-0" style="color:var(--maroon);font-family:'Plus Jakarta Sans',sans-serif;">
-        <i class="bi bi-people-fill text-danger me-2"></i>Verified Guardians &amp; Responders ({{ residents.count }})
+        <i class="bi bi-people-fill text-danger me-2"></i>Verified Guardians &amp; Responders ({{ residents|length }})
       </h5>
       <span class="small text-muted">Aadhaar verified &middot; Police cleared &middot; Real-time 3 KM geofenced accompaniment</span>
     </div>
@@ -501,12 +521,12 @@
   <!-- 8. GRID VIEW: Spacious, High-Trust, Attractive Cards -->
   <div id="guardiansGridView" class="row g-4 mb-4">
     {% for r in residents %}
-    <div class="col-md-6 col-lg-4">
+    <div class="col-md-6 col-lg-4 guardian-card-col" data-guardian-card="true" data-id="{{ r.id }}" data-lat="{{ r.latitude|default:'28.6139' }}" data-lng="{{ r.longitude|default:'77.2090' }}">
       <div class="guardian-compact-card h-100 shadow-sm position-relative d-flex flex-column justify-content-between">
         
         <div>
           <!-- Top Row: Avatar Monogram + Name + Verified Badge + Status -->
-          <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
+          <div class="d-flex align-items-start justify-content-between gap-3 mb-2">
             <div class="d-flex align-items-center gap-3 overflow-hidden">
               <!-- 2-Letter Monogram Avatar -->
               <div class="avatar-monogram {% if r.is_available %}avatar-beacon-online{% else %}avatar-beacon-offline{% endif %}"
@@ -540,6 +560,19 @@
               </span>
               {% endif %}
             </div>
+          </div>
+
+          <!-- Dynamic Distance Badge (Populated via backend or client GPS) -->
+          <div class="guardian-dist-container mb-2" id="distContainer{{ r.id }}">
+            {% if r.distance_km is not None %}
+            <span class="badge rounded-pill {% if r.is_nearby %}bg-danger-subtle text-danger border border-danger-subtle{% else %}bg-light text-secondary border{% endif %} px-2.5 py-1 small fw-bold">
+              <i class="bi bi-geo-alt-fill me-1"></i><span class="dist-val">{{ r.distance_text }} away</span> &bull; <span class="eta-val">ETA ~{{ r.eta_mins }} min</span>
+            </span>
+            {% else %}
+            <span class="badge rounded-pill bg-light text-secondary border px-2.5 py-1 small fw-semibold">
+              <i class="bi bi-broadcast me-1 text-danger"></i>3 KM Safety Ring Coverage
+            </span>
+            {% endif %}
           </div>
 
           <!-- Unified Trust & Role Bar (Replaces crammed badges) -->
@@ -1088,29 +1121,282 @@ function fitAllMarkers() {
   }
 }
 
+function haversine(lat1, lon1, lat2, lon2) {
+  const r = 6371.0;
+  const dLat = (lat2 - lat1) * Math.PI / 180.0;
+  const dLon = (lon2 - lon1) * Math.PI / 180.0;
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1 * Math.PI / 180.0) * Math.cos(lat2 * Math.PI / 180.0) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  return r * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+let dynamicRadarMarkers = [];
+let userLocationBeacon = null;
+let userRadarCircle = null;
+
 function centerOnUserLocation() {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(pos => {
-      const lat = pos.coords.latitude;
-      const lng = pos.coords.longitude;
-      if (map) {
-        map.setCenter({ lat: lat, lng: lng });
-        map.setZoom(14);
-        new google.maps.Circle({
-          map: map,
-          center: { lat: lat, lng: lng },
-          radius: 3000,
-          strokeColor: '#C41E3D',
-          strokeOpacity: 0.9,
-          strokeWeight: 2,
-          fillColor: '#C41E3D',
-          fillOpacity: 0.05
-        });
-      }
-    }, err => {
-      alert("Could not detect location. Please check browser GPS permission.");
-    });
+  const btnNearMe = document.getElementById('btnNearMe');
+  const pillNearMe = document.getElementById('pillNearMe');
+  const prevBtnHtml = btnNearMe ? btnNearMe.innerHTML : '';
+  const prevPillHtml = pillNearMe ? pillNearMe.innerHTML : '';
+
+  if (btnNearMe) btnNearMe.innerHTML = `<span class="spinner-border spinner-border-sm me-1" role="status"></span>Locating GPS...`;
+  if (pillNearMe) pillNearMe.innerHTML = `<span class="spinner-border spinner-border-sm me-1" role="status"></span>Locating...`;
+
+  if (!navigator.geolocation) {
+    alert("Geolocation is not supported by your browser.");
+    restoreButtons(prevBtnHtml, prevPillHtml);
+    return;
   }
+
+  navigator.geolocation.getCurrentPosition(pos => {
+    const lat = pos.coords.latitude;
+    const lng = pos.coords.longitude;
+    applyUserLocationRadar(lat, lng);
+    restoreButtons(prevBtnHtml, prevPillHtml, true);
+  }, err => {
+    restoreButtons(prevBtnHtml, prevPillHtml);
+    // Provide a graceful fallback to Central Zone if browser permission is blocked
+    alert("Could not acquire GPS position (Permission denied or timed out). To see responders near you, please grant location access in your browser settings.");
+  }, {
+    enableHighAccuracy: true,
+    timeout: 10000,
+    maximumAge: 30000
+  });
+}
+
+function restoreButtons(btnHtml, pillHtml, isActive = false) {
+  const btnNearMe = document.getElementById('btnNearMe');
+  const pillNearMe = document.getElementById('pillNearMe');
+  if (btnNearMe) {
+    btnNearMe.innerHTML = `<i class="bi bi-crosshair me-1"></i>Near Me (GPS)`;
+    if (isActive) btnNearMe.classList.add('btn-danger', 'text-white');
+  }
+  if (pillNearMe) {
+    pillNearMe.innerHTML = `<i class="bi bi-crosshair text-danger"></i> Near Me (GPS)`;
+    if (isActive) pillNearMe.classList.add('active');
+  }
+}
+
+function applyUserLocationRadar(lat, lng) {
+  if (!map) return;
+
+  // 1. Center map on user coordinates with close zoom
+  map.setCenter({ lat: lat, lng: lng });
+  map.setZoom(14);
+
+  // 2. Clear previous user beacon and 3km circle
+  if (userLocationBeacon) {
+    if (userLocationBeacon.setMap) userLocationBeacon.setMap(null);
+    else if (userLocationBeacon.remove) userLocationBeacon.remove();
+  }
+  if (userRadarCircle) {
+    userRadarCircle.setMap(null);
+  }
+
+  // 3. Render glowing user location beacon marker
+  const beaconHtml = `
+    <div style="width:40px; height:40px; display:flex; align-items:center; justify-content:center; position:relative; cursor:pointer;">
+      <div style="position:absolute; width:100%; height:100%; border-radius:50%; background:rgba(196,30,61,0.3); animation:pulseOnlineGlow 1.6s infinite;"></div>
+      <div style="width:26px; height:26px; border-radius:50%; background:#C41E3D; border:3px solid #ffffff; box-shadow:0 4px 14px rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center; color:#ffffff; font-size:13px; position:relative; z-index:2;">
+        <i class="bi bi-person-fill"></i>
+      </div>
+    </div>
+  `;
+
+  userLocationBeacon = GoogleMapsShield.createCustomMarker(map, {
+    lat: lat,
+    lng: lng,
+    html: beaconHtml,
+    title: "YOU - CURRENT LOCATION",
+    popupContent: `
+      <div style="font-family:'Plus Jakarta Sans',sans-serif; padding:6px; min-width:190px; text-align:center;">
+        <strong style="color:#C41E3D; font-size:14px;"><i class="bi bi-crosshair me-1"></i>YOUR CURRENT LOCATION</strong>
+        <div style="font-size:11px; color:#64748b; margin-top:2px;">GPS: ${lat.toFixed(4)}, ${lng.toFixed(4)}</div>
+        <div style="font-size:10px; background:#fff1f2; color:#be123c; border-radius:6px; padding:3px 6px; margin-top:5px; font-weight:700;">
+          3 KM Emergency Assistance Zone
+        </div>
+      </div>
+    `
+  });
+
+  // 4. Draw 3 KM emergency protection circle
+  userRadarCircle = new google.maps.Circle({
+    map: map,
+    center: { lat: lat, lng: lng },
+    radius: 3000,
+    strokeColor: '#C41E3D',
+    strokeOpacity: 0.9,
+    strokeWeight: 2,
+    fillColor: '#C41E3D',
+    fillOpacity: 0.07
+  });
+
+  // 5. Query live nearby verified responders via smart radar API
+  fetch(`/emergency/smart-radar/?lat=${lat}&lng=${lng}&radius=3`)
+    .then(res => res.json())
+    .then(data => {
+      if (data && data.success && Array.isArray(data.helpers) && data.helpers.length > 0) {
+        renderNearbyRespondersOnRadar(data.helpers, lat, lng);
+      }
+    })
+    .catch(err => console.warn("Smart radar fetch notice:", err));
+
+  // 6. Recalculate distance and ETA for all directory cards on the page
+  updateCardsWithLiveGPS(lat, lng);
+
+  // 7. Reveal and update GPS Status Banner
+  const banner = document.getElementById('gpsStatusBanner');
+  const bannerText = document.getElementById('gpsStatusText');
+  if (banner && bannerText) {
+    bannerText.innerHTML = `📍 Safety Radar Active &middot; Centered at your GPS (${lat.toFixed(4)}, ${lng.toFixed(4)}) &middot; Showing verified community guardians within 3 KM protection ring`;
+    banner.classList.remove('d-none');
+  }
+
+  // 8. Auto-fill pickup location in Safe Walk escort modal
+  const pickupInput = document.getElementById('pickupLocationInput');
+  if (pickupInput) {
+    pickupInput.value = `My GPS Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
+  }
+}
+
+function renderNearbyRespondersOnRadar(helpers, userLat, userLng) {
+  // Clear previous dynamic markers
+  dynamicRadarMarkers.forEach(m => {
+    if (m && m.setMap) m.setMap(null);
+    else if (m && m.remove) m.remove();
+  });
+  dynamicRadarMarkers = [];
+
+  const radarBounds = new google.maps.LatLngBounds();
+  radarBounds.extend(new google.maps.LatLng(userLat, userLng));
+
+  helpers.forEach(h => {
+    const isOnline = h.status.includes('Available') || h.status.includes('On');
+    const markerColor = '#10B981';
+
+    const helperHtml = `
+      <div style="width:38px; height:38px; border-radius:50%; background:${markerColor}; border:3px solid #ffffff; box-shadow:0 4px 14px rgba(16,185,129,0.45); display:flex; align-items:center; justify-content:center; color:#ffffff; font-weight:800; font-size:13px; position:relative; cursor:pointer;">
+        <i class="bi bi-shield-fill-check"></i>
+        <span style="position:absolute; top:-2px; right:-2px; width:11px; height:11px; background:#22c55e; border:2px solid #ffffff; border-radius:50%;"></span>
+      </div>
+    `;
+
+    const popupHtml = `
+      <div style="font-family:'Plus Jakarta Sans',sans-serif; min-width:220px; padding:6px 4px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;">
+          <strong style="color:#7A1F2B; font-size:14px;">${h.name || h.title}</strong>
+          <span style="font-size:10px; padding:2px 6px; border-radius:10px; font-weight:700; background:#dcfce7; color:#15803d;">
+            ● On-Duty
+          </span>
+        </div>
+        <div style="font-size:12px; color:#64748b; margin-bottom:4px;">
+          <i class="bi bi-award-fill" style="color:#f59e0b;"></i> ${h.badge || 'Community Guardian'}
+        </div>
+        <div style="font-size:12px; color:#dc2626; font-weight:700; margin-bottom:6px;">
+          <i class="bi bi-geo-alt-fill"></i> ${h.distance_text || 'Nearby'} away &bull; ETA ~${h.eta_minutes || 2} min
+        </div>
+        <div style="font-size:11px; background:#f8fafc; border:1px solid #e2e8f0; padding:6px 8px; border-radius:8px; margin-bottom:8px; line-height:1.4;">
+          ⭐ <strong>${Number(h.trust_score || 9.8).toFixed(1)} / 10 Trust</strong> &middot; Verified Responder<br>
+          <span style="color:#16a34a; font-weight:600;"><i class="bi bi-check-circle-fill me-1"></i>Inside 3 KM Safety Circle</span>
+        </div>
+        <button type="button" class="btn btn-danger btn-sm w-100 fw-bold" style="font-size:11px; padding:6px;"
+                onclick="openEscortModalWithResident('${h.id.replace('res_', '')}', '${(h.name || h.title).replace(/'/g, "\\'")}', 'Current Neighborhood');">
+          🚶‍♀️ Request Safe Escort
+        </button>
+      </div>
+    `;
+
+    const markerObj = GoogleMapsShield.createCustomMarker(map, {
+      lat: h.lat,
+      lng: h.lng,
+      html: helperHtml,
+      title: h.name || h.title,
+      popupContent: popupHtml
+    });
+
+    if (markerObj) {
+      dynamicRadarMarkers.push(markerObj);
+      radarBounds.extend(new google.maps.LatLng(h.lat, h.lng));
+    }
+  });
+
+  // Fit bounds smoothly to show user and all active responders in circle
+  map.fitBounds(radarBounds, { padding: 40 });
+}
+
+function updateCardsWithLiveGPS(userLat, userLng) {
+  const cardCols = Array.from(document.querySelectorAll('.guardian-card-col'));
+  cardCols.forEach(col => {
+    const cLat = parseFloat(col.dataset.lat || 28.6139);
+    const cLng = parseFloat(col.dataset.lng || 77.2090);
+    const distKm = haversine(userLat, userLng, cLat, cLng);
+    col.dataset.dist = distKm;
+    const dText = distKm < 1.0 ? `${Math.round(distKm * 1000)} m` : `${distKm.toFixed(1)} km`;
+    const etaMin = Math.max(1, Math.round((distKm / 4.5) * 60));
+    const isNearby = distKm <= 3.0;
+
+    const id = col.dataset.id;
+    const distBox = document.getElementById(`distContainer${id}`);
+    if (distBox) {
+      distBox.innerHTML = `
+        <span class="badge rounded-pill ${isNearby ? 'bg-danger-subtle text-danger border border-danger-subtle' : 'bg-light text-secondary border'} px-2.5 py-1 small fw-bold">
+          <i class="bi bi-geo-alt-fill me-1"></i><span class="dist-val">${dText} away</span> &bull; <span class="eta-val">ETA ~${etaMin} min</span>
+          ${isNearby ? '<span class="badge bg-danger text-white rounded-pill ms-1" style="font-size:0.65rem;">Inside 3km</span>' : ''}
+        </span>
+      `;
+    }
+
+    const cardEl = col.querySelector('.guardian-compact-card');
+    if (cardEl) {
+      if (isNearby) {
+        cardEl.style.borderColor = 'rgba(196, 30, 61, 0.45)';
+        cardEl.style.boxShadow = '0 6px 20px rgba(196, 30, 61, 0.08)';
+      } else {
+        cardEl.style.borderColor = '#edf2f7';
+      }
+    }
+  });
+
+  // Re-order card columns in the DOM so closest guardians are always first!
+  const grid = document.getElementById('guardiansGridView');
+  if (grid) {
+    cardCols.sort((a, b) => parseFloat(a.dataset.dist || 9999) - parseFloat(b.dataset.dist || 9999));
+    cardCols.forEach(col => grid.appendChild(col));
+  }
+}
+
+function resetToDefaultArea() {
+  if (userLocationBeacon) {
+    if (userLocationBeacon.setMap) userLocationBeacon.setMap(null);
+    else if (userLocationBeacon.remove) userLocationBeacon.remove();
+    userLocationBeacon = null;
+  }
+  if (userRadarCircle) {
+    userRadarCircle.setMap(null);
+    userRadarCircle = null;
+  }
+  dynamicRadarMarkers.forEach(m => {
+    if (m && m.setMap) m.setMap(null);
+    else if (m && m.remove) m.remove();
+  });
+  dynamicRadarMarkers = [];
+
+  const banner = document.getElementById('gpsStatusBanner');
+  if (banner) banner.classList.add('d-none');
+
+  const btnNearMe = document.getElementById('btnNearMe');
+  const pillNearMe = document.getElementById('pillNearMe');
+  if (btnNearMe) {
+    btnNearMe.classList.remove('btn-danger', 'text-white');
+    btnNearMe.innerHTML = `<i class="bi bi-crosshair me-1"></i>Near Me (GPS)`;
+  }
+  if (pillNearMe) {
+    pillNearMe.classList.remove('active');
+  }
+
+  focusLocalCluster();
 }
 
 function panToResident(lat, lng, id) {
@@ -1166,7 +1452,7 @@ function toggleViewMode(mode) {
 
 function openEscortModalWithResident(id, name, area) {
   const select = document.getElementById('modalResidentSelect');
-  if (select) {
+  if (select && id) {
     select.value = id;
   }
   const modalEl = document.getElementById('safeEscortModal');
@@ -1186,6 +1472,11 @@ function detectGPSPickup() {
 
 document.addEventListener('DOMContentLoaded', () => {
   initRadarMap();
+  {% if user_lat and user_lng %}
+  setTimeout(() => {
+    applyUserLocationRadar({{ user_lat }}, {{ user_lng }});
+  }, 600);
+  {% endif %}
 });
 </script>
 

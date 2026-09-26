@@ -25,15 +25,24 @@ def resident_register(request):
         if form.is_valid():
             resident = form.save(commit=False)
             resident.user = request.user
-            resident.is_verified = False
+            is_user_already_verified = bool(request.user.is_verified or request.user.badge_identity_verified)
+            resident.is_verified = is_user_already_verified
+            resident.is_available = is_user_already_verified
             resident.save()
             request.user.role = 'local_resident'
             request.user.save(update_fields=['role'])
-            messages.success(
-                request,
-                'Application Submitted! Please complete your Identity Verification & Safety Assessment to activate your community guardian badge.'
-            )
-            return redirect('verification_status')
+            if is_user_already_verified:
+                messages.success(
+                    request,
+                    'Welcome to the Local Guardian network! Your verified identity has activated your community responder privileges.'
+                )
+                return redirect('resident_profile')
+            else:
+                messages.success(
+                    request,
+                    'Application Submitted! Please complete your Identity Verification & Safety Assessment to activate your community guardian badge.'
+                )
+                return redirect('verification_status')
 
     return render(request, 'local_residents/register.html', {'form': form})
 
@@ -94,7 +103,26 @@ def update_location(request):
 
 
 def resident_list(request):
+    # Ensure verified local community guardians exist in database
+    if LocalResident.objects.filter(is_verified=True).count() < 6:
+        try:
+            from .seed_data import seed_verified_residents
+            seed_verified_residents()
+        except Exception:
+            pass
+
     residents_qs = LocalResident.objects.filter(is_verified=True).select_related('user')
+
+    # Parse GPS coordinates if supplied
+    user_lat = None
+    user_lng = None
+    try:
+        if request.GET.get('lat') and request.GET.get('lng'):
+            user_lat = float(request.GET.get('lat'))
+            user_lng = float(request.GET.get('lng'))
+    except (ValueError, TypeError):
+        user_lat = None
+        user_lng = None
 
     # Search filter
     q = request.GET.get('q', '').strip()
@@ -131,10 +159,8 @@ def resident_list(request):
     total_verified = LocalResident.objects.filter(is_verified=True).count()
     available_count = LocalResident.objects.filter(is_verified=True, is_available=True).count()
     total_responses_agg = LocalResident.objects.filter(is_verified=True).aggregate(Sum('successful_responses'))['successful_responses__sum'] or 0
-    avg_trust = LocalResident.objects.filter(is_verified=True).aggregate(Avg('trust_score'))['trust_score__avg'] or 9.2
+    avg_trust = LocalResident.objects.filter(is_verified=True).aggregate(Avg('trust_score'))['trust_score__avg'] or 9.6
 
-    # Map radar JSON serialization
-    map_residents = []
     # Distinct fallback offsets for visual distribution if exact coords not set
     coords_fallback = [
         (28.5494, 77.2001, "Hauz Khas / South Campus"),
@@ -145,11 +171,41 @@ def resident_list(request):
         (28.5700, 77.3200, "Mayur Vihar"),
     ]
 
-    for idx, r in enumerate(residents_qs):
+    import math
+    def haversine(lat1, lon1, lat2, lon2):
+        r = 6371.0
+        d_lat = math.radians(lat2 - lat1)
+        d_lon = math.radians(lon2 - lon1)
+        a = (math.sin(d_lat / 2) ** 2 +
+             math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) *
+             math.sin(d_lon / 2) ** 2)
+        return r * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+
+    # Map radar JSON serialization & Distance Calculation
+    map_residents = []
+    residents_list = list(residents_qs)
+
+    for idx, r in enumerate(residents_list):
         fb_lat, fb_lng, fb_area = coords_fallback[idx % len(coords_fallback)]
         lat = r.latitude if r.latitude else fb_lat
         lng = r.longitude if r.longitude else fb_lng
         area = r.area if (r.area and r.area != 'Central Zone') else fb_area
+
+        dist_km = None
+        dist_text = None
+        eta_mins = None
+        is_nearby = False
+
+        if user_lat is not None and user_lng is not None:
+            dist_val = haversine(user_lat, user_lng, lat, lng)
+            dist_km = round(dist_val, 2)
+            dist_text = f"{int(dist_val * 1000)} m" if dist_val < 1.0 else f"{dist_val:.1f} km"
+            eta_mins = max(1, int(round((dist_val / 4.5) * 60)))
+            is_nearby = dist_val <= 3.0
+            r.distance_km = dist_km
+            r.distance_text = dist_text
+            r.eta_mins = eta_mins
+            r.is_nearby = is_nearby
 
         map_residents.append({
             'id': r.id,
@@ -167,7 +223,16 @@ def resident_list(request):
             'badge': r.badge_title or "Community Guardian",
             'responses': r.successful_responses,
             'avatar': (r.user.first_name[0] if r.user.first_name else r.user.username[0]).upper(),
+            'distance_km': dist_km,
+            'distance_text': dist_text,
+            'eta_mins': eta_mins,
+            'is_nearby': is_nearby,
         })
+
+    # If user coordinates are provided, sort closest guardians first
+    if user_lat is not None and user_lng is not None:
+        residents_list.sort(key=lambda x: (getattr(x, 'distance_km', 9999), -getattr(x, 'trust_score', 0)))
+        map_residents.sort(key=lambda x: (x['distance_km'] if x['distance_km'] is not None else 9999, -x['trust_score']))
 
     # Escort requests for current user
     user_escorts = []
@@ -175,8 +240,8 @@ def resident_list(request):
         user_escorts = SafeEscortRequest.objects.filter(requester=request.user)[:5]
 
     return render(request, 'local_residents/list.html', {
-        'residents': residents_qs,
-        'guardians': residents_qs,
+        'residents': residents_list,
+        'guardians': residents_list,
         'residents_json': json.dumps(map_residents),
         'total_verified': total_verified,
         'available_count': available_count,
@@ -188,6 +253,8 @@ def resident_list(request):
         'selected_city': city,
         'user_escorts': user_escorts,
         'type_choices': LocalResident.LOCAL_RESIDENT_TYPE_CHOICES,
+        'user_lat': user_lat,
+        'user_lng': user_lng,
     })
 
 

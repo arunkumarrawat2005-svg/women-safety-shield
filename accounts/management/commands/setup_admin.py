@@ -30,3 +30,15 @@ class Command(BaseCommand):
             user.set_password(password)
             user.save()
             self.stdout.write(self.style.SUCCESS(f"[OK] Existing admin account '{username}' updated and password synced."))
+
+        # Auto-seed verified community guardians / local residents if needed
+        try:
+            from local_residents.seed_data import seed_verified_residents
+            from local_residents.models import LocalResident
+            if LocalResident.objects.filter(is_verified=True).count() < 6:
+                count = seed_verified_residents(admin_user=user)
+                self.stdout.write(self.style.SUCCESS(f"[OK] Seeded {count} verified local community guardians and responders."))
+            else:
+                self.stdout.write(self.style.SUCCESS(f"[OK] Verified local guardians network is already active."))
+        except Exception as e:
+            self.stdout.write(self.style.WARNING(f"[WARNING] Could not seed local residents: {e}"))

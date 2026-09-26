@@ -6,6 +6,13 @@ class LocalResidentService:
     @staticmethod
     def get_nearby(lat, lng, radius_km=3):
         """Find verified, available local residents within radius_km."""
+        if LocalResident.objects.filter(is_verified=True).count() < 6:
+            try:
+                from .seed_data import seed_verified_residents
+                seed_verified_residents()
+            except Exception:
+                pass
+
         residents = LocalResident.objects.filter(is_verified=True, is_available=True).select_related('user')
         nearby = []
         for r in residents:
