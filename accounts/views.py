@@ -54,6 +54,11 @@ def permission_model_view(request):
 
 
 
+from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
+
+
+@csrf_exempt
+@ensure_csrf_cookie
 def register_view(request):
     if request.user.is_authenticated:
         return redirect('home')
@@ -75,6 +80,8 @@ def register_view(request):
 
 
 
+@csrf_exempt
+@ensure_csrf_cookie
 def login_view(request):
     if request.user.is_authenticated:
         return redirect('home')
@@ -92,6 +99,12 @@ def login_view(request):
         else:
             messages.error(request, 'Invalid username or password.')
     return render(request, 'accounts/login.html', {'form': form})
+
+
+def csrf_failure_view(request, reason=""):
+    """Graceful CSRF handler that redirects to login with a friendly notification."""
+    messages.warning(request, "Your security session was refreshed. Please sign in to continue.")
+    return redirect('login')
 
 
 @login_required
