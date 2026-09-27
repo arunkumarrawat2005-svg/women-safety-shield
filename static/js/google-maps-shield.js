@@ -18,6 +18,10 @@
 (function (window) {
     'use strict';
 
+    if (window.GoogleMapsShield && window.GoogleMapsShield._isReady) {
+        return;
+    }
+
     // Suppress Google Maps broken auth overlay box instantly
     try {
         const errHideStyle = document.createElement('style');
@@ -184,7 +188,12 @@
                     const lng = typeof this.pos.lng === 'function' ? this.pos.lng() : this.pos.lng;
                     L.popup().setLatLng([lat, lng]).setContent(this.content).openOn(targetMap);
                 }
+            }
         };
+    }
+
+    if (!window.google.maps.Map) {
+        window.google.maps.Map = function () {};
     }
 
     // Global Google Maps Platform Auth Failure Interceptor
@@ -331,7 +340,8 @@
                 document.head.appendChild(script);
             } else {
                 // No key or demo mode: instantly fire callbacks with universal fallback engine
-                setTimeout(fireCallbacks, 20);
+                isGoogleMapsLoading = false;
+                fireCallbacks();
             }
         },
 
@@ -380,6 +390,8 @@
                     gMap.on = function(event, cb) {
                         return gMap.addListener(event, cb);
                     };
+                    gMap.addLayer = function() {};
+                    gMap.removeLayer = function() {};
 
                     // Monitor container for Google auth failure or empty gray canvas without tiles
                     const self = this;
@@ -434,11 +446,10 @@
                 });
                 el._leaflet_map = lMap;
 
-                // High-contrast, unblocked HD Street Network tiles (CartoDB Voyager CDN)
-                const tileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-                    maxZoom: 20,
-                    subdomains: 'abcd',
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a> | Google Maps Platform Protocol'
+                // High-contrast, unblocked HD Street Network tiles (OpenStreetMap & Esri World Street Map)
+                const tileLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 });
                 
                 // Fallback to Esri World Street Map if tile load fails
@@ -539,34 +550,56 @@
             const lng = typeof opts.lng === 'function' ? opts.lng() : opts.lng;
             const isGoogle = map && map.isGoogleMap === true;
 
-            if (isGoogle) {
-                const position = { lat: lat, lng: lng };
-                let gMarker;
+            if (isGoogle && window.google && window.google.maps) {
+                try {
+                    const position = { lat: lat, lng: lng };
+                    let gMarker = null;
 
-                if (opts.html) {
-                    const el = document.createElement('div');
-                    el.innerHTML = opts.html;
-                    if (google.maps.marker && google.maps.marker.AdvancedMarkerElement) {
-                        gMarker = new google.maps.marker.AdvancedMarkerElement({
-                            map: rawMap,
-                            position: position,
-                            content: el,
-                            title: opts.title || '',
-                            gmpDraggable: !!opts.draggable,
-                            zIndex: opts.zIndex || 100
-                        });
-                        if (opts.onDragEnd) {
-                            gMarker.addListener('dragend', function () {
-                                const p = gMarker.position;
-                                opts.onDragEnd({ lat: typeof p.lat === 'function' ? p.lat() : p.lat, lng: typeof p.lng === 'function' ? p.lng() : p.lng });
+                    if (opts.html) {
+                        const el = document.createElement('div');
+                        el.innerHTML = opts.html;
+                        if (google.maps.marker && google.maps.marker.AdvancedMarkerElement) {
+                            gMarker = new google.maps.marker.AdvancedMarkerElement({
+                                map: rawMap,
+                                position: position,
+                                content: el,
+                                title: opts.title || '',
+                                gmpDraggable: !!opts.draggable,
+                                zIndex: opts.zIndex || 100
                             });
+                            if (opts.onDragEnd) {
+                                gMarker.addListener('dragend', function () {
+                                    const p = gMarker.position;
+                                    opts.onDragEnd({ lat: typeof p.lat === 'function' ? p.lat() : p.lat, lng: typeof p.lng === 'function' ? p.lng() : p.lng });
+                                });
+                            }
+                        } else if (typeof google.maps.Marker === 'function') {
+                            gMarker = new google.maps.Marker({
+                                map: rawMap,
+                                position: position,
+                                title: opts.title || '',
+                                draggable: !!opts.draggable
+                            });
+                            if (opts.onDragEnd) {
+                                gMarker.addListener('dragend', function (event) {
+                                    opts.onDragEnd({ lat: event.latLng.lat(), lng: event.latLng.lng() });
+                                });
+                            }
                         }
-                    } else {
+                    } else if (typeof google.maps.Marker === 'function') {
                         gMarker = new google.maps.Marker({
                             map: rawMap,
                             position: position,
                             title: opts.title || '',
-                            draggable: !!opts.draggable
+                            draggable: !!opts.draggable,
+                            icon: opts.icon || (google.maps.SymbolPath ? {
+                                path: google.maps.SymbolPath.CIRCLE,
+                                scale: opts.scale || 8,
+                                fillColor: opts.color || '#B3243A',
+                                fillOpacity: 1,
+                                strokeColor: '#ffffff',
+                                strokeWeight: 2
+                            } : undefined)
                         });
                         if (opts.onDragEnd) {
                             gMarker.addListener('dragend', function (event) {
@@ -574,64 +607,48 @@
                             });
                         }
                     }
-                } else {
-                    gMarker = new google.maps.Marker({
-                        map: rawMap,
-                        position: position,
-                        title: opts.title || '',
-                        draggable: !!opts.draggable,
-                        icon: opts.icon || {
-                            path: google.maps.SymbolPath.CIRCLE,
-                            scale: opts.scale || 8,
-                            fillColor: opts.color || '#B3243A',
-                            fillOpacity: 1,
-                            strokeColor: '#ffffff',
-                            strokeWeight: 2
+
+                    if (gMarker) {
+                        let infoWindow = null;
+                        if (opts.popupContent && typeof google.maps.InfoWindow === 'function') {
+                            infoWindow = new google.maps.InfoWindow({ content: opts.popupContent });
+                            gMarker.addListener('click', function () {
+                                infoWindow.open({ anchor: gMarker, map: rawMap, shouldFocus: false });
+                            });
                         }
-                    });
-                    if (opts.onDragEnd) {
-                        gMarker.addListener('dragend', function (event) {
-                            opts.onDragEnd({ lat: event.latLng.lat(), lng: event.latLng.lng() });
-                        });
-                    }
-                }
 
-                let infoWindow = null;
-                if (opts.popupContent) {
-                    infoWindow = new google.maps.InfoWindow({ content: opts.popupContent });
-                    gMarker.addListener('click', function () {
-                        infoWindow.open({ anchor: gMarker, map: rawMap, shouldFocus: false });
-                    });
-                }
-
-                return {
-                    marker: gMarker,
-                    infoWindow: infoWindow,
-                    setPosition: function (nLat, nLng) {
-                        const p = { lat: nLat, lng: nLng };
-                        if (gMarker.setPosition) gMarker.setPosition(p);
-                        else if (gMarker.position) gMarker.position = p;
-                    },
-                    setLatLng: function (latlng) {
-                        const nLat = Array.isArray(latlng) ? latlng[0] : (typeof latlng.lat === 'function' ? latlng.lat() : latlng.lat);
-                        const nLng = Array.isArray(latlng) ? latlng[1] : (typeof latlng.lng === 'function' ? latlng.lng() : latlng.lng);
-                        this.setPosition(nLat, nLng);
-                    },
-                    openPopup: function () {
-                        if (infoWindow) infoWindow.open({ anchor: gMarker, map: rawMap, shouldFocus: false });
-                    },
-                    closePopup: function () {
-                        if (infoWindow) infoWindow.close();
-                    },
-                    setMap: function (m) {
-                        const rm = m && m.rawMap ? m.rawMap : m;
-                        if (gMarker.setMap) gMarker.setMap(rm);
-                        else gMarker.map = rm;
-                    },
-                    remove: function () {
-                        this.setMap(null);
+                        return {
+                            marker: gMarker,
+                            infoWindow: infoWindow,
+                            setPosition: function (nLat, nLng) {
+                                const p = { lat: nLat, lng: nLng };
+                                if (gMarker.setPosition) gMarker.setPosition(p);
+                                else if (gMarker.position) gMarker.position = p;
+                            },
+                            setLatLng: function (latlng) {
+                                const nLat = Array.isArray(latlng) ? latlng[0] : (typeof latlng.lat === 'function' ? latlng.lat() : latlng.lat);
+                                const nLng = Array.isArray(latlng) ? latlng[1] : (typeof latlng.lng === 'function' ? latlng.lng() : latlng.lng);
+                                this.setPosition(nLat, nLng);
+                            },
+                            openPopup: function () {
+                                if (infoWindow) infoWindow.open({ anchor: gMarker, map: rawMap, shouldFocus: false });
+                            },
+                            closePopup: function () {
+                                if (infoWindow) infoWindow.close();
+                            },
+                            setMap: function (m) {
+                                const rm = m && m.rawMap ? m.rawMap : m;
+                                if (gMarker.setMap) gMarker.setMap(rm);
+                                else gMarker.map = rm;
+                            },
+                            remove: function () {
+                                this.setMap(null);
+                            }
+                        };
                     }
-                };
+                } catch(e) {
+                    console.warn('[GoogleMapsShield] Google marker creation failed:', e);
+                }
             }
 
             // High-fidelity Leaflet Marker Fallback
@@ -661,7 +678,7 @@
                     title: opts.title || ''
                 });
 
-                if (rawMap) lMarker.addTo(rawMap);
+                if (rawMap && typeof rawMap.addLayer === 'function') lMarker.addTo(rawMap);
 
                 if (opts.popupContent) {
                     lMarker.bindPopup(opts.popupContent);
@@ -766,7 +783,8 @@
                     fillColor: options.fillColor || '#ef4444',
                     fillOpacity: options.fillOpacity || 0.12,
                     weight: options.strokeWeight || 2
-                }).addTo(rawMap);
+                });
+                if (rawMap && typeof rawMap.addLayer === 'function') circle.addTo(rawMap);
 
                 return {
                     circle: circle,
@@ -854,7 +872,8 @@
                     weight: options.strokeWeight || 5,
                     opacity: options.strokeOpacity !== undefined ? options.strokeOpacity : 0.9,
                     dashArray: options.dashArray || null
-                }).addTo(rawMap);
+                });
+                if (rawMap && typeof rawMap.addLayer === 'function') line.addTo(rawMap);
 
                 return {
                     line: line,
@@ -902,21 +921,28 @@
             if (!map || !coordinates || coordinates.length === 0) return;
             const isGoogle = map.isGoogleMap === true;
 
-            if (isGoogle && window.google && window.google.maps) {
-                const bounds = new google.maps.LatLngBounds();
-                coordinates.forEach(c => {
-                    const lat = typeof c.lat === 'function' ? c.lat() : (c.lat !== undefined ? c.lat : c[0]);
-                    const lng = typeof c.lng === 'function' ? c.lng() : (c.lng !== undefined ? c.lng : c[1]);
-                    bounds.extend(new google.maps.LatLng(lat, lng));
-                });
-                map.fitBounds(bounds);
-            } else if (map.fitBounds) {
-                const lCoords = coordinates.map(c => {
-                    const lat = typeof c.lat === 'function' ? c.lat() : (c.lat !== undefined ? c.lat : c[0]);
-                    const lng = typeof c.lng === 'function' ? c.lng() : (c.lng !== undefined ? c.lng : c[1]);
-                    return [lat, lng];
-                });
-                map.fitBounds(lCoords);
+            try {
+                if (isGoogle && window.google && window.google.maps) {
+                    const bounds = new google.maps.LatLngBounds();
+                    coordinates.forEach(c => {
+                        const lat = typeof c.lat === 'function' ? c.lat() : (c.lat !== undefined ? c.lat : c[0]);
+                        const lng = typeof c.lng === 'function' ? c.lng() : (c.lng !== undefined ? c.lng : c[1]);
+                        bounds.extend(new google.maps.LatLng(lat, lng));
+                    });
+                    const target = map.rawMap || map;
+                    if (target && typeof target.fitBounds === 'function') {
+                        target.fitBounds(bounds);
+                    }
+                } else if (map && typeof map.fitBounds === 'function') {
+                    const lCoords = coordinates.map(c => {
+                        const lat = typeof c.lat === 'function' ? c.lat() : (c.lat !== undefined ? c.lat : c[0]);
+                        const lng = typeof c.lng === 'function' ? c.lng() : (c.lng !== undefined ? c.lng : c[1]);
+                        return [lat, lng];
+                    });
+                    map.fitBounds(lCoords);
+                }
+            } catch(err) {
+                console.warn('[GoogleMapsShield] fitBounds handled:', err);
             }
         },
 
@@ -1103,6 +1129,7 @@
         }
     };
 
+    GoogleMapsShield._isReady = true;
     window.GoogleMapsShield = GoogleMapsShield;
 
     // Backward compatibility bridge for any existing NearbyUsersMap calls

@@ -155,7 +155,7 @@
          * Standard helper to mount victim marker, 3km radius, and nearby-user dots onto ANY Google Map or Leaflet map
          */
         attachNearbyUsersLayer: function (map, userLat, userLng, options = {}) {
-            if (window.google && window.google.maps && (map instanceof google.maps.Map || (map && map.setCenter && !map.setView))) {
+            if (window.google && window.google.maps && ((typeof google.maps.Map === 'function' && map instanceof google.maps.Map) || (map && map.setCenter && !map.setView))) {
                 if (window.GoogleMapsShield) {
                     return window.GoogleMapsShield.attachNearbyUsersLayer(map, userLat, userLng, options);
                 }
