@@ -211,10 +211,10 @@
                 </div>
             </div>
         </div>
-    </div>
 </div>
+{% endblock %}
 
-<script src="{% static 'js/google-maps-shield.js' %}?v=6.0"></script>
+{% block extra_js %}
 <script src="{% static 'js/nearby-users-map.js' %}?v=6.0"></script>
 {% if GOOGLE_MAPS_API_KEY and GOOGLE_MAPS_API_KEY != 'your_real_google_maps_key' %}
 <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places,geometry,marker&loading=async&callback=__initGoogleMapsShield"></script>
@@ -240,6 +240,10 @@ function initSosMap() {
     if (!mapEl) return;
 
     function renderMap() {
+        if (window.GoogleMapsShield) {
+            GoogleMapsShield.registerMapInit('sosMap', renderMap);
+        }
+
         mapInstance = GoogleMapsShield.createMap(mapEl, {
             center: { lat: currentLat, lng: currentLng },
             zoom: 15,

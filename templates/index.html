@@ -1579,7 +1579,10 @@ function initRouteMap() {
     if (!mapEl) return;
 
     function renderRoute() {
-        if (!routeMap) {
+        if (window.GoogleMapsShield) {
+            GoogleMapsShield.registerMapInit('routeMap', renderRoute);
+        }
+        if (!routeMap || routeMap.isGoogleMap) {
             routeMap = GoogleMapsShield.createMap(mapEl, {
                 center: { lat: currentLat, lng: currentLng },
                 zoom: 14,

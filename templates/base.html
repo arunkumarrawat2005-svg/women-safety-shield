@@ -16,10 +16,23 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" rel="stylesheet">
   <link href="{% static 'css/main.css' %}?v=5.2" rel="stylesheet">
 
-  {% block extra_css %}{% endblock %}
+  <!-- Core Mapping Libraries (Loaded early in head so maps render with zero downtime) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="{% static 'js/google-maps-shield.js' %}?v=6.2"></script>
   <script>
     window.WS_HOST = "{{ WEBSOCKET_HOST|default:'' }}";
+    // Early Google Maps Platform Auth Failure Interceptor
+    window.gm_authFailure = function() {
+        console.warn('[Global Map Shield] Google Maps authentication rejected. Enforcing instant Leaflet failover.');
+        window.googleMapsAuthFailed = true;
+        try { sessionStorage.setItem('gmp_auth_failed', '1'); } catch(e){}
+        if (window.GoogleMapsShield && window.GoogleMapsShield.failoverAllMapsToLeaflet) {
+            window.GoogleMapsShield.failoverAllMapsToLeaflet();
+        }
+    };
   </script>
+
+  {% block extra_css %}{% endblock %}
 </head>
 <body class="d-flex flex-column min-vh-100">
 
@@ -320,7 +333,6 @@ function triggerMobileSosNav(e) {
 
 <!-- Scripts -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="{% static 'js/main.js' %}"></script>
 {% if user.is_authenticated %}
 <!-- Citizen Rescue Live Emergency Alert Modal -->

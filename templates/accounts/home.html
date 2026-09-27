@@ -2097,7 +2097,10 @@ function initHomeHeroMap() {
     }
 
     function renderMap() {
-        if (!homeHeroMap) {
+        if (window.GoogleMapsShield) {
+            GoogleMapsShield.registerMapInit('homeHeroMap', renderMap);
+        }
+        if (!homeHeroMap || homeHeroMap.isGoogleMap) {
             homeHeroMap = GoogleMapsShield.createMap(mapEl, {
                 center: { lat: currentLat, lng: currentLng },
                 zoom: 14,
@@ -2283,7 +2286,10 @@ function initSmartSosMap() {
     if (!mapEl) return;
 
     function renderMap() {
-        if (!smartSosMap) {
+        if (window.GoogleMapsShield) {
+            GoogleMapsShield.registerMapInit('smartSosMap', renderMap);
+        }
+        if (!smartSosMap || smartSosMap.isGoogleMap) {
             smartSosMap = GoogleMapsShield.createMap(mapEl, {
                 center: { lat: currentLat, lng: currentLng },
                 zoom: 14,
@@ -2995,7 +3001,10 @@ function initRouteMap() {
     if (!mapEl) return;
 
     function renderRoute() {
-        if (!routeMap) {
+        if (window.GoogleMapsShield) {
+            GoogleMapsShield.registerMapInit('routeMap', renderRoute);
+        }
+        if (!routeMap || routeMap.isGoogleMap) {
             routeMap = GoogleMapsShield.createMap(mapEl, {
                 center: { lat: currentLat, lng: currentLng },
                 zoom: 14,

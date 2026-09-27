@@ -209,8 +209,16 @@
         failoverContainerToLeaflet: function(el, options = {}) {
             if (!el) return;
             console.warn('[GoogleMapsShield] Converting container', el.id || el, 'to high-fidelity Leaflet street map.');
+            window.googleMapsAuthFailed = true;
+            try { sessionStorage.setItem('gmp_auth_failed', '1'); } catch(e){}
+
+            // Clean up any existing Leaflet instances on this element
+            if (el._leaflet_id) {
+                try { if (el._leaflet_map) el._leaflet_map.remove(); } catch(e){}
+                el._leaflet_id = null;
+            }
             el.innerHTML = '';
-            
+
             // Check if there is a registered reinit callback
             const entry = this._activeMapRegistry.find(r => r.id === el.id || r.el === el);
             if (entry && typeof entry.initFn === 'function') {
@@ -223,7 +231,10 @@
             }
 
             // Otherwise, create default fallback Leaflet map directly
-            this.createMap(el, Object.assign({}, options, { forceLeaflet: true }));
+            const fallbackMap = this.createMap(el, Object.assign({}, options, { forceLeaflet: true }));
+            if (fallbackMap && fallbackMap.rawMap) {
+                setTimeout(() => { try { fallbackMap.rawMap.invalidateSize(); } catch(e){} }, 100);
+            }
         },
 
         failoverAllMapsToLeaflet: function() {
@@ -283,10 +294,13 @@
                     let attempts = 0;
                     const checkInterval = setInterval(() => {
                         attempts++;
-                        if (window.google && window.google.maps && typeof window.google.maps.Map === 'function') {
+                        if (window.googleMapsAuthFailed) {
                             clearInterval(checkInterval);
                             fireCallbacks();
-                        } else if (attempts > 30) {
+                        } else if (window.google && window.google.maps && typeof window.google.maps.Map === 'function') {
+                            clearInterval(checkInterval);
+                            fireCallbacks();
+                        } else if (attempts > 12) {
                             clearInterval(checkInterval);
                             isGoogleMapsLoading = false;
                             fireCallbacks(); // Fallback ready
@@ -396,7 +410,11 @@
 
             // Attempt 2: High-Resolution Zero-Downtime Fallback Map (Leaflet Engine)
             if (window.L) {
-                // Clear any broken children from failed Google Maps container
+                // Clear any broken children and reset any previous Leaflet instances
+                if (el._leaflet_id) {
+                    try { if (el._leaflet_map) el._leaflet_map.remove(); } catch(e){}
+                    el._leaflet_id = null;
+                }
                 el.innerHTML = '';
 
                 const lMap = L.map(el, {
@@ -405,6 +423,7 @@
                     zoomControl: options.zoomControl !== false,
                     attributionControl: true
                 });
+                el._leaflet_map = lMap;
 
                 // High-contrast, unblocked HD Street Network tiles (CartoDB Voyager CDN)
                 const tileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
@@ -436,15 +455,15 @@
                 lMap.panTo = function (pos) {
                     const lat = typeof pos.lat === 'function' ? pos.lat() : (pos.lat !== undefined ? pos.lat : pos[0]);
                     const lng = typeof pos.lng === 'function' ? pos.lng() : (pos.lng !== undefined ? pos.lng : pos[1]);
-                    lMap.panTo([lat, lng], { animate: true, duration: 1.0 });
+                    L.Map.prototype.panTo.call(lMap, [lat, lng], { animate: true, duration: 1.0 });
                 };
 
                 lMap.setZoom = function (z) {
-                    lMap.setZoom(z);
+                    L.Map.prototype.setZoom.call(lMap, z);
                 };
 
                 lMap.getCenter = function () {
-                    const c = lMap.getCenter();
+                    const c = L.Map.prototype.getCenter.call(lMap);
                     return {
                         lat: () => c.lat,
                         lng: () => c.lng,
@@ -469,14 +488,31 @@
 
                 lMap.fitBounds = function (bounds) {
                     if (!bounds) return;
-                    if (bounds.points && bounds.points.length > 0) {
-                        lMap.fitBounds(bounds.points, { padding: [30, 30] });
-                    } else if (Array.isArray(bounds) && bounds.length > 0) {
-                        lMap.fitBounds(bounds, { padding: [30, 30] });
-                    } else if (bounds.getNorthEast) {
-                        lMap.fitBounds(bounds, { padding: [30, 30] });
+                    try {
+                        if (bounds.points && bounds.points.length > 0) {
+                            L.Map.prototype.fitBounds.call(lMap, bounds.points, { padding: [30, 30] });
+                        } else if (Array.isArray(bounds) && bounds.length > 0) {
+                            const pts = bounds.map(p => {
+                                const lat = typeof p.lat === 'function' ? p.lat() : (p.lat !== undefined ? p.lat : p[0]);
+                                const lng = typeof p.lng === 'function' ? p.lng() : (p.lng !== undefined ? p.lng : p[1]);
+                                return [lat, lng];
+                            }).filter(p => !isNaN(p[0]) && !isNaN(p[1]));
+                            if (pts.length > 0) {
+                                L.Map.prototype.fitBounds.call(lMap, pts, { padding: [30, 30] });
+                            }
+                        } else if (bounds.getNorthEast && bounds.getSouthWest) {
+                            L.Map.prototype.fitBounds.call(lMap, [
+                                [bounds.getSouthWest().lat(), bounds.getSouthWest().lng()],
+                                [bounds.getNorthEast().lat(), bounds.getNorthEast().lng()]
+                            ], { padding: [30, 30] });
+                        }
+                    } catch(err) {
+                        console.warn('fitBounds fallback handled:', err);
                     }
                 };
+
+                setTimeout(() => { try { lMap.invalidateSize(); } catch(e){} }, 100);
+                setTimeout(() => { try { lMap.invalidateSize(); } catch(e){} }, 400);
 
                 return lMap;
             }

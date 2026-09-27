@@ -727,6 +727,10 @@ function initHandoffMap() {
     const mapEl = document.getElementById('handoffMap');
     if (!mapEl) return;
 
+    if (window.GoogleMapsShield) {
+        GoogleMapsShield.registerMapInit('handoffMap', initHandoffMap);
+    }
+
     map = GoogleMapsShield.createMap(mapEl, {
         center: { lat: victimLat, lng: victimLng },
         zoom: 15,

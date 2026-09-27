@@ -401,6 +401,10 @@ function initTrackingMap() {
     const container = document.getElementById('trackingMap');
     if (!container) return;
 
+    if (window.GoogleMapsShield) {
+        GoogleMapsShield.registerMapInit('trackingMap', initTrackingMap);
+    }
+
     trackingMap = GoogleMapsShield.createMap(container, {
         center: { lat: emergencyLat, lng: emergencyLng },
         zoom: 15,

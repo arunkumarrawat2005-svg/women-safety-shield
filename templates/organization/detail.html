@@ -264,9 +264,10 @@
     </div>
   </div>
 </div>
+{% endblock %}
 
+{% block extra_js %}
 {% if organization.latitude and organization.longitude %}
-<script src="{% static 'js/google-maps-shield.js' %}?v=6.0"></script>
 {% if GOOGLE_MAPS_API_KEY and GOOGLE_MAPS_API_KEY != 'your_real_google_maps_key' %}
 <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places,geometry,marker&loading=async&callback=__initGoogleMapsShield"></script>
 {% endif %}
@@ -274,6 +275,10 @@
   function initDetailMap() {
     const mapEl = document.getElementById('detailMap');
     if (!mapEl) return;
+
+    if (window.GoogleMapsShield) {
+      GoogleMapsShield.registerMapInit('detailMap', initDetailMap);
+    }
 
     const lat = {{ organization.latitude }};
     const lng = {{ organization.longitude }};
