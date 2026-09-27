@@ -285,8 +285,18 @@
             if (isGoogleMapsLoading) return;
             isGoogleMapsLoading = true;
 
+            const DENIED_KEYS = [
+                'AIzaSyBcRwJBYIf9ZBhLepkxMRfrLC2VtV9rpQg',
+                'your_real_google_maps_key',
+                'your-google-maps-key',
+                'YOUR_GOOGLE_MAPS_API_KEY',
+                'None',
+                ''
+            ];
+
             // If an API key is provided and valid, attempt loading Google Maps SDK
-            const hasValidKey = (apiKey && apiKey !== 'your_real_google_maps_key' && apiKey !== 'your-google-maps-key' && apiKey.trim().length > 10);
+            const cleanKey = (apiKey || '').trim();
+            const hasValidKey = (cleanKey && !DENIED_KEYS.includes(cleanKey) && cleanKey.length > 10);
             
             if (hasValidKey) {
                 const existingScript = document.querySelector('script[src*="maps.googleapis.com/maps/api/js"]');
@@ -371,36 +381,35 @@
                         return gMap.addListener(event, cb);
                     };
 
-                    // Monitor container for Google auth failure error UI injection
+                    // Monitor container for Google auth failure or empty gray canvas without tiles
                     const self = this;
+                    let hasFailedOver = false;
+
+                    function triggerFailover(reason) {
+                        if (hasFailedOver) return;
+                        hasFailedOver = true;
+                        console.warn('[GoogleMapsShield] Failover triggered (' + reason + '). Hot-swapping to Leaflet HD street map.');
+                        try { if (errObserver) errObserver.disconnect(); } catch(e){}
+                        window.googleMapsAuthFailed = true;
+                        try { sessionStorage.setItem('gmp_auth_failed', '1'); } catch(e){}
+                        self.failoverContainerToLeaflet(el, options);
+                    }
+
                     const errObserver = new MutationObserver(function() {
                         if (el.querySelector('.gm-err-container, .gm-err-message') || (el.innerText && el.innerText.includes('Sorry! Something went wrong'))) {
-                            console.warn('[GoogleMapsShield] Detected Google Maps error overlay in container. Triggering instant failover.');
-                            errObserver.disconnect();
-                            window.googleMapsAuthFailed = true;
-                            try { sessionStorage.setItem('gmp_auth_failed', '1'); } catch(e){}
-                            self.failoverContainerToLeaflet(el, options);
+                            triggerFailover('Google error overlay');
                         }
                     });
                     errObserver.observe(el, { childList: true, subtree: true });
 
+                    // Fast check for tile load: if Google denied billing/key, no tiles ever load
                     setTimeout(function() {
-                        if (el.querySelector('.gm-err-container, .gm-err-message') || (el.innerText && el.innerText.includes('Sorry! Something went wrong'))) {
-                            errObserver.disconnect();
-                            window.googleMapsAuthFailed = true;
-                            try { sessionStorage.setItem('gmp_auth_failed', '1'); } catch(e){}
-                            self.failoverContainerToLeaflet(el, options);
+                        const hasTiles = el.querySelector('.gm-style img, .gm-style canvas');
+                        const hasErr = el.querySelector('.gm-err-container, .gm-err-message') || (el.innerText && el.innerText.includes('Sorry! Something went wrong'));
+                        if (hasErr || !hasTiles) {
+                            triggerFailover(hasErr ? 'Google auth rejected' : 'No Google tiles loaded (Unbilled/denied key)');
                         }
-                    }, 800);
-
-                    setTimeout(function() {
-                        if (el.querySelector('.gm-err-container, .gm-err-message') || (el.innerText && el.innerText.includes('Sorry! Something went wrong'))) {
-                            errObserver.disconnect();
-                            window.googleMapsAuthFailed = true;
-                            try { sessionStorage.setItem('gmp_auth_failed', '1'); } catch(e){}
-                            self.failoverContainerToLeaflet(el, options);
-                        }
-                    }, 2000);
+                    }, 650);
 
                     return gMap;
                 } catch (err) {
