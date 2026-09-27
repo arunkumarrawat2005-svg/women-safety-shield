@@ -184,6 +184,10 @@ function initCommunitySafetyMap() {
     const mapEl = document.getElementById('safetyMap');
     if (!mapEl) return;
 
+    if (window.GoogleMapsShield) {
+        GoogleMapsShield.registerMapInit('safetyMap', initCommunitySafetyMap);
+    }
+
     safetyMap = GoogleMapsShield.createMap(mapEl, {
         center: { lat: 20.5937, lng: 78.9629 },
         zoom: 5,
@@ -218,23 +222,29 @@ function initCommunitySafetyMap() {
         const zones = JSON.parse(document.getElementById('zonesData').textContent);
         zones.forEach(zone => {
             const color = zone.status === 'safe' ? '#27ae60' : zone.status === 'medium' ? '#f39c12' : '#e74c3c';
-            const circle = new google.maps.Circle({
-                map: safetyMap,
-                center: { lat: zone.lat, lng: zone.lng },
-                radius: zone.radius,
+            const zoneHtml = `<b>${zone.name}</b><br>Risk Score: ${zone.risk}/10<br>Status: ${zone.status}`;
+            const circle = GoogleMapsShield.createRadiusCircle(safetyMap, zone.lat, zone.lng, zone.radius, {
                 strokeColor: color,
                 strokeOpacity: 0.8,
                 strokeWeight: 2,
                 fillColor: color,
-                fillOpacity: 0.2
+                fillOpacity: 0.2,
+                clickable: true
             });
-            const info = new google.maps.InfoWindow({
-                content: `<b>${zone.name}</b><br>Risk Score: ${zone.risk}/10<br>Status: ${zone.status}`
-            });
-            circle.addListener('click', function(e) {
-                info.setPosition(e.latLng);
-                info.open(safetyMap);
-            });
+            if (circle && circle.bindPopup) {
+                circle.bindPopup(zoneHtml);
+            }
+            if (circle && circle.addListener) {
+                circle.addListener('click', function(e) {
+                    if (safetyMap.isGoogleMap && window.google && window.google.maps && window.google.maps.InfoWindow) {
+                        try {
+                            const info = new google.maps.InfoWindow({ content: zoneHtml });
+                            if (e && e.latLng) info.setPosition(e.latLng);
+                            info.open(safetyMap.rawMap || safetyMap);
+                        } catch(err){}
+                    }
+                });
+            }
         });
     } catch(e) { console.error('Zones parsing error:', e); }
 

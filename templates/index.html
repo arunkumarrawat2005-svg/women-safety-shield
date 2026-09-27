@@ -1500,20 +1500,18 @@ function switchRoute(route) {
     if (btnB) btnB.classList.toggle('selected', route === 'B');
 
     if (currentRouteLayer) {
-        currentRouteLayer.setMap(null);
+        if (currentRouteLayer.setMap) currentRouteLayer.setMap(null);
+        else if (currentRouteLayer.remove) currentRouteLayer.remove();
         currentRouteLayer = null;
     }
 
-    if (!routeMap || !window.google || !window.google.maps) return;
+    if (!routeMap) return;
 
     if (route === 'A') {
-        currentRouteLayer = new google.maps.Polyline({
-            path: routeCoordinates['A'],
-            geodesic: true,
+        currentRouteLayer = GoogleMapsShield.createPolyline(routeMap, routeCoordinates['A'], {
             strokeColor: '#27ae60',
             strokeOpacity: 0.9,
-            strokeWeight: 6,
-            map: routeMap
+            strokeWeight: 6
         });
 
         const scoreEl = document.getElementById('routeScoreText');
@@ -1526,23 +1524,10 @@ function switchRoute(route) {
         const polEl = document.getElementById('routePolice');
         if (polEl) polEl.textContent = '220m';
     } else {
-        const lineSymbol = {
-            path: 'M 0,-1 0,1',
-            strokeOpacity: 1,
-            scale: 3
-        };
-        currentRouteLayer = new google.maps.Polyline({
-            path: routeCoordinates['B'],
-            geodesic: true,
+        currentRouteLayer = GoogleMapsShield.createPolyline(routeMap, routeCoordinates['B'], {
             strokeColor: '#e67e22',
-            strokeOpacity: 0,
-            strokeWeight: 5,
-            icons: [{
-                icon: lineSymbol,
-                offset: '0',
-                repeat: '12px'
-            }],
-            map: routeMap
+            strokeOpacity: 0.85,
+            strokeWeight: 5
         });
 
         const scoreEl = document.getElementById('routeScoreText');

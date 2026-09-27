@@ -18,6 +18,15 @@
 (function (window) {
     'use strict';
 
+    // Suppress Google Maps broken auth overlay box instantly
+    try {
+        const errHideStyle = document.createElement('style');
+        errHideStyle.id = 'gmp-err-suppressor';
+        errHideStyle.textContent = '.gm-err-container, .gm-err-message, .gm-err-autocomplete { display: none !important; visibility: hidden !important; }';
+        if (document.head) document.head.appendChild(errHideStyle);
+        else document.addEventListener('DOMContentLoaded', () => document.head && document.head.appendChild(errHideStyle));
+    } catch(e){}
+
     let isGoogleMapsLoaded = false;
     let isGoogleMapsLoading = false;
     const loadCallbacks = [];
@@ -175,17 +184,74 @@
                     const lng = typeof this.pos.lng === 'function' ? this.pos.lng() : this.pos.lng;
                     L.popup().setLatLng([lat, lng]).setContent(this.content).openOn(targetMap);
                 }
-            }
         };
     }
 
+    // Global Google Maps Platform Auth Failure Interceptor
+    window.gm_authFailure = function() {
+        console.warn('[GoogleMapsShield] Google Maps API authentication rejected by Google (gm_authFailure). Automatically triggering Zero-Downtime Leaflet fallback.');
+        window.googleMapsAuthFailed = true;
+        try { sessionStorage.setItem('gmp_auth_failed', '1'); } catch(e){}
+        if (typeof GoogleMapsShield !== 'undefined' && GoogleMapsShield.failoverAllMapsToLeaflet) {
+            GoogleMapsShield.failoverAllMapsToLeaflet();
+        }
+    };
+
     const GoogleMapsShield = {
         DEMO_HELPERS: DEMO_HELPERS,
+        _activeMapRegistry: [],
+
+        registerMapInit: function(containerId, initFn, options) {
+            this._activeMapRegistry = this._activeMapRegistry.filter(entry => entry.id !== containerId);
+            this._activeMapRegistry.push({ id: containerId, initFn: initFn, options: options });
+        },
+
+        failoverContainerToLeaflet: function(el, options = {}) {
+            if (!el) return;
+            console.warn('[GoogleMapsShield] Converting container', el.id || el, 'to high-fidelity Leaflet street map.');
+            el.innerHTML = '';
+            
+            // Check if there is a registered reinit callback
+            const entry = this._activeMapRegistry.find(r => r.id === el.id || r.el === el);
+            if (entry && typeof entry.initFn === 'function') {
+                try {
+                    entry.initFn();
+                    return;
+                } catch(err) {
+                    console.error('Re-init failed:', err);
+                }
+            }
+
+            // Otherwise, create default fallback Leaflet map directly
+            this.createMap(el, Object.assign({}, options, { forceLeaflet: true }));
+        },
+
+        failoverAllMapsToLeaflet: function() {
+            window.googleMapsAuthFailed = true;
+            try { sessionStorage.setItem('gmp_auth_failed', '1'); } catch(e){}
+            const entries = [...this._activeMapRegistry];
+            entries.forEach(entry => {
+                const el = typeof entry.id === 'string' ? document.getElementById(entry.id) : (entry.el || null);
+                if (el) {
+                    this.failoverContainerToLeaflet(el, entry.options);
+                }
+            });
+        },
 
         /**
          * Load the Google Maps JavaScript API dynamically with fallback notification
          */
         load: function (apiKey, callback) {
+            const hasAuthFailed = window.googleMapsAuthFailed || (function(){
+                try { return sessionStorage.getItem('gmp_auth_failed') === '1'; } catch(e){ return false; }
+            })();
+
+            if (hasAuthFailed) {
+                // If previous attempt failed auth, immediately fire callback with Leaflet
+                if (callback) setTimeout(callback, 10);
+                return;
+            }
+
             if (window.google && window.google.maps && typeof window.google.maps.Map === 'function') {
                 isGoogleMapsLoaded = true;
                 if (callback) callback();
@@ -260,8 +326,12 @@
             const cLat = typeof center.lat === 'function' ? center.lat() : (center.lat !== undefined ? center.lat : center[0]);
             const cLng = typeof center.lng === 'function' ? center.lng() : (center.lng !== undefined ? center.lng : center[1]);
 
-            // Attempt 1: True Google Maps Platform
-            if (window.google && window.google.maps && typeof window.google.maps.Map === 'function') {
+            const hasAuthFailed = window.googleMapsAuthFailed || (function(){
+                try { return sessionStorage.getItem('gmp_auth_failed') === '1'; } catch(e){ return false; }
+            })();
+
+            // Attempt 1: True Google Maps Platform (ONLY if not previously failed and not forced to Leaflet)
+            if (!options.forceLeaflet && !hasAuthFailed && window.google && window.google.maps && typeof window.google.maps.Map === 'function') {
                 try {
                     const mapOptions = {
                         center: { lat: cLat, lng: cLng },
@@ -286,6 +356,38 @@
                     gMap.on = function(event, cb) {
                         return gMap.addListener(event, cb);
                     };
+
+                    // Monitor container for Google auth failure error UI injection
+                    const self = this;
+                    const errObserver = new MutationObserver(function() {
+                        if (el.querySelector('.gm-err-container, .gm-err-message') || (el.innerText && el.innerText.includes('Sorry! Something went wrong'))) {
+                            console.warn('[GoogleMapsShield] Detected Google Maps error overlay in container. Triggering instant failover.');
+                            errObserver.disconnect();
+                            window.googleMapsAuthFailed = true;
+                            try { sessionStorage.setItem('gmp_auth_failed', '1'); } catch(e){}
+                            self.failoverContainerToLeaflet(el, options);
+                        }
+                    });
+                    errObserver.observe(el, { childList: true, subtree: true });
+
+                    setTimeout(function() {
+                        if (el.querySelector('.gm-err-container, .gm-err-message') || (el.innerText && el.innerText.includes('Sorry! Something went wrong'))) {
+                            errObserver.disconnect();
+                            window.googleMapsAuthFailed = true;
+                            try { sessionStorage.setItem('gmp_auth_failed', '1'); } catch(e){}
+                            self.failoverContainerToLeaflet(el, options);
+                        }
+                    }, 800);
+
+                    setTimeout(function() {
+                        if (el.querySelector('.gm-err-container, .gm-err-message') || (el.innerText && el.innerText.includes('Sorry! Something went wrong'))) {
+                            errObserver.disconnect();
+                            window.googleMapsAuthFailed = true;
+                            try { sessionStorage.setItem('gmp_auth_failed', '1'); } catch(e){}
+                            self.failoverContainerToLeaflet(el, options);
+                        }
+                    }, 2000);
+
                     return gMap;
                 } catch (err) {
                     console.warn('Google Maps initialization failed, failing over to high-fidelity street map:', err);
@@ -623,6 +725,7 @@
 
                 return {
                     circle: circle,
+                    rawCircle: circle,
                     setCenter: function(pos) {
                         const nLat = typeof pos.lat === 'function' ? pos.lat() : (pos.lat !== undefined ? pos.lat : pos[0]);
                         const nLng = typeof pos.lng === 'function' ? pos.lng() : (pos.lng !== undefined ? pos.lng : pos[1]);
@@ -635,6 +738,22 @@
                         const rm = m && m.rawMap ? m.rawMap : m;
                         if (rm) rm.addLayer(circle);
                         else circle.remove();
+                    },
+                    addListener: function(event, cb) {
+                        circle.on(event, function(e) {
+                            cb({
+                                latLng: {
+                                    lat: () => e.latlng.lat,
+                                    lng: () => e.latlng.lng,
+                                    lat: e.latlng.lat,
+                                    lng: e.latlng.lng
+                                }
+                            });
+                        });
+                    },
+                    bindPopup: function(content) {
+                        circle.bindPopup(content);
+                        return this;
                     },
                     remove: function() {
                         circle.remove();
@@ -673,7 +792,15 @@
                     strokeWeight: options.strokeWeight || 5,
                     map: rawMap
                 }, options));
-                return polyline;
+                return {
+                    line: polyline,
+                    rawPolyline: polyline,
+                    setOptions: function(newOpts) { polyline.setOptions(newOpts); },
+                    setMap: function(m) { polyline.setMap(m ? (m.rawMap || m) : null); },
+                    addListener: function(event, cb) { return polyline.addListener(event, cb); },
+                    bindPopup: function(content) { return this; },
+                    remove: function() { polyline.setMap(null); }
+                };
             }
 
             if (window.L) {

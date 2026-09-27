@@ -391,6 +391,10 @@
     const mapEl = document.getElementById('orgMap');
     if (!mapEl) return;
 
+    if (window.GoogleMapsShield) {
+      GoogleMapsShield.registerMapInit('orgMap', initMap);
+    }
+
     const defaultCenter = pinsData.length > 0 ? { lat: pinsData[0].lat, lng: pinsData[0].lng } : { lat: 28.6139, lng: 77.2090 };
     orgMap = GoogleMapsShield.createMap(mapEl, {
       center: defaultCenter,
@@ -398,7 +402,6 @@
       mapId: 'DEMO_MAP_ID'
     });
 
-    const bounds = new google.maps.LatLngBounds();
     pinsData.forEach(p => {
       const popupContent = `
         <div style="font-family:'Inter',sans-serif;min-width:210px;padding:4px;">
@@ -422,12 +425,10 @@
         title: p.name,
         popupContent: popupContent
       });
-
-      bounds.extend(new google.maps.LatLng(p.lat, p.lng));
     });
 
     if (pinsData.length > 1) {
-      orgMap.fitBounds(bounds);
+      GoogleMapsShield.fitBounds(orgMap, pinsData);
     }
   }
 

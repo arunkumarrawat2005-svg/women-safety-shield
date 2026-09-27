@@ -679,7 +679,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const mapEl = document.getElementById('routesMap');
         if (!mapEl) return;
 
-        // 2. Initialize Google Map
+        // Register map init callback for zero-downtime failover
+        if (window.GoogleMapsShield && window.GoogleMapsShield.registerMapInit) {
+            window.GoogleMapsShield.registerMapInit('routesMap', initCompareMap, {
+                center: { lat: startLat, lng: startLng },
+                zoom: 13,
+                mapId: 'DEMO_MAP_ID'
+            });
+        }
+
+        // 2. Initialize Map (Google Maps if authorized, or instant HD Street Leaflet fallback)
         const map = GoogleMapsShield.createMap(mapEl, {
             center: { lat: startLat, lng: startLng },
             zoom: 13,
@@ -688,7 +697,7 @@ document.addEventListener('DOMContentLoaded', function() {
         window.routesMap = map;
 
         // 2b. Consistent 3km assistance grid & nearby users visualization
-        if (window.GoogleMapsShield) {
+        if (window.GoogleMapsShield && window.GoogleMapsShield.attachNearbyUsersLayer) {
             window.GoogleMapsShield.attachNearbyUsersLayer(map, startLat, startLng, {
                 radiusKm: 3.0,
                 victimLabel: "Origin (Point A)"
@@ -727,41 +736,51 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // 5. Draw Candidate Real Street Polylines
+        // 5. Draw Candidate Real Street Polylines across both engines
         const colors = ['#27ae60', '#3498db', '#e67e22'];
         window.polylines = [];
 
         routesData.forEach((r, idx) => {
             const latlngs = r.waypoints.map(wp => ({ lat: wp.lat, lng: wp.lng }));
             const isDefault = (idx === 0);
-            const line = new google.maps.Polyline({
-                path: latlngs,
-                strokeColor: colors[idx % colors.length],
+            const routeColor = colors[idx % colors.length];
+
+            const poly = GoogleMapsShield.createPolyline(map, latlngs, {
+                strokeColor: routeColor,
                 strokeWeight: isDefault ? 7 : 4,
                 strokeOpacity: isDefault ? 1.0 : 0.65,
-                map: map,
                 zIndex: isDefault ? 10 : 1
             });
 
-            const info = new google.maps.InfoWindow({
-                content: `
-                    <div style="font-family: 'Inter', sans-serif; min-width: 210px; padding:4px;">
-                        <span class="badge ${r.badge_class} mb-1">${r.badge}</span>
-                        <h6 class="fw-bold mb-1 text-dark">${r.name}</h6>
-                        <div class="mb-1">Safety Score: <span class="badge bg-success">${r.safety_score}/10</span></div>
-                        <div class="small text-muted mb-1">Distance: <b>${r.distance_km} km</b> (~${r.walk_time_mins}m walk)</div>
-                        <div class="small text-secondary">${r.risk_factors.slice(0, 2).join('<br>')}</div>
-                    </div>
-                `
-            });
+            const popupHtml = `
+                <div style="font-family: 'Plus Jakarta Sans', sans-serif; min-width: 210px; padding:4px;">
+                    <span class="badge ${r.badge_class} mb-1">${r.badge}</span>
+                    <h6 class="fw-bold mb-1 text-dark">${r.name}</h6>
+                    <div class="mb-1">Safety Score: <span class="badge bg-success">${r.safety_score}/10</span></div>
+                    <div class="small text-muted mb-1">Distance: <b>${r.distance_km} km</b> (~${r.walk_time_mins}m walk)</div>
+                    <div class="small text-secondary">${(r.risk_factors || []).slice(0, 2).join('<br>')}</div>
+                </div>
+            `;
 
-            line.addListener('click', (e) => {
-                selectRoute(idx);
-                info.setPosition(e.latLng);
-                info.open(map);
-            });
+            if (poly) {
+                if (poly.bindPopup) {
+                    poly.bindPopup(popupHtml);
+                }
+                if (poly.addListener) {
+                    poly.addListener('click', (e) => {
+                        selectRoute(idx);
+                        if (map.isGoogleMap && window.google && window.google.maps && window.google.maps.InfoWindow) {
+                            try {
+                                const info = new google.maps.InfoWindow({ content: popupHtml });
+                                if (e && e.latLng) info.setPosition(e.latLng);
+                                info.open(map.rawMap || map);
+                            } catch(err){}
+                        }
+                    });
+                }
+            }
 
-            window.polylines.push({ line: line, info: info, defaultColor: colors[idx % colors.length] });
+            window.polylines.push({ line: poly, defaultColor: routeColor });
         });
 
         // 6. Community Incident Reports Pins Layer
@@ -785,7 +804,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 html: `<div class="incident-marker-icon" style="background:${conf.bg};color:white;">${conf.emoji}</div>`,
                 title: rep.location_name,
                 popupContent: `
-                    <div style="font-family: 'Inter', sans-serif; min-width: 180px;">
+                    <div style="font-family: 'Plus Jakarta Sans', sans-serif; min-width: 180px;">
                         <span class="badge bg-danger mb-1">${rep.category_display}</span>
                         <h6 class="fw-bold mb-1">${rep.location_name}</h6>
                         <p class="small text-muted mb-1">${rep.description || 'Community reported hazard'}</p>
@@ -798,7 +817,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         window.toggleIncidentReports = function(show) {
             window.incidentMarkers.forEach(m => {
-                m.setMap(show ? map : null);
+                if (m && m.setMap) {
+                    m.setMap(show ? map : null);
+                }
             });
         };
 
@@ -807,40 +828,47 @@ document.addEventListener('DOMContentLoaded', function() {
         zonesData.forEach(z => {
             const isHigh = (z.status === 'high');
             const color = isHigh ? '#e74c3c' : (z.status === 'medium' ? '#f39c12' : '#27ae60');
-            const circle = new google.maps.Circle({
-                map: map,
-                center: { lat: z.latitude, lng: z.longitude },
-                radius: z.radius_meters || 250,
+            const circle = GoogleMapsShield.createRadiusCircle(map, z.latitude, z.longitude, z.radius_meters || 250, {
                 strokeColor: color,
+                fillColor: color,
                 strokeOpacity: 0.8,
                 strokeWeight: 2,
-                fillColor: color,
-                fillOpacity: isHigh ? 0.22 : 0.12
+                fillOpacity: isHigh ? 0.22 : 0.12,
+                clickable: true
             });
-            const info = new google.maps.InfoWindow({
-                content: `<b>${isHigh ? '⚠️ Danger Hotspot' : '🛡️ Safety Zone'}: ${z.name}</b><br>Radius: ${z.radius_meters}m`
-            });
-            circle.addListener('click', (e) => {
-                info.setPosition(e.latLng);
-                info.open(map);
-            });
+
+            const zoneHtml = `<b>${isHigh ? '⚠️ Danger Hotspot' : '🛡️ Safety Zone'}: ${z.name}</b><br>Radius: ${z.radius_meters}m`;
+            if (circle && circle.bindPopup) {
+                circle.bindPopup(zoneHtml);
+            }
+            if (circle && circle.addListener) {
+                circle.addListener('click', (e) => {
+                    if (map.isGoogleMap && window.google && window.google.maps && window.google.maps.InfoWindow) {
+                        try {
+                            const info = new google.maps.InfoWindow({ content: zoneHtml });
+                            if (e && e.latLng) info.setPosition(e.latLng);
+                            info.open(map.rawMap || map);
+                        } catch(err){}
+                    }
+                });
+            }
             window.zoneCircles.push(circle);
         });
 
         window.toggleSafetyZones = function(show) {
             window.zoneCircles.forEach(c => {
-                c.setMap(show ? map : null);
+                if (c && c.setMap) {
+                    c.setMap(show ? map : null);
+                }
             });
         };
 
         // 8. Fit Map Bounds
-        const bounds = new google.maps.LatLngBounds();
-        bounds.extend(new google.maps.LatLng(startLat, startLng));
-        bounds.extend(new google.maps.LatLng(endLat, endLng));
+        const allPoints = [{ lat: startLat, lng: startLng }, { lat: endLat, lng: endLng }];
         routesData.forEach(r => {
-            r.waypoints.forEach(w => bounds.extend(new google.maps.LatLng(w.lat, w.lng)));
+            (r.waypoints || []).forEach(w => allPoints.push({ lat: w.lat, lng: w.lng }));
         });
-        map.fitBounds(bounds);
+        GoogleMapsShield.fitBounds(map, allPoints);
 
         // 9. Route Selection
         window.selectRoute = function(index) {
@@ -848,10 +876,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 el.classList.toggle('selected', i === index);
             });
             window.polylines.forEach((item, i) => {
-                if (i === index) {
-                    item.line.setOptions({ strokeWeight: 8, strokeOpacity: 1.0, zIndex: 10 });
-                } else {
-                    item.line.setOptions({ strokeWeight: 4, strokeOpacity: 0.5, zIndex: 1 });
+                if (item && item.line && item.line.setOptions) {
+                    if (i === index) {
+                        item.line.setOptions({ strokeWeight: 8, strokeOpacity: 1.0, zIndex: 10 });
+                    } else {
+                        item.line.setOptions({ strokeWeight: 4, strokeOpacity: 0.5, zIndex: 1 });
+                    }
                 }
             });
         };
@@ -859,11 +889,22 @@ document.addEventListener('DOMContentLoaded', function() {
         window.zoomToReport = function(lat, lng, cat, loc) {
             map.setCenter({ lat: lat, lng: lng });
             map.setZoom(16);
-            const info = new google.maps.InfoWindow({
-                content: `<b>${cat}</b><br>${loc}`,
-                position: { lat: lat, lng: lng }
-            });
-            info.open(map);
+            if (map.isGoogleMap && window.google && window.google.maps && window.google.maps.InfoWindow) {
+                try {
+                    const info = new google.maps.InfoWindow({
+                        content: `<b>${cat}</b><br>${loc}`,
+                        position: { lat: lat, lng: lng }
+                    });
+                    info.open(map.rawMap || map);
+                } catch(e){}
+            } else if (window.L && map.rawMap) {
+                try {
+                    L.popup()
+                        .setLatLng([lat, lng])
+                        .setContent(`<b>${cat}</b><br>${loc}`)
+                        .openOn(map.rawMap);
+                } catch(e){}
+            }
         };
 
         // 10. Autocomplete

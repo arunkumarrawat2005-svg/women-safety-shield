@@ -1031,14 +1031,25 @@ function initRadarMap() {
   const defaultLat = 28.6139;
   const defaultLng = 77.2090;
 
+  let allResidentPoints = [];
+
   function renderRadar() {
+    if (window.GoogleMapsShield) {
+      GoogleMapsShield.registerMapInit('map', renderRadar);
+    }
+
     map = GoogleMapsShield.createMap(mapEl, {
       center: { lat: defaultLat, lng: defaultLng },
       zoom: 12,
       mapId: 'DEMO_MAP_ID'
     });
 
-    googleBounds = new google.maps.LatLngBounds();
+    allResidentPoints = [];
+    if (window.google && window.google.maps && window.google.maps.LatLngBounds) {
+      googleBounds = new google.maps.LatLngBounds();
+    } else {
+      googleBounds = null;
+    }
 
     residentsData.forEach(r => {
       const isOnline = r.is_available;
@@ -1084,10 +1095,7 @@ function initRadarMap() {
       guardianMarkers[r.id] = { marker: markerObj, lat: r.lat, lng: r.lng };
 
       if (isOnline) {
-        new google.maps.Circle({
-          map: map,
-          center: { lat: r.lat, lng: r.lng },
-          radius: 1500,
+        GoogleMapsShield.createRadiusCircle(map, r.lat, r.lng, 1500, {
           strokeColor: '#10B981',
           strokeOpacity: 0.8,
           strokeWeight: 1.5,
@@ -1096,7 +1104,10 @@ function initRadarMap() {
         });
       }
 
-      googleBounds.extend(new google.maps.LatLng(r.lat, r.lng));
+      allResidentPoints.push({ lat: r.lat, lng: r.lng });
+      if (googleBounds) {
+        googleBounds.extend(new google.maps.LatLng(r.lat, r.lng));
+      }
     });
 
     focusLocalCluster();
@@ -1116,7 +1127,9 @@ function focusLocalCluster() {
 }
 
 function fitAllMarkers() {
-  if (map && googleBounds && !googleBounds.isEmpty()) {
+  if (map && allResidentPoints && allResidentPoints.length > 0) {
+    GoogleMapsShield.fitBounds(map, allResidentPoints);
+  } else if (map && googleBounds && !googleBounds.isEmpty()) {
     map.fitBounds(googleBounds, { padding: 50 });
   }
 }
@@ -1222,10 +1235,7 @@ function applyUserLocationRadar(lat, lng) {
   });
 
   // 4. Draw 3 KM emergency protection circle
-  userRadarCircle = new google.maps.Circle({
-    map: map,
-    center: { lat: lat, lng: lng },
-    radius: 3000,
+  userRadarCircle = GoogleMapsShield.createRadiusCircle(map, lat, lng, 3000, {
     strokeColor: '#C41E3D',
     strokeOpacity: 0.9,
     strokeWeight: 2,
@@ -1278,8 +1288,7 @@ function renderNearbyRespondersOnRadar(helpers, userLat, userLng) {
   });
   dynamicRadarMarkers = [];
 
-  const radarBounds = new google.maps.LatLngBounds();
-  radarBounds.extend(new google.maps.LatLng(userLat, userLng));
+  const helperPoints = [{ lat: userLat, lng: userLng }];
 
   helpers.forEach(h => {
     const isOnline = h.status.includes('Available') || h.status.includes('On');
@@ -1327,12 +1336,12 @@ function renderNearbyRespondersOnRadar(helpers, userLat, userLng) {
 
     if (markerObj) {
       dynamicRadarMarkers.push(markerObj);
-      radarBounds.extend(new google.maps.LatLng(h.lat, h.lng));
+      helperPoints.push({ lat: h.lat, lng: h.lng });
     }
   });
 
   // Fit bounds smoothly to show user and all active responders in circle
-  map.fitBounds(radarBounds, { padding: 40 });
+  GoogleMapsShield.fitBounds(map, helperPoints);
 }
 
 function updateCardsWithLiveGPS(userLat, userLng) {
