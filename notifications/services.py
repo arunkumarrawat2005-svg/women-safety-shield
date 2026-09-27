@@ -72,20 +72,34 @@ class NotificationService:
         )
 
     @staticmethod
-    def send_sos_alert_to_resident(resident_user, emergency):
+    def send_sos_alert_to_resident(resident_user, emergency, resident=None):
+        dist_km = getattr(resident, 'distance_km', None) or getattr(resident_user, '_temp_dist_km', None)
+        dist_str = f" (~{dist_km*1000:.0f}m away)" if dist_km else ""
+        victim_name = emergency.victim.full_name or emergency.victim.username
+
         Notification.objects.create(
             recipient=resident_user,
             title='🆘 Emergency Nearby - Local Resident Alert',
-            message=f'A woman needs help near you! Emergency #{emergency.id}. Please respond immediately.',
+            message=f'A woman ({victim_name}) needs help near you{dist_str}! Emergency #{emergency.id}. Please respond immediately.',
             notif_type='sos',
             data={'emergency_id': emergency.id, 'lat': emergency.latitude, 'lng': emergency.longitude}
         )
         send_fcm_push(
             fcm_token=getattr(resident_user, 'fcm_token', None),
             title='🆘 Emergency Nearby!',
-            body=f'A woman needs help near you! Emergency #{emergency.id}. Please respond immediately.',
+            body=f'{victim_name} needs urgent help near you{dist_str}! Emergency #{emergency.id}. Tap to respond.',
             data={'emergency_id': emergency.id, 'lat': emergency.latitude, 'lng': emergency.longitude}
         )
+        
+        # Immediate SMS escalation to local citizen responder
+        phone = getattr(resident_user, 'phone', None)
+        if phone:
+            sms_body = (
+                f"🚨 CITIZEN RESCUE ALERT! {victim_name} needs urgent emergency assistance near you{dist_str}. "
+                f"Emergency #{emergency.id}. Location: ({emergency.latitude:.4f}, {emergency.longitude:.4f}). "
+                f"Respond & track: /emergency/{emergency.id}/track/"
+            )
+            trigger_twilio_call_or_sms(phone, sms_body)
 
     # Backwards compatibility alias
     send_sos_alert_to_guardian = send_sos_alert_to_resident

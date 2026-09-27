@@ -58,7 +58,8 @@ class EmergencyService:
                 )
                 trigger_twilio_call_or_sms(phone, sms_body)
 
-            EmergencyService._create_event(emergency, 'CONTACT_NOTIFIED', emergency.latitude, emergency.longitude)
+            desc = f"Alert dispatched to trusted contact {tc.name}" + (f" ({phone})" if phone else "")
+            EmergencyService._create_event(emergency, 'CONTACT_NOTIFIED', emergency.latitude, emergency.longitude, description=desc, actor=tc.contact)
 
     @staticmethod
     def _alert_nearby_residents(emergency):
@@ -71,9 +72,28 @@ class EmergencyService:
                 resident=resident,
                 defaults={'status': 'notified'}
             )
-            # Deliver notification: Push first
-            NotificationService.send_sos_alert_to_resident(resident.user, emergency)
-            EmergencyService._create_event(emergency, 'RESIDENT_NOTIFIED', emergency.latitude, emergency.longitude)
+            # Deliver notification: In-app, Web Push, and SMS
+            NotificationService.send_sos_alert_to_resident(resident.user, emergency, resident=resident)
+            
+            # Link resident to emergency notified contacts for full audit visibility
+            if resident.user:
+                try:
+                    emergency.notified_contacts.add(resident.user)
+                except Exception:
+                    pass
+
+            # Create rich timeline entry with distance and badge
+            name = resident.user.get_full_name() or resident.user.username
+            dist_txt = f"{resident.distance_km*1000:.0f}m away" if resident.distance_km < 1 else f"{resident.distance_km:.1f}km away"
+            desc = f"Emergency broadcast dispatched to local citizen {name} ({resident.badge_title}) - ~{dist_txt}"
+            EmergencyService._create_event(
+                emergency,
+                'RESIDENT_NOTIFIED',
+                emergency.latitude,
+                emergency.longitude,
+                description=desc,
+                actor=resident.user
+            )
 
     @staticmethod
     def _alert_nearby_organizations(emergency):
@@ -170,11 +190,13 @@ class EmergencyService:
         return emergency
 
     @staticmethod
-    def _create_event(emergency, event_name, latitude, longitude):
+    def _create_event(emergency, event_name, latitude, longitude, description='', actor=None):
         from incident.models import IncidentEvent
         IncidentEvent.objects.create(
             emergency=emergency,
             event_name=event_name,
             latitude=latitude,
-            longitude=longitude
+            longitude=longitude,
+            description=description,
+            actor=actor
         )

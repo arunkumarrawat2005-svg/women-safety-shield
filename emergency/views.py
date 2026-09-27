@@ -185,23 +185,32 @@ def guardian_emergencies(request):
 
 
 @login_required
-@require_POST
 def accept_emergency(request, pk):
+    is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.content_type == 'application/json'
+
     if not request.user.can_act_as_helper:
-        messages.error(
-            request,
+        msg = (
             "Permission Denied: Only verified community helpers can accept or respond to citizen SOS emergencies. "
             "Basic Users can seek protection anytime, but must complete Identity Verification to provide community assistance."
         )
+        if is_ajax:
+            return JsonResponse({'success': False, 'error': msg}, status=403)
+        messages.error(request, msg)
         return redirect('verification_status')
 
     emergency = get_object_or_404(Emergency, pk=pk)
     if emergency.status != 'ACTIVE':
-        messages.info(request, f'Emergency #{emergency.id} is already {emergency.get_status_display().lower()}.')
+        msg = f'Emergency #{emergency.id} is already {emergency.get_status_display().lower()}.'
+        if is_ajax:
+            return JsonResponse({'success': True, 'message': msg, 'track_url': f'/emergency/{pk}/track/'})
+        messages.info(request, msg)
         return redirect('emergency_track', pk=pk)
 
     EmergencyService.accept_emergency(emergency, request.user)
-    messages.success(request, 'You have accepted this emergency. Please proceed to the location.')
+    msg = 'You have accepted this emergency. Please proceed to the location.'
+    if is_ajax:
+        return JsonResponse({'success': True, 'message': msg, 'track_url': f'/emergency/{pk}/track/'})
+    messages.success(request, msg)
     return redirect('emergency_track', pk=pk)
 
 

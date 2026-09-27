@@ -323,9 +323,129 @@ function triggerMobileSosNav(e) {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="{% static 'js/main.js' %}"></script>
 {% if user.is_authenticated %}
+<!-- Citizen Rescue Live Emergency Alert Modal -->
+<div class="modal fade" id="citizenRescueModal" tabindex="-1" aria-labelledby="citizenRescueModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-danger shadow-lg rounded-4" style="border-width:3px !important;overflow:hidden;">
+      <div class="modal-header bg-danger text-white py-3">
+        <h5 class="modal-title fw-800 d-flex align-items-center gap-2" id="citizenRescueModalLabel">
+          <span class="spinner-grow spinner-grow-sm text-warning" role="status"></span>
+          🚨 URGENT CITIZEN RESCUE ALERT
+        </h5>
+      </div>
+      <div class="modal-body p-4 text-center">
+        <div style="font-size:3.5rem;animation:pulse 1s infinite;">🆘</div>
+        <h4 class="fw-800 text-danger mt-2 mb-1">A Woman Needs Help Near You!</h4>
+        <div class="badge bg-danger-subtle text-danger px-3 py-2 fs-6 rounded-pill my-2" id="rescueDistanceBadge">
+          📍 ~<span id="rescueDistanceText">10 m</span> away from your position
+        </div>
+        <p class="text-dark fs-5 mt-2 mb-1">
+          Distress beacon from: <strong id="rescueVictimName">Citizen in Distress</strong>
+        </p>
+        <p class="text-muted small mb-3">
+          As a registered local resident &amp; guardian in this zone, you are requested to respond immediately.
+        </p>
+
+        <div class="d-grid gap-2 mt-3">
+          <a id="rescueAcceptBtn" href="#" class="btn btn-success btn-lg fw-bold shadow-sm py-3" style="font-size:1.1rem;">
+            <i class="bi bi-shield-fill-check me-2"></i>✅ Accept &amp; Respond to SOS
+          </a>
+          <a id="rescueTrackBtn" href="#" class="btn btn-outline-danger fw-semibold py-2">
+            <i class="bi bi-compass me-1"></i>🗺️ View Live Incident Tracker
+          </a>
+          <button type="button" class="btn btn-link text-muted btn-sm text-decoration-none mt-1" data-bs-dismiss="modal" id="rescueDismissBtn">
+            Dismiss for now
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
-// Universal background live GPS telemetry for authenticated users
+// Universal background live GPS telemetry and real-time emergency listener
 (function() {
+  let rescueModalInstance = null;
+  let lastAlertedEmergencyId = null;
+
+  function playEmergencyChime() {
+    try {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+      osc.frequency.setValueAtTime(1174, audioCtx.currentTime + 0.15);
+      osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.3);
+      gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.55);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.55);
+    } catch(e) {}
+  }
+
+  function handleActiveAlert(alert) {
+    if (!alert) return;
+    
+    // If we've already shown this modal and user dismissed it this session, don't spam repeatedly
+    if (sessionStorage.getItem('dismissed_em_' + alert.id)) return;
+
+    const modalEl = document.getElementById('citizenRescueModal');
+    if (!modalEl) return;
+
+    document.getElementById('rescueVictimName').textContent = alert.victim_name || 'Community Member';
+    document.getElementById('rescueDistanceText').textContent = alert.distance_text || 'Nearby';
+    
+    const acceptBtn = document.getElementById('rescueAcceptBtn');
+    acceptBtn.href = alert.accept_url || `/emergency/${alert.id}/accept/`;
+    
+    const trackBtn = document.getElementById('rescueTrackBtn');
+    trackBtn.href = alert.track_url || `/emergency/${alert.id}/track/`;
+
+    const dismissBtn = document.getElementById('rescueDismissBtn');
+    dismissBtn.onclick = function() {
+      sessionStorage.setItem('dismissed_em_' + alert.id, '1');
+    };
+
+    if (lastAlertedEmergencyId !== alert.id) {
+      lastAlertedEmergencyId = alert.id;
+      playEmergencyChime();
+    }
+
+    if (!rescueModalInstance && typeof bootstrap !== 'undefined') {
+      rescueModalInstance = new bootstrap.Modal(modalEl);
+    }
+    if (rescueModalInstance) {
+      rescueModalInstance.show();
+    }
+  }
+
+  function pollAlerts() {
+    fetch('/notifications/poll-active-alerts/')
+      .then(res => res.json())
+      .then(data => {
+        // 1. Update notification badge
+        const badge = document.getElementById('notifCount');
+        if (badge) {
+          if (data.unread_count > 0) {
+            badge.textContent = data.unread_count;
+            badge.style.display = 'inline-block';
+            badge.className = 'notification-badge bg-danger text-white px-1';
+          } else {
+            badge.style.display = 'none';
+          }
+        }
+
+        // 2. Trigger high-priority rescue modal if active SOS emergency is nearby
+        if (data.active_alert) {
+          handleActiveAlert(data.active_alert);
+        }
+      })
+      .catch(function() {});
+  }
+
   function syncLiveGps(pos) {
     if (!pos || !pos.coords) return;
     const lat = pos.coords.latitude;
@@ -347,15 +467,27 @@ function triggerMobileSosNav(e) {
         'X-CSRFToken': csrf
       },
       body: JSON.stringify({ latitude: lat, longitude: lng, accuracy: acc })
-    }).catch(function() {});
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data && data.active_alert) {
+        handleActiveAlert(data.active_alert);
+      }
+    })
+    .catch(function() {});
   }
 
+  // Initial trigger & recurring telemetry
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(syncLiveGps, null, { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 });
     setInterval(function() {
       navigator.geolocation.getCurrentPosition(syncLiveGps, null, { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 });
-    }, 35000);
+    }, 30000);
   }
+
+  // Poll alerts every 10 seconds for instant notification delivery
+  setTimeout(pollAlerts, 1500);
+  setInterval(pollAlerts, 10000);
 })();
 </script>
 {% endif %}

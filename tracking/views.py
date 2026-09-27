@@ -92,9 +92,30 @@ def heartbeat_location(request):
     except Exception as e:
         pass
 
+    # 3. Check for any active distress SOS within 3 km to immediately alert this responder
+    active_alert = None
+    try:
+        from emergency.models import Emergency
+        active_emergencies = Emergency.objects.filter(status='ACTIVE').exclude(victim=request.user)
+        for em in active_emergencies:
+            dist = em._haversine_distance(lat, lng, float(em.latitude), float(em.longitude))
+            if dist <= 3.0:
+                dist_text = f"{int(dist * 1000)} m" if dist < 1 else f"{dist:.1f} km"
+                active_alert = {
+                    'id': em.id,
+                    'victim_name': em.victim.full_name or em.victim.username,
+                    'distance_text': dist_text,
+                    'track_url': f"/emergency/{em.id}/track/",
+                    'accept_url': f"/emergency/{em.id}/accept/",
+                }
+                break
+    except Exception:
+        pass
+
     return JsonResponse({
         'success': True,
         'user': request.user.username,
         'latitude': lat,
-        'longitude': lng
+        'longitude': lng,
+        'active_alert': active_alert
     })

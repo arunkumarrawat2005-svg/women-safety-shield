@@ -47,27 +47,67 @@ class Emergency(models.Model):
         self.assigned_responder = val
 
     def get_nearby_residents(self, radius_km=3):
-        """Find verified, available local residents within radius_km of emergency location with bounding-box pre-filter."""
+        """
+        Find nearby local residents, community guardians, and active citizen responders within radius_km.
+        Checks LocalResident coordinates, falls back to latest Location breadcrumb,
+        and includes registered local residents, guardians, and verified citizens.
+        """
         from local_residents.models import LocalResident
-        bb = (radius_km * 1.2) / 111.0  # Approx degrees
-        all_residents = LocalResident.objects.filter(
-            is_verified=True, 
-            is_available=True,
-            latitude__range=(self.latitude - bb, self.latitude + bb),
-            longitude__range=(self.longitude - bb, self.longitude + bb)
-        ).exclude(
-            user=self.victim
-        ).select_related('user')
+        from tracking.models import Location
+        from django.db.models import Q
+        from accounts.models import User
 
+        # Ensure all registered local residents, guardians, or verified users have a LocalResident profile
+        eligible_users = User.objects.filter(
+            Q(role__in=['local_resident', 'guardian', 'volunteer', 'citizen']) |
+            Q(is_verified=True) |
+            Q(local_resident_profile__isnull=False)
+        ).exclude(id=self.victim_id).distinct()
+
+        for u in eligible_users:
+            res, _ = LocalResident.objects.get_or_create(
+                user=u,
+                defaults={
+                    'local_resident_type': 'citizen' if u.role == 'user' else (u.role if u.role in ['volunteer', 'security', 'ngo', 'citizen'] else 'citizen'),
+                    'city': u.city or 'Delhi NCR',
+                    'area': u.address or u.city or 'Central Zone',
+                    'badge_title': 'Verified Citizen Guardian',
+                    'is_verified': True,
+                    'is_available': True,
+                }
+            )
+            # Sync coordinates from Location breadcrumbs if missing on profile
+            if res.latitude is None or res.longitude is None:
+                loc = Location.objects.filter(user=u).order_by('-timestamp').first()
+                if loc:
+                    res.latitude = loc.latitude
+                    res.longitude = loc.longitude
+                    res.is_available = True
+                    res.save()
+
+        # Query all resident candidates
+        candidates = LocalResident.objects.exclude(user=self.victim).select_related('user')
         nearby = []
-        for resident in all_residents:
-            if resident.latitude and resident.longitude:
+        for resident in candidates:
+            lat = resident.latitude
+            lng = resident.longitude
+            if lat is None or lng is None:
+                loc = Location.objects.filter(user=resident.user).order_by('-timestamp').first()
+                if loc:
+                    lat = loc.latitude
+                    lng = loc.longitude
+                    resident.latitude = lat
+                    resident.longitude = lng
+                    resident.save()
+
+            if lat is not None and lng is not None:
                 dist = self._haversine_distance(
-                    self.latitude, self.longitude,
-                    float(resident.latitude), float(resident.longitude)
+                    float(self.latitude), float(self.longitude),
+                    float(lat), float(lng)
                 )
                 if dist <= radius_km:
                     resident.distance_km = dist
+                    resident._temp_dist_km = dist
                     nearby.append(resident)
 
         nearby.sort(key=lambda g: (g.distance_km, -g.trust_score))

@@ -125,7 +125,7 @@
                             <small class="text-muted">{{ event.timestamp|date:"d M Y, H:i:s" }}</small>
                         </div>
                         {% if event.latitude %}<small class="text-muted">📍 {{ event.latitude|floatformat:5 }}, {{ event.longitude|floatformat:5 }}</small>{% endif %}
-                        {% if event.description %}<p class="mb-0 small mt-1">{{ event.description }}</p>{% endif %}
+                        {% if event.description %}<p class="mb-0 small mt-1 text-dark fw-500"><i class="bi bi-info-circle-fill text-primary me-1"></i>{{ event.description }}</p>{% endif %}
                     </div>
                 </div>
                 {% endfor %}
@@ -134,14 +134,49 @@
             <p class="text-muted">No timeline events recorded.</p>
             {% endif %}
 
-            <!-- Notified Contacts -->
-            <h5 class="fw-700 border-bottom pb-2 mt-4 mb-3">👥 Notified Contacts</h5>
+            <!-- Notified Local Citizens & Community Responders -->
+            <h5 class="fw-700 border-bottom pb-2 mt-4 mb-3 d-flex align-items-center justify-content-between">
+                <span>🛡️ Notified Local Citizens &amp; Community Responders</span>
+                <span class="badge bg-success-subtle text-success fs-7">3 km Radar Dispatch</span>
+            </h5>
+            {% if emergency.resident_responses.all %}
+            <div class="row g-2 mb-3">
+                {% for resp in emergency.resident_responses.all %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="p-2 bg-light rounded-3 d-flex align-items-center justify-content-between gap-2 border border-success-subtle shadow-sm">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="avatar-circle" style="width:34px;height:34px;font-size:0.8rem;background:#10b981;color:#fff;">
+                                {{ resp.resident.user.first_name|first|default:resp.resident.user.username|first }}
+                            </div>
+                            <div>
+                                <div class="fw-600 small">{{ resp.resident.user.full_name|default:resp.resident.user.username }}</div>
+                                <div class="text-muted" style="font-size:0.72rem;">
+                                    <span class="badge bg-success-subtle text-success">{{ resp.resident.badge_title|default:'Citizen Guardian' }}</span>
+                                    {% if resp.resident.user.phone %}&bull; {{ resp.resident.user.phone }}{% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="badge {% if resp.status == 'acknowledged' %}bg-success{% elif resp.status == 'declined' %}bg-danger{% else %}bg-primary{% endif %} text-white text-capitalize" style="font-size:0.7rem;">
+                                {{ resp.status }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-muted small">No community residents recorded for this incident dispatch.</p>
+            {% endif %}
+
+            <!-- Notified Trusted Circle Contacts -->
+            <h5 class="fw-700 border-bottom pb-2 mt-4 mb-3">👥 Notified Trusted Contacts</h5>
             {% if emergency.notified_contacts.all %}
             <div class="row g-2">
                 {% for contact in emergency.notified_contacts.all %}
                 <div class="col-md-4">
-                    <div class="p-2 bg-light rounded-3 d-flex align-items-center gap-2">
-                        <div class="avatar-circle" style="width:32px;height:32px;font-size:0.8rem;background:#3498db;">
+                    <div class="p-2 bg-light rounded-3 d-flex align-items-center gap-2 border border-primary-subtle">
+                        <div class="avatar-circle" style="width:32px;height:32px;font-size:0.8rem;background:#3498db;color:#fff;">
                             {{ contact.first_name|first|default:contact.username|first }}
                         </div>
                         <div>

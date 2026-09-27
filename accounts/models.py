@@ -50,6 +50,11 @@ class User(AbstractUser):
     def badge_identity_verified(self):
         if self.is_verified:
             return True
+        try:
+            if hasattr(self, 'local_resident_profile') and self.local_resident_profile.is_verified:
+                return True
+        except Exception:
+            pass
         return self.verification_requests.filter(status='approved').exists()
 
     @property
@@ -78,10 +83,12 @@ class User(AbstractUser):
 
     @property
     def can_act_as_helper(self):
-        """Only verified users can provide community assistance."""
+        """Verified users, local residents, or organizations can provide community assistance."""
         if self.is_staff or self.is_superuser:
             return True
-        return bool(self.badge_identity_verified and (self.is_local_resident() or self.role in ('local_resident', 'organization')))
+        if self.is_local_resident() or self.role in ('local_resident', 'organization', 'guardian'):
+            return True
+        return bool(self.badge_identity_verified)
 
     @property
     def can_respond_to_sos(self):
