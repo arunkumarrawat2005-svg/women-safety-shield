@@ -446,18 +446,18 @@
                 });
                 el._leaflet_map = lMap;
 
-                // High-contrast, unblocked HD Street Network tiles (OpenStreetMap & Esri World Street Map)
-                const tileLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                // High-performance, zero-blocking World Street Map (Esri ArcGIS CDN - No rate limits, no 403 blocks)
+                const tileLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
                     maxZoom: 19,
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    attribution: 'Tiles &copy; <a href="https://www.esri.com/">Esri</a> &mdash; Street Network'
                 });
                 
-                // Fallback to Esri World Street Map if tile load fails
+                // Fallback to World Topo Map if needed
                 tileLayer.on('tileerror', function(error, tile) {
                     if (tile && !tile._retried) {
                         tile._retried = true;
                         const coords = error.coords;
-                        tile.src = `https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/${coords.z}/${coords.y}/${coords.x}`;
+                        tile.src = `https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/${coords.z}/${coords.y}/${coords.x}`;
                     }
                 });
                 tileLayer.addTo(lMap);
