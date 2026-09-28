@@ -54,7 +54,7 @@
 
 /* Central Dial Container */
 .giant-sos-wrapper {
-  max-width: 500px;
+  max-width: 620px;
   margin: 0 auto;
   text-align: center;
   position: relative;
@@ -70,16 +70,16 @@
   align-items: center;
   justify-content: center;
   margin: 0.75rem auto 0.5rem;
-  width: 184px;
-  height: 184px;
+  width: 180px;
+  height: 180px;
 }
 
-/* Professional Tactile Circular SOS Emergency Dial */
+/* Professional Solid High-Contrast SOS Emergency Dial */
 .sos-giant-dial {
-  width: 184px;
-  height: 184px;
+  width: 180px;
+  height: 180px;
   border-radius: 50% !important;
-  background: radial-gradient(circle at 35% 30%, #ef4444 0%, #dc2626 45%, #b91c1c 80%, #991b1b 100%) !important;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%) !important;
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
@@ -87,29 +87,29 @@
   color: #ffffff !important;
   cursor: pointer !important;
   position: relative !important;
-  box-shadow: 0 12px 35px rgba(220, 38, 38, 0.4), 0 0 0 6px rgba(239, 68, 68, 0.12) !important;
-  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+  box-shadow: 0 4px 14px rgba(185, 28, 28, 0.28) !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease !important;
   user-select: none !important;
-  border: 4px solid rgba(255, 255, 255, 0.95) !important;
+  border: 4px solid #ffffff !important;
   text-decoration: none !important;
   margin: 0 auto;
 }
 
 @media (max-width: 576px) {
   .sos-dial-anchor, .sos-giant-dial {
-    width: 175px !important;
-    height: 175px !important;
+    width: 165px !important;
+    height: 165px !important;
   }
 }
 
 .sos-giant-dial:hover {
-  transform: translateY(-3px) scale(1.03) !important;
-  box-shadow: 0 22px 55px rgba(220, 38, 38, 0.58), 0 0 0 12px rgba(239, 68, 68, 0.2) !important;
+  transform: scale(1.02) !important;
+  box-shadow: 0 6px 18px rgba(185, 28, 28, 0.35) !important;
 }
 
 .sos-giant-dial:active {
-  transform: translateY(2px) scale(0.97) !important;
-  box-shadow: 0 8px 25px rgba(220, 38, 38, 0.5) !important;
+  transform: scale(0.98) !important;
+  box-shadow: 0 2px 8px rgba(185, 28, 28, 0.4) !important;
 }
 
 .sos-giant-dial .sos-top-icon {
@@ -158,99 +158,17 @@
   pointer-events: none !important;
 }
 
-/* Concentric Radar Wave Rings */
-.sos-dial-radar-ring {
-  position: absolute;
-  top: -12px;
-  left: -12px;
-  right: -12px;
-  bottom: -12px;
-  border-radius: 50%;
-  border: 2px solid rgba(239, 68, 68, 0.45);
-  animation: giant-radar-pulse 2.4s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
-  pointer-events: none;
-}
-
-.sos-dial-radar-ring.ring-2 {
-  animation-delay: 1.2s;
-}
-
-@keyframes giant-radar-pulse {
-  0% { transform: scale(0.92); opacity: 0.8; }
-  100% { transform: scale(1.35); opacity: 0; }
-}
-
-/* Clean Professional SOS Control Dock (App Standard) */
-.sos-control-dock {
-  width: 100%;
-  max-width: 480px;
-  margin: 1.4rem auto 0;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
-  overflow: hidden;
-  transition: all 0.2s ease;
-}
-
-.sos-trigger-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  background: #ffffff;
-}
-
-.sos-trigger-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 0.85rem 0.5rem;
-  border-right: 1px solid #f1f5f9;
-  cursor: pointer;
-  transition: background 0.15s ease;
-  user-select: none;
-}
-
-.sos-trigger-item:last-child {
-  border-right: none;
-}
-
-.sos-trigger-item:hover {
-  background: #f8fafc;
-}
-
-.sos-trigger-meta {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  margin-bottom: 0.35rem;
-}
-
-.sos-trigger-meta i {
-  font-size: 1rem;
-}
-
-.sos-trigger-name {
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: #1e293b;
-}
-
-.armed-beacon-dot {
-  width: 6px !important;
-  height: 6px !important;
-  border-radius: 50% !important;
-  background-color: #22c55e !important;
-  box-shadow: 0 0 6px rgba(34, 197, 94, 0.8) !important;
+/* Clean Professional Emergency Response Status Chart */
+.chip-status-text {
+  font-size: 0.68rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.04em !important;
+  padding: 3px 8px !important;
+  border-radius: 4px !important;
+  text-transform: uppercase !important;
   display: inline-block !important;
-  animation: armedBeaconPulse 2s infinite ease-in-out !important;
-}
-
-@keyframes armedBeaconPulse {
-  0% { transform: scale(0.95); opacity: 0.85; box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
-  70% { transform: scale(1.15); opacity: 1; box-shadow: 0 0 0 5px rgba(34, 197, 94, 0); }
-  100% { transform: scale(0.95); opacity: 0.85; box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+  line-height: 1.2 !important;
+  border: 1px solid transparent;
 }
 
 .chip-status-text {
@@ -619,14 +537,9 @@
         </p>
       </div>
 
-      <!-- Refined Interactive Central Emergency SOS Cockpit -->
+      <!-- Real, Clean Emergency SOS Dial (Solid, Clean, No Lights) -->
       <div class="giant-sos-wrapper">
         <div class="sos-dial-anchor">
-          <!-- Subtle Concentric Radar Rings -->
-          <div class="sos-dial-radar-ring"></div>
-          <div class="sos-dial-radar-ring ring-2"></div>
-
-          <!-- Tactile SOS Emergency Dial Button -->
           <div class="sos-giant-dial" id="heroGiantSosBtn" role="button" tabindex="0" 
                aria-label="Trigger Instant Emergency SOS" 
                onclick="triggerSamePageSOS('hero_dial')">
@@ -636,51 +549,69 @@
           </div>
         </div>
 
-        <!-- Unified Emergency Triggers Dock (Professional SOS App Standard) -->
-        <div class="sos-control-dock" role="region" aria-label="Emergency Trigger Status: Button, Voice, and Motion armed">
-          <!-- Top Row: 3 Equal-Width Dedicated Trigger Panels -->
-          <div class="sos-trigger-grid">
-            <!-- 1. Instant Button Trigger -->
-            <div class="sos-trigger-item" id="chipButton" onclick="triggerSamePageSOS('chip_button')" title="1-Tap Instant SOS Dial is continuously active">
-              <div class="sos-trigger-meta">
-                <span class="armed-beacon-dot" id="btnBeaconDot"></span>
-                <i class="bi bi-hand-index-thumb-fill text-danger"></i>
-                <span class="sos-trigger-name">Button</span>
-              </div>
-              <span class="chip-status-text bg-success-subtle text-success">Active</span>
-            </div>
+        <!-- Quick 1-Tap Emergency Actions (Easy to use in distress) -->
+        <div class="d-flex align-items-center justify-content-center gap-2 mt-3 mb-2 flex-wrap">
+          <button type="button" class="btn btn-danger btn-sm px-3 py-1.5 fw-bold" onclick="triggerSamePageSOS('quick_btn')" style="border-radius:6px;">
+            <i class="bi bi-broadcast me-1"></i>Broadcast SOS Alert
+          </button>
+          <a href="tel:112" class="btn btn-outline-danger btn-sm px-3 py-1.5 fw-semibold" style="border-radius:6px;">
+            <i class="bi bi-telephone-fill me-1"></i>Police 112
+          </a>
+          <a href="tel:1091" class="btn btn-outline-secondary btn-sm px-3 py-1.5 fw-semibold" style="border-radius:6px;">
+            <i class="bi bi-telephone-fill me-1"></i>Helpline 1091
+          </a>
+        </div>
 
-            <!-- 2. Voice Trigger -->
-            <div class="sos-trigger-item" id="chipVoice" onclick="requestMicrophonePermission(true)" title="Voice keyword trigger: Click to test or enable microphone">
-              <div class="sos-trigger-meta">
-                <span class="armed-beacon-dot" id="voiceBeaconDot"></span>
-                <i class="bi bi-mic-fill text-danger" id="voiceIcon"></i>
-                <span class="sos-trigger-name">Voice</span>
-              </div>
-              <span class="chip-status-text bg-success-subtle text-success" id="voiceStatusText">Listening</span>
-            </div>
-
-            <!-- 3. Shake Trigger -->
-            <div class="sos-trigger-item" id="chipShake" onclick="triggerTapSimulation()" title="Motion sensor armed: Shake phone vigorously to trigger SOS">
-              <div class="sos-trigger-meta">
-                <span class="armed-beacon-dot" id="shakeBeaconDot"></span>
-                <i class="bi bi-phone-vibrate-fill text-danger"></i>
-                <span class="sos-trigger-name">Shake</span>
-              </div>
-              <span class="chip-status-text bg-success-subtle text-success" id="shakeStatusText">Armed</span>
-            </div>
+        <!-- Professional Emergency Response Status Chart & Table -->
+        <div class="card border-0 shadow-sm rounded-3 mt-3 w-100 text-start" style="border: 1px solid #e2e8f0 !important; background: #ffffff;">
+          <div class="card-header bg-white border-bottom py-2 px-3 d-flex justify-content-between align-items-center">
+            <span class="fw-bold text-dark small text-uppercase" style="font-size: 0.74rem; letter-spacing: 0.04em;">
+              <i class="bi bi-table me-1 text-primary"></i>System Readiness &amp; Response Chart
+            </span>
+            <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.68rem; border-radius: 4px;">
+              System Online
+            </span>
           </div>
-
-          <!-- Bottom Row: Unified Telemetry & Status Bar -->
-          <div class="sos-dock-footer">
-            <div id="locDisplay" class="d-inline-flex align-items-center gap-1.5 text-secondary">
-              <i class="bi bi-shield-fill-check text-danger"></i>
-              <span class="fw-medium">Ready: Tap Dial, Say "Help", or Shake Phone</span>
+          <div class="table-responsive">
+            <table class="table table-sm table-hover align-middle mb-0" style="font-size: 0.82rem;">
+              <thead class="table-light">
+                <tr>
+                  <th class="ps-3 py-2 text-muted fw-semibold">Trigger Channel</th>
+                  <th class="py-2 text-muted fw-semibold">Activation Method</th>
+                  <th class="py-2 text-muted fw-semibold">Live State</th>
+                  <th class="pe-3 py-2 text-end text-muted fw-semibold">Manual Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr id="chipButton" onclick="triggerSamePageSOS('chip_button')" style="cursor: pointer;">
+                  <td class="ps-3 fw-bold text-dark">One-Tap Dial</td>
+                  <td class="text-secondary">Emergency SOS center button</td>
+                  <td><span class="chip-status-text bg-success-subtle text-success">Active</span></td>
+                  <td class="pe-3 text-end"><span class="btn btn-xs btn-outline-danger py-0 px-2 fw-semibold" style="font-size:0.72rem; border-radius:4px;">Trigger</span></td>
+                </tr>
+                <tr id="chipVoice" onclick="requestMicrophonePermission(true)" style="cursor: pointer;">
+                  <td class="ps-3 fw-bold text-dark">Voice Recognition</td>
+                  <td class="text-secondary">Keyword detection ("Help", "Bachao")</td>
+                  <td><span class="chip-status-text bg-success-subtle text-success" id="voiceStatusText">Listening</span></td>
+                  <td class="pe-3 text-end"><span class="btn btn-xs btn-outline-secondary py-0 px-2 fw-semibold" style="font-size:0.72rem; border-radius:4px;">Enable Mic</span></td>
+                </tr>
+                <tr id="chipShake" onclick="triggerTapSimulation()" style="cursor: pointer;">
+                  <td class="ps-3 fw-bold text-dark">Motion Detection</td>
+                  <td class="text-secondary">Device accelerometer sensor</td>
+                  <td><span class="chip-status-text bg-success-subtle text-success" id="shakeStatusText">Armed</span></td>
+                  <td class="pe-3 text-end"><span class="btn btn-xs btn-outline-secondary py-0 px-2 fw-semibold" style="font-size:0.72rem; border-radius:4px;">Simulate</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card-footer bg-light border-top py-2 px-3 d-flex justify-content-between align-items-center flex-wrap gap-2 text-muted" style="font-size: 0.78rem;">
+            <div id="locDisplay" class="d-flex align-items-center gap-1 text-secondary">
+              <i class="bi bi-geo-alt-fill text-danger"></i>
+              <span>Live Location Armed &bull; Continuous Tracking Ready</span>
             </div>
-            <span class="text-muted d-none d-sm-inline">&bull;</span>
-            <div class="d-inline-flex align-items-center gap-1 text-success fw-semibold">
-              <i class="bi bi-broadcast"></i>
-              <span>3 km Radar Active</span>
+            <div class="d-flex align-items-center gap-2 text-secondary">
+              <span class="badge bg-white text-dark border" style="font-size:0.7rem; border-radius:4px;">3 km Resident Radar</span>
+              <span class="badge bg-white text-dark border" style="font-size:0.7rem; border-radius:4px;">ERSS 112 Connected</span>
             </div>
           </div>
         </div>
