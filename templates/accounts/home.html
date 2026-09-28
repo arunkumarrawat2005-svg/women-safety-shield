@@ -42,19 +42,19 @@
 }
 
 .hero-single-title {
-  color: #7f1d1d;
+  color: #1e293b;
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 800;
-  font-size: clamp(1.85rem, 3.2vw, 2.75rem);
+  font-size: clamp(1.65rem, 2.7vw, 2.25rem);
   letter-spacing: -0.025em;
   text-align: center;
-  margin-bottom: 2.25rem;
-  line-height: 1.2;
+  margin-bottom: 0.5rem;
+  line-height: 1.25;
 }
 
 /* Central Dial Container */
 .giant-sos-wrapper {
-  max-width: 520px;
+  max-width: 500px;
   margin: 0 auto;
   text-align: center;
   position: relative;
@@ -66,18 +66,20 @@
 
 .sos-dial-anchor {
   position: relative;
-  display: block;
-  margin: 0.5rem auto 1rem;
-  width: 200px;
-  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0.75rem auto 0.5rem;
+  width: 184px;
+  height: 184px;
 }
 
-/* Beautiful Tactile Circular SOS Emergency Dial */
+/* Professional Tactile Circular SOS Emergency Dial */
 .sos-giant-dial {
-  width: 200px;
-  height: 200px;
+  width: 184px;
+  height: 184px;
   border-radius: 50% !important;
-  background: radial-gradient(circle at 35% 30%, #ff5252 0%, #ef4444 38%, #dc2626 72%, #991b1b 100%) !important;
+  background: radial-gradient(circle at 35% 30%, #ef4444 0%, #dc2626 45%, #b91c1c 80%, #991b1b 100%) !important;
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
@@ -85,10 +87,10 @@
   color: #ffffff !important;
   cursor: pointer !important;
   position: relative !important;
-  box-shadow: 0 16px 45px rgba(220, 38, 38, 0.45), 0 0 0 8px rgba(239, 68, 68, 0.14) !important;
-  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+  box-shadow: 0 12px 35px rgba(220, 38, 38, 0.4), 0 0 0 6px rgba(239, 68, 68, 0.12) !important;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
   user-select: none !important;
-  border: 3.5px solid rgba(255, 255, 255, 0.85) !important;
+  border: 4px solid rgba(255, 255, 255, 0.95) !important;
   text-decoration: none !important;
   margin: 0 auto;
 }
@@ -178,57 +180,71 @@
   100% { transform: scale(1.35); opacity: 0; }
 }
 
-/* All 3 Triggers Armed Matrix */
-.sos-modes-wrap {
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
-  width: 100% !important;
-  margin-top: 1.5rem !important;
-  margin-bottom: 0.8rem !important;
+/* Clean Professional SOS Control Dock (App Standard) */
+.sos-control-dock {
+  width: 100%;
+  max-width: 480px;
+  margin: 1.4rem auto 0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  transition: all 0.2s ease;
 }
 
-.sos-armed-matrix {
-  display: inline-flex !important;
-  align-items: center !important;
-  background: #ffffff !important;
-  padding: 5px 10px !important;
-  border-radius: 6px !important;
-  gap: 8px !important;
-  border: 1px solid rgba(0, 0, 0, 0.08) !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04) !important;
-  flex-wrap: wrap !important;
-  justify-content: center !important;
+.sos-trigger-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background: #ffffff;
 }
 
-.sos-armed-chip {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 6px !important;
-  padding: 6px 14px !important;
-  border-radius: 6px !important;
-  font-size: 0.82rem !important;
-  font-weight: 700 !important;
-  color: #1e293b !important;
-  background: #ffffff !important;
-  border: 1px solid #e2e8f0 !important;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03) !important;
-  transition: all 0.2s ease !important;
-  user-select: none !important;
+.sos-trigger-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.85rem 0.5rem;
+  border-right: 1px solid #f1f5f9;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  user-select: none;
 }
 
-.sos-armed-chip i {
-  font-size: 0.95rem !important;
+.sos-trigger-item:last-child {
+  border-right: none;
+}
+
+.sos-trigger-item:hover {
+  background: #f8fafc;
+}
+
+.sos-trigger-meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 0.35rem;
+}
+
+.sos-trigger-meta i {
+  font-size: 1rem;
+}
+
+.sos-trigger-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #1e293b;
 }
 
 .armed-beacon-dot {
-  width: 7px !important;
-  height: 7px !important;
+  width: 6px !important;
+  height: 6px !important;
   border-radius: 50% !important;
   background-color: #22c55e !important;
-  box-shadow: 0 0 8px #22c55e !important;
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.8) !important;
   display: inline-block !important;
-  animation: armedBeaconPulse 2s infinite !important;
+  animation: armedBeaconPulse 2s infinite ease-in-out !important;
 }
 
 @keyframes armedBeaconPulse {
@@ -238,28 +254,27 @@
 }
 
 .chip-status-text {
-  font-size: 0.68rem !important;
-  background: #ecfdf5 !important;
-  color: #059669 !important;
-  padding: 2px 7px !important;
-  border-radius: 8px !important;
+  font-size: 0.65rem !important;
   font-weight: 800 !important;
-  text-transform: uppercase !important;
   letter-spacing: 0.04em !important;
+  padding: 2px 7px !important;
+  border-radius: 4px !important;
+  text-transform: uppercase !important;
+  display: inline-block !important;
+  line-height: 1.2 !important;
 }
 
-/* Live Status Pill */
-.hero-live-status-pill {
-  display: inline-flex;
+.sos-dock-footer {
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+  padding: 0.6rem 0.85rem;
+  display: flex;
   align-items: center;
-  gap: 10px;
-  background: #ffffff;
-  padding: 6px 18px;
-  border-radius: 6px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
-  font-size: 0.82rem;
-  color: #334155;
+  justify-content: center;
+  gap: 0.75rem;
+  font-size: 0.78rem;
+  color: #475569;
+  flex-wrap: wrap;
 }
 
 .status-pulse-dot {
@@ -593,12 +608,14 @@
     <!-- NORMAL STATE: LARGE SOS BUTTON (APPROX 60% VISIBLE SCREEN FOCUS) -->
     <div class="giant-sos-normal-view" id="giantSosNormalView">
       <div class="text-center mb-3">
-        <div class="hero-eyebrow text-uppercase fw-bold text-danger mb-1" style="font-size:0.75rem; letter-spacing:0.06em;">Emergency SOS Network for Women &amp; Community Safety</div>
+        <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2.5 py-1 text-uppercase fw-bold mb-2 d-inline-block" style="font-size:0.72rem; letter-spacing:0.06em; border-radius:6px;">
+          <i class="bi bi-shield-fill-check me-1"></i>Emergency SOS Network
+        </span>
         <h1 class="hero-single-title">
-          Real-Time Emergency Response for Women
+          Instant Emergency Response
         </h1>
-        <p class="text-muted small mx-auto mb-2" style="max-width: 650px;">
-          Women Safety Shield alerts verified nearby residents, local institutions, and police dispatch in a single tap. Tap the central SOS dial or trigger via voice command or shake gesture.
+        <p class="text-muted small mx-auto mb-0" style="max-width: 560px; line-height: 1.55;">
+          Broadcasts your live distress location to verified nearby residents, institutional guardians, and 112 police dispatch in a single action.
         </p>
       </div>
 
@@ -609,7 +626,7 @@
           <div class="sos-dial-radar-ring"></div>
           <div class="sos-dial-radar-ring ring-2"></div>
 
-          <!-- Tactile SOS Emergency Dial Button (Clean 200px) -->
+          <!-- Tactile SOS Emergency Dial Button -->
           <div class="sos-giant-dial" id="heroGiantSosBtn" role="button" tabindex="0" 
                aria-label="Trigger Instant Emergency SOS" 
                onclick="triggerSamePageSOS('hero_dial')">
@@ -619,39 +636,52 @@
           </div>
         </div>
 
-        <!-- All 3 Emergency Triggers Concurrently Armed & Active -->
-        <div class="sos-modes-wrap">
-          <div class="sos-armed-matrix" role="region" aria-label="Emergency Trigger Status: All 3 active">
-            <div class="sos-armed-chip" id="chipButton" onclick="triggerSamePageSOS('chip_button')" style="cursor: pointer;" title="1-Tap Instant SOS Dial is continuously active">
-              <span class="armed-beacon-dot" id="btnBeaconDot"></span>
-              <i class="bi bi-hand-index-thumb-fill text-danger"></i>
-              <span>Button</span>
-              <span class="chip-status-text">Active</span>
+        <!-- Unified Emergency Triggers Dock (Professional SOS App Standard) -->
+        <div class="sos-control-dock" role="region" aria-label="Emergency Trigger Status: Button, Voice, and Motion armed">
+          <!-- Top Row: 3 Equal-Width Dedicated Trigger Panels -->
+          <div class="sos-trigger-grid">
+            <!-- 1. Instant Button Trigger -->
+            <div class="sos-trigger-item" id="chipButton" onclick="triggerSamePageSOS('chip_button')" title="1-Tap Instant SOS Dial is continuously active">
+              <div class="sos-trigger-meta">
+                <span class="armed-beacon-dot" id="btnBeaconDot"></span>
+                <i class="bi bi-hand-index-thumb-fill text-danger"></i>
+                <span class="sos-trigger-name">Button</span>
+              </div>
+              <span class="chip-status-text bg-success-subtle text-success">Active</span>
             </div>
-            <div class="sos-armed-chip" id="chipVoice" onclick="requestMicrophonePermission(true)" style="cursor: pointer;" title="Voice keyword trigger: Click to test or enable microphone">
-              <span class="armed-beacon-dot" id="voiceBeaconDot"></span>
-              <i class="bi bi-mic-fill text-danger" id="voiceIcon"></i>
-              <span>Voice</span>
-              <span class="chip-status-text" id="voiceStatusText">Listening</span>
+
+            <!-- 2. Voice Trigger -->
+            <div class="sos-trigger-item" id="chipVoice" onclick="requestMicrophonePermission(true)" title="Voice keyword trigger: Click to test or enable microphone">
+              <div class="sos-trigger-meta">
+                <span class="armed-beacon-dot" id="voiceBeaconDot"></span>
+                <i class="bi bi-mic-fill text-danger" id="voiceIcon"></i>
+                <span class="sos-trigger-name">Voice</span>
+              </div>
+              <span class="chip-status-text bg-success-subtle text-success" id="voiceStatusText">Listening</span>
             </div>
-            <div class="sos-armed-chip" id="chipShake" onclick="triggerTapSimulation()" style="cursor: pointer;" title="Motion sensor armed: Shake phone vigorously to trigger SOS">
-              <span class="armed-beacon-dot" id="shakeBeaconDot"></span>
-              <i class="bi bi-phone-vibrate-fill text-danger"></i>
-              <span>Shake</span>
-              <span class="chip-status-text" id="shakeStatusText">Armed</span>
+
+            <!-- 3. Shake Trigger -->
+            <div class="sos-trigger-item" id="chipShake" onclick="triggerTapSimulation()" title="Motion sensor armed: Shake phone vigorously to trigger SOS">
+              <div class="sos-trigger-meta">
+                <span class="armed-beacon-dot" id="shakeBeaconDot"></span>
+                <i class="bi bi-phone-vibrate-fill text-danger"></i>
+                <span class="sos-trigger-name">Shake</span>
+              </div>
+              <span class="chip-status-text bg-success-subtle text-success" id="shakeStatusText">Armed</span>
             </div>
           </div>
-        </div>
 
-        <!-- Live Status Pill -->
-        <div class="d-flex align-items-center justify-content-center">
-          <div class="hero-live-status-pill">
-            <span class="status-pulse-dot"></span>
-            <span id="locDisplay" class="fw-semibold">
-              <span class="text-danger fw-bold"><i class="bi bi-shield-fill-check me-1"></i>All 3 Triggers Armed:</span> Tap Dial, Say "Help", or Shake Phone
-            </span>
-            <span class="status-divider"></span>
-            <span class="text-success fw-semibold"><i class="bi bi-broadcast me-1"></i>3 km Safety Radar Active</span>
+          <!-- Bottom Row: Unified Telemetry & Status Bar -->
+          <div class="sos-dock-footer">
+            <div id="locDisplay" class="d-inline-flex align-items-center gap-1.5 text-secondary">
+              <i class="bi bi-shield-fill-check text-danger"></i>
+              <span class="fw-medium">Ready: Tap Dial, Say "Help", or Shake Phone</span>
+            </div>
+            <span class="text-muted d-none d-sm-inline">&bull;</span>
+            <div class="d-inline-flex align-items-center gap-1 text-success fw-semibold">
+              <i class="bi bi-broadcast"></i>
+              <span>3 km Radar Active</span>
+            </div>
           </div>
         </div>
       </div>
