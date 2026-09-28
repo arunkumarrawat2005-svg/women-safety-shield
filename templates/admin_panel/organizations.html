@@ -5,7 +5,7 @@
 <div class="container-fluid my-4 px-3 px-md-4">
 
   <!-- Header -->
-  <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+  <div class="card border-0 shadow-sm rounded-3 p-4 mb-4 bg-white">
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
       <div>
         <div class="d-flex align-items-center gap-2 mb-1">
@@ -13,7 +13,7 @@
           <span class="badge bg-danger">GOVERNANCE</span>
         </div>
         <h3 class="fw-bold mb-1" style="color:var(--maroon);">
-          🏢 Organization Safety Network Management
+          <i class="bi bi-building me-1"></i> Organization Safety Network Management
         </h3>
         <p class="text-muted small mb-0">Review, verify, and monitor institutional partners (Colleges, Hospitals, Tech Parks, NGOs)</p>
       </div>
@@ -31,7 +31,7 @@
   <!-- Stat Cards -->
   <div class="row g-3 mb-4">
     <div class="col-md-4">
-      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+      <div class="card border-0 shadow-sm rounded-3 p-3 bg-white">
         <div class="d-flex justify-content-between align-items-center">
           <div>
             <div class="text-muted small fw-bold text-uppercase">TOTAL ORGANIZATIONS</div>
@@ -42,7 +42,7 @@
       </div>
     </div>
     <div class="col-md-4">
-      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+      <div class="card border-0 shadow-sm rounded-3 p-3 bg-white">
         <div class="d-flex justify-content-between align-items-center">
           <div>
             <div class="text-muted small fw-bold text-uppercase">VERIFIED PARTNERS</div>
@@ -53,7 +53,7 @@
       </div>
     </div>
     <div class="col-md-4">
-      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+      <div class="card border-0 shadow-sm rounded-3 p-3 bg-white">
         <div class="d-flex justify-content-between align-items-center">
           <div>
             <div class="text-muted small fw-bold text-uppercase">PENDING REVIEW</div>
@@ -66,7 +66,7 @@
   </div>
 
   <!-- Filters & Search -->
-  <div class="card border-0 shadow-sm rounded-4 p-3 mb-4 bg-white">
+  <div class="card border-0 shadow-sm rounded-3 p-3 mb-4 bg-white">
     <form method="GET" action="{% url 'admin_organizations' %}" class="row g-2 align-items-center">
       <div class="col-md-5">
         <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Search organization, address, city, hotline...">
@@ -95,7 +95,7 @@
   </div>
 
   <!-- Organizations Table -->
-  <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
+  <div class="card border-0 shadow-sm rounded-3 bg-white overflow-hidden">
     <div class="table-responsive">
       <table class="table table-hover align-middle mb-0">
         <thead class="table-light">

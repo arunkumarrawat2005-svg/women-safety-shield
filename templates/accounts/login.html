@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Sign In — Women Safety Shield{% endblock %}
+{% block title %}Sign In: Women Safety Shield{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -15,7 +15,7 @@
   .auth-card {
     background: #ffffff;
     border: 1px solid var(--line);
-    border-radius: 20px;
+    border-radius: 6px;
     padding: 2.8rem 2.4rem;
     box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.08);
     width: 100%;
@@ -24,7 +24,7 @@
   .auth-logo-badge {
     width: 58px;
     height: 58px;
-    border-radius: 16px;
+    border-radius: 8px;
     background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
     border: 1px solid var(--crimson-border);
     display: flex;
@@ -42,7 +42,7 @@
     font-family: 'Plus Jakarta Sans', sans-serif;
     font-weight: 700;
     padding: 0.8rem 1.5rem;
-    border-radius: 12px;
+    border-radius: 8px;
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     box-shadow: 0 4px 12px rgba(220, 38, 38, 0.28);
   }
@@ -62,9 +62,9 @@
         
         <!-- Left Column: Platform Features & Capabilities Showcase -->
         <div class="col-lg-6 col-xl-6 d-flex flex-column">
-            <div class="p-4 p-md-5 rounded-4 shadow-sm d-flex flex-column justify-content-between h-100" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: #ffffff;">
+            <div class="p-4 p-md-5 rounded-3 shadow-sm d-flex flex-column justify-content-between h-100" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: #ffffff;">
                 <div>
-                    <span class="badge rounded-pill bg-danger px-3 py-1 fw-bold text-uppercase mb-3" style="font-size:0.75rem; letter-spacing:0.05em;">
+                    <span class="badge rounded-2 bg-danger px-3 py-1 fw-bold text-uppercase mb-3" style="font-size:0.75rem; letter-spacing:0.05em;">
                         <i class="bi bi-shield-lock-fill me-1"></i>Women Safety Shield Ecosystem
                     </span>
                     <h2 class="fw-bold mb-2 text-white" style="color: #ffffff !important; font-family:'Plus Jakarta Sans',sans-serif; letter-spacing:-0.02em;">
@@ -85,7 +85,7 @@
                                 <div>
                                     <strong class="d-block text-white" style="font-size:0.95rem;">One-Tap Emergency SOS</strong>
                                     <small class="text-white-50" style="font-size:0.82rem; line-height:1.4; display:block;">
-                                        Instant multi-channel dispatch — live coordinates, audible siren, and parallel emergency contacts notification.
+                                        Instant multi-channel dispatch, live coordinates, audible siren, and parallel emergency contacts notification.
                                     </small>
                                 </div>
                             </div>
@@ -129,10 +129,10 @@
                         <small class="text-white-50" style="font-size:0.75rem;">Walk through our interactive features tour.</small>
                     </div>
                     <div class="d-flex gap-2">
-                        <button type="button" class="btn btn-sm btn-danger rounded-pill px-3 fw-bold shadow-sm" onclick="openOnboardingModal()">
+                        <button type="button" class="btn btn-sm btn-danger rounded-2 px-3 fw-bold shadow-sm" onclick="openOnboardingModal()">
                             <i class="bi bi-play-circle-fill me-1"></i>Tour
                         </button>
-                        <a href="{% url 'how_it_works' %}" class="btn btn-sm btn-outline-light rounded-pill px-3 fw-semibold">
+                        <a href="{% url 'how_it_works' %}" class="btn btn-sm btn-outline-light rounded-2 px-3 fw-semibold">
                             Features Guide
                         </a>
                     </div>
@@ -147,7 +147,7 @@
                     <div class="auth-logo-badge">
                         <i class="bi bi-shield-fill-check"></i>
                     </div>
-                    <span class="badge bg-danger-subtle text-danger px-3 py-1 rounded-pill mb-2 fw-semibold">SECURE ACCESS</span>
+                    <span class="badge bg-danger-subtle text-danger px-3 py-1 rounded-2 mb-2 fw-semibold">SECURE ACCESS</span>
                     <h3 class="fw-bold mb-1" style="font-family:'Plus Jakarta Sans',sans-serif; letter-spacing:-0.025em; color:var(--text-primary);">Welcome Back</h3>
                     <p class="text-muted small mb-0">Sign in to your account and stay protected</p>
                 </div>

@@ -4,7 +4,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Women Safety Shield — Help finds you, from every direction.</title>
+<title>Women Safety Shield: Help finds you, from every direction.</title>
+<!-- Favicon & Touch Icons -->
+<link rel="icon" type="image/svg+xml" href="{% static 'images/favicon.svg' %}">
+<link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+<link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+<link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+<link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
 <!-- PWA & Mobile Web App Meta -->
 <link rel="manifest" href="{% url 'manifest_json' %}">
 <meta name="theme-color" content="#7A1F2B">
@@ -87,7 +93,7 @@
             <div class="avatar-circle-sm me-1">{{ user.first_name|first|default:user.username|first }}</div>
             <span class="d-none d-md-inline small fw-semibold">{{ user.full_name|default:user.username }}</span>
           </a>
-          <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="border:1px solid var(--line);border-radius:12px;">
+          <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="border:1px solid var(--line);border-radius: 8px;">
             <li><a class="dropdown-item py-2" href="{% url 'profile' %}"><i class="bi bi-person me-2"></i>My Profile</a></li>
             <li><a class="dropdown-item py-2" href="{% url 'emergency_list' %}"><i class="bi bi-clock-history me-2"></i>My Emergencies</a></li>
             <li><a class="dropdown-item py-2" href="{% url 'trusted_contacts' %}"><i class="bi bi-people me-2"></i>Trusted Circle</a></li>
@@ -140,9 +146,9 @@
       
       <!-- LEFT: EYEBROW + HEADLINE + DESCRIPTION + CTAS + TRUST ROW -->
       <div class="col-lg-7">
-        <div class="hero-eyebrow">Community-powered safety, built for real emergencies</div>
-        <h1>Help finds you, from every direction.</h1>
-        <p class="lead">One alert reaches verified people nearby, trained responders at local institutions, and the police — all at once. No single point of failure, when it matters most.</p>
+        <div class="hero-eyebrow">Emergency SOS Network for Women &amp; Community Safety</div>
+        <h1>Real-Time Emergency Response for Women</h1>
+        <p class="lead">Women Safety Shield alerts verified nearby residents, local institutions, and police dispatch in a single tap. Send an immediate distress alert or download the Android app to stay protected.</p>
         <div class="hero-ctas">
           <button type="button" class="btn-hero-primary" onclick="openAppModal()">
             Download for Android
@@ -202,29 +208,29 @@
 
     {% if active_emergencies and active_emergencies > 0 %}
     <!-- Active Emergency In Progress Banner -->
-    <div class="alert mb-4 border-0 shadow-sm rounded-4 p-3 d-flex align-items-center justify-content-between flex-wrap gap-2 text-white" style="background:var(--crimson);border-left:6px solid var(--gold)!important;">
+    <div class="alert mb-4 border-0 shadow-sm rounded-3 p-3 d-flex align-items-center justify-content-between flex-wrap gap-2 text-white" style="background:var(--crimson);border-left:6px solid var(--gold)!important;">
       <div class="d-flex align-items-center gap-3">
         <span class="spinner-grow spinner-grow-sm text-warning" role="status"></span>
         <div>
-          <strong class="d-block fs-6">⚠️ Active Emergency Dispatch In Progress!</strong>
+          <strong class="d-block fs-6"><i class="bi bi-exclamation-triangle me-1"></i> Active Emergency Dispatch In Progress!</strong>
           <small>You have {{ active_emergencies }} unresolved SOS broadcast actively tracked by responders.</small>
         </div>
       </div>
-      <a href="{% url 'emergency_list' %}" class="btn btn-warning btn-sm px-3 fw-bold rounded-pill text-dark">
+      <a href="{% url 'emergency_list' %}" class="btn btn-warning btn-sm px-3 fw-bold rounded-2 text-dark">
         <i class="bi bi-geo-alt-fill me-1"></i>View Live Dispatch →
       </a>
     </div>
     {% endif %}
 
     <!-- Status Ribbon & Greeting -->
-    <div class="station-title-box d-flex justify-content-between align-items-center flex-wrap gap-3 p-3 bg-white rounded-4 border shadow-sm">
+    <div class="station-title-box d-flex justify-content-between align-items-center flex-wrap gap-3 p-3 bg-white rounded-3 border shadow-sm">
       <div class="d-flex align-items-center gap-2 flex-wrap">
         <span class="status-pulse-dot"></span>
         <strong style="color:var(--maroon);font-size:1.02rem;">Shield Protection Active</strong>
         <span class="text-muted">|</span>
         {% if user.is_authenticated %}
         <span>Welcome, <strong class="text-danger">{{ user.full_name|default:user.username }}</strong></span>
-        <span class="badge bg-danger-subtle text-danger rounded-pill">{{ user.get_role_display|default:'User' }}</span>
+        <span class="badge bg-danger-subtle text-danger rounded-2">{{ user.get_role_display|default:'User' }}</span>
         {% else %}
         <span>Community Safety Radar &bull; Public Mode</span>
         {% endif %}
@@ -366,13 +372,13 @@
 
     <!-- Resident Responder Console (If user has resident profile) -->
     {% if resident %}
-    <div class="card p-3 mb-4 border-0 shadow-sm rounded-4 bg-white" style="border:1px solid var(--line)!important;">
+    <div class="card p-3 mb-4 border-0 shadow-sm rounded-3 bg-white" style="border:1px solid var(--line)!important;">
       <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
         <div class="d-flex align-items-center gap-2">
           <i class="bi bi-shield-fill-check text-success fs-5"></i>
           <h6 class="mb-0 fw-bold">Resident Responder Status</h6>
         </div>
-        <span class="badge {% if resident.is_verified %}bg-success{% else %}bg-warning text-dark{% endif %} rounded-pill">
+        <span class="badge {% if resident.is_verified %}bg-success{% else %}bg-warning text-dark{% endif %} rounded-2">
           {% if resident.is_verified %}Aadhaar Verified by Admin{% else %}Pending Admin Approval{% endif %}
         </span>
       </div>
@@ -394,7 +400,7 @@
           <div class="p-2 bg-light rounded-3 border text-center">
             <span class="small text-muted d-block" style="font-size:0.75rem;">Duty Availability:</span>
             <strong class="{% if resident.is_available %}text-success{% else %}text-muted{% endif %}">
-              {% if resident.is_available %}🟢 On-Call{% else %}⚪ Standby{% endif %}
+              {% if resident.is_available %}<i class="bi bi-geo-alt-fill text-success me-1"></i> On-Call{% else %}<i class="bi bi-circle-fill text-secondary me-1"></i> Standby{% endif %}
             </strong>
           </div>
         </div>
@@ -415,11 +421,11 @@
     {% endif %}
 
     <!-- Official Emergency Helplines (India) -->
-    <div class="card p-3 border-0 shadow-sm rounded-4 bg-white" style="border:1px solid var(--line)!important;">
+    <div class="card p-3 border-0 shadow-sm rounded-3 bg-white" style="border:1px solid var(--line)!important;">
       <div class="d-flex align-items-center justify-content-between mb-2">
         <div class="d-flex align-items-center gap-2">
           <i class="bi bi-telephone-inbound-fill text-danger"></i>
-          <strong class="small fw-bold text-dark">Official Emergency Helplines (India) — Direct Dial</strong>
+          <strong class="small fw-bold text-dark">Official Emergency Helplines (India), Direct Dial</strong>
         </div>
         <small class="text-muted" style="font-size:0.75rem;">Immediate National Dispatch</small>
       </div>
@@ -448,14 +454,14 @@
         </div>
         <div>
           <h4 class="fw-bold mb-1" style="color:var(--maroon);">
-            See How It Works — Interactive Safety &amp; Rescue Deep Dive
+            See How It Works, Interactive Safety &amp; Rescue Deep Dive
           </h4>
           <p class="text-muted small mb-0">
             Click to explore the step-by-step emergency escalation simulator, safety radar, defense networks &amp; features.
           </p>
         </div>
       </div>
-      <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3 py-2 fw-bold" id="howToggleBtn" onclick="event.stopPropagation(); toggleHowItWorks();">
+      <button type="button" class="btn btn-outline-danger btn-sm rounded-2 px-3 py-2 fw-bold" id="howToggleBtn" onclick="event.stopPropagation(); toggleHowItWorks();">
         <i class="bi bi-chevron-down me-1" id="howToggleIcon"></i><span id="howToggleText">Show Details</span>
       </button>
     </div>
@@ -565,10 +571,10 @@
         </div>
         <div class="row g-4">
           <div class="col-lg-7">
-            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white" style="border:1px solid var(--line) !important;">
+            <div class="card border-0 shadow-sm rounded-3 p-4 bg-white" style="border:1px solid var(--line) !important;">
               <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                 <div>
-                  <h5 class="fw-bold mb-0" style="color:var(--maroon);">🗺️ Live Safety Route Map</h5>
+                  <h5 class="fw-bold mb-0" style="color:var(--maroon);"><i class="bi bi-map-fill me-1"></i> Live Safety Route Map</h5>
                   <small class="text-muted">Interactive street-level illumination and risk index</small>
                 </div>
                 <a href="{% url 'safe_routes_compare' %}" class="btn btn-sm btn-outline-danger fw-semibold">Compare All Routes &rarr;</a>
@@ -615,7 +621,7 @@
             <div class="scanner-box">
               <div>
                 <div class="d-flex align-items-center justify-content-between mb-2">
-                  <h5 class="fw-bold mb-0" style="color:var(--maroon);">📡 Citizen Resident Radius</h5>
+                  <h5 class="fw-bold mb-0" style="color:var(--maroon);"><i class="bi bi-broadcast me-1"></i> Citizen Resident Radius</h5>
                   <span class="badge bg-danger-subtle text-danger">LIVE RADAR</span>
                 </div>
                 <p class="text-muted small mb-3">Adjust detection range to dynamically scan for verified resident protectors near you.</p>
@@ -670,14 +676,14 @@
       <div class="networks-section-inner" id="networks">
         <div class="section-head">
           <h2>Help reaches you from three directions at once</h2>
-          <p>No single channel has to work perfectly — because you're never relying on just one.</p>
+          <p>No single channel has to work perfectly, because you're never relying on just one.</p>
         </div>
         <div class="row g-4">
           <div class="col-lg-4">
             <div class="network-card local">
               <div class="feature-icon"><i class="bi bi-people-fill"></i></div>
               <h3>Local Resident Network</h3>
-              <p>Verified people near you right now — not contacts you added, but whoever is close enough to actually reach you fast.</p>
+              <p>Verified people near you right now, not contacts you added, but whoever is close enough to actually reach you fast.</p>
               <ul>
                 <li>Found by real-time proximity search</li>
                 <li>Aadhaar-verified by the platform</li>
@@ -689,7 +695,7 @@
             <div class="network-card org">
               <div class="feature-icon"><i class="bi bi-building-fill-check"></i></div>
               <h3>Organization Network</h3>
-              <p>Colleges, hospitals, and offices with designated, trained volunteers ready to respond — regardless of your affiliation with them.</p>
+              <p>Colleges, hospitals, and offices with designated, trained volunteers ready to respond, regardless of your affiliation with them.</p>
               <ul>
                 <li>Approved directly by each organization</li>
                 <li>Institutional dashboard alert, in parallel</li>
@@ -701,7 +707,7 @@
             <div class="network-card local">
               <div class="feature-icon"><i class="bi bi-shield-lock-fill"></i></div>
               <h3>Government Emergency Bodies</h3>
-              <p>Police are alerted the moment SOS fires — automatically, and without waiting to see if a volunteer responds first.</p>
+              <p>Police are alerted the moment SOS fires, automatically, and without waiting to see if a volunteer responds first.</p>
               <ul>
                 <li>Fires in parallel, every time</li>
                 <li>No dependency on volunteer response</li>
@@ -716,14 +722,14 @@
       <div class="features-section-inner" id="features">
         <div class="section-head">
           <h2>Everything you need, before and during an emergency</h2>
-          <p>Built as a complete safety system — not just a panic button.</p>
+          <p>Built as a complete safety system, not just a panic button.</p>
         </div>
         <div class="row g-4">
           <div class="col-md-4">
             <div class="feature-card">
               <div class="feature-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
               <h3>Triple SOS trigger</h3>
-              <p>Activate an alert by button, voice command, or shake gesture — built for moments when reaching for your phone isn't easy.</p>
+              <p>Activate an alert by button, voice command, or shake gesture, built for moments when reaching for your phone isn't easy.</p>
             </div>
           </div>
           <div class="col-md-4">
@@ -738,14 +744,14 @@
             <div class="feature-card">
               <div class="feature-icon"><i class="bi bi-signpost-split-fill"></i></div>
               <h3>Safe route predictor</h3>
-              <p>See a safety score for every route between two points, built from community reports and official crime data — you choose the path.</p>
+              <p>See a safety score for every route between two points, built from community reports and official crime data, you choose the path.</p>
             </div>
           </div>
           <div class="col-md-4">
             <div class="feature-card">
               <div class="feature-icon"><i class="bi bi-telephone-outbound-fill"></i></div>
               <h3>Automatic call escalation</h3>
-              <p>If a push alert goes unanswered, a direct call follows — so a quiet notification never becomes a missed emergency.</p>
+              <p>If a push alert goes unanswered, a direct call follows, so a quiet notification never becomes a missed emergency.</p>
             </div>
           </div>
           <div class="col-md-4">
@@ -759,7 +765,7 @@
             <div class="feature-card">
               <div class="feature-icon"><i class="bi bi-patch-check-fill"></i></div>
               <h3>Verified responders only</h3>
-              <p>Every responder — resident or institutional — is Aadhaar-verified before they can see your location or respond.</p>
+              <p>Every responder, resident or institutional, is Aadhaar-verified before they can see your location or respond.</p>
             </div>
           </div>
         </div>
@@ -780,10 +786,10 @@
       Download Women Safety Shield and know that help is already looking for you, from three directions, the moment you need it.
     </p>
     <div class="d-flex justify-content-center align-items-center gap-3 flex-wrap">
-      <a href="{% url 'download_apk' %}" class="btn-cta-download" onclick="triggerAppDownload(event)" style="background: #ffffff !important; color: #1e293b !important; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; padding: 0.85rem 2rem; border-radius: 9999px; border: 1px solid rgba(255,255,255,0.2); text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; transition: all 0.2s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.15);">
+      <a href="{% url 'download_apk' %}" class="btn-cta-download" onclick="triggerAppDownload(event)" style="background: #ffffff !important; color: #1e293b !important; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; padding: 0.85rem 2rem; border-radius: 6px; border: 1px solid rgba(255,255,255,0.2); text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; transition: all 0.2s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.15);">
         <i class="bi bi-download me-2"></i>Download for Android (.apk)
       </a>
-      <button type="button" class="btn-cta" onclick="openSosModal('cta')" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important; color: #ffffff !important; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; padding: 0.85rem 2rem; border-radius: 9999px; border: none; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s ease; box-shadow: 0 6px 20px rgba(220,38,38,0.45);">
+      <button type="button" class="btn-cta" onclick="openSosModal('cta')" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important; color: #ffffff !important; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; padding: 0.85rem 2rem; border-radius: 6px; border: none; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s ease; box-shadow: 0 6px 20px rgba(220,38,38,0.45);">
         <i class="bi bi-broadcast me-2"></i>Launch Emergency SOS
       </button>
     </div>
@@ -809,13 +815,13 @@
           <i class="bi bi-cpu me-1" style="color:var(--gold);"></i>Developed by <strong>Team Shield Matrix</strong>
         </p>
         <div class="d-flex gap-2 flex-wrap">
-          <a href="tel:112" class="badge rounded-pill bg-danger text-white px-3 py-2 text-decoration-none shadow-sm" title="National Emergency Response">
+          <a href="tel:112" class="badge rounded-2 bg-danger text-white px-3 py-2 text-decoration-none shadow-sm" title="National Emergency Response">
             <i class="bi bi-telephone-fill me-1"></i>112 Police
           </a>
-          <a href="tel:1091" class="badge rounded-pill bg-danger text-white px-3 py-2 text-decoration-none shadow-sm" title="Women Helpline">
+          <a href="tel:1091" class="badge rounded-2 bg-danger text-white px-3 py-2 text-decoration-none shadow-sm" title="Women Helpline">
             <i class="bi bi-telephone-fill me-1"></i>1091 Women
           </a>
-          <a href="tel:181" class="badge rounded-pill bg-danger text-white px-3 py-2 text-decoration-none shadow-sm" title="Women in Distress">
+          <a href="tel:181" class="badge rounded-2 bg-danger text-white px-3 py-2 text-decoration-none shadow-sm" title="Women in Distress">
             <i class="bi bi-telephone-fill me-1"></i>181 Helpline
           </a>
         </div>
@@ -857,15 +863,21 @@
           <i class="bi bi-shield-check text-success fs-5"></i>
           <span class="small text-white-50" style="font-size:0.78rem;">Aadhaar &amp; PAN statutory verification standards</span>
         </div>
+        <div class="mt-3 pt-2 border-top" style="border-color:#423934 !important;">
+          <p class="mb-1"><a href="{% url 'privacy' %}" class="text-white-50 text-decoration-none hover-underline"><i class="bi bi-shield-lock me-1"></i>Privacy Policy</a></p>
+          <p class="mb-0"><a href="{% url 'terms' %}" class="text-white-50 text-decoration-none hover-underline"><i class="bi bi-file-earmark-text me-1"></i>Terms &amp; Conditions</a></p>
+        </div>
       </div>
     </div>
 
     <!-- Bottom Bar -->
     <div class="footer-bottom d-flex justify-content-between align-items-center flex-wrap gap-2 pt-3 mt-4 border-top" style="border-color:#423934 !important; font-size:0.82rem; color:#9a8f8a;">
-      <div>© 2026 Women Safety Shield — Team Shield Matrix. All rights reserved. Help finds you, from every direction.</div>
-      <div class="d-flex align-items-center gap-2">
+      <div>© 2026 Women Safety Shield: Team Shield Matrix. All rights reserved. Help finds you, from every direction.</div>
+      <div class="d-flex align-items-center gap-3">
+        <a href="{% url 'privacy' %}" class="text-white-50 text-decoration-none">Privacy Policy</a>
+        <span class="text-white-50">&bull;</span>
+        <a href="{% url 'terms' %}" class="text-white-50 text-decoration-none">Terms and Conditions</a>
         <span class="badge bg-dark border border-secondary text-white-50 px-2 py-1">ERSS 112 Integrated</span>
-        <span>Emergency Dispatch Protocol v2.5</span>
       </div>
     </div>
   </div>
@@ -876,7 +888,7 @@
 <!-- ======================================================== -->
 <div class="modal fade" id="sosModal" tabindex="-1" aria-labelledby="sosModalLabel" aria-hidden="true" data-bs-backdrop="static">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden">
+    <div class="modal-content border-0 rounded-3 shadow-lg overflow-hidden">
       <div class="modal-header bg-danger text-white py-3">
         <h5 class="modal-title fw-bold" id="sosModalLabel">
           <i class="bi bi-exclamation-octagon-fill me-2"></i>CONFIRM DISTRESS SOS
@@ -930,7 +942,7 @@
 <!-- ======================================================== -->
 <div class="modal fade" id="appModal" tabindex="-1" aria-labelledby="appModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0 rounded-4 shadow-lg">
+    <div class="modal-content border-0 rounded-3 shadow-lg">
       <div class="modal-header border-0 pb-0">
         <h5 class="modal-title fw-bold" style="color:var(--maroon);" id="appModalLabel">
           <i class="bi bi-phone-fill text-danger me-2"></i>Get Women Safety Shield
@@ -939,7 +951,7 @@
       </div>
       <div class="modal-body p-4 text-center">
         <div class="mb-3 text-center">
-          <div class="p-3 bg-light rounded-4 d-inline-block border">
+          <div class="p-3 bg-light rounded-3 d-inline-block border">
             <i class="bi bi-qr-code text-danger" style="font-size:5rem;"></i>
           </div>
         </div>
@@ -1089,7 +1101,7 @@ const simStepData = {
     },
     2: {
         title: "Step 2: Three Alerts Fire Simultaneously",
-        subtitle: "No single point of failure — parallel broadcast dispatched across all 3 response networks.",
+        subtitle: "No single point of failure, parallel broadcast dispatched across all 3 response networks.",
         html: `
           <div class="mb-3">
             <h5 class="fw-bold" style="color:var(--maroon);"><i class="bi bi-bezier2 me-2"></i>Parallel Triple-Channel Fanout</h5>
@@ -1123,7 +1135,7 @@ const simStepData = {
     },
     3: {
         title: "Step 3: A Responder Confirms & Responds",
-        subtitle: "Only an acknowledged alert counts as help on the way — silence escalates automatically.",
+        subtitle: "Only an acknowledged alert counts as help on the way, silence escalates automatically.",
         html: `
           <div class="mb-3">
             <h5 class="fw-bold text-success"><i class="bi bi-person-check-fill me-2"></i>Verified Protector Accepted</h5>
@@ -1286,7 +1298,7 @@ function openSosModal(source = 'button') {
             playBeep(900 + (3 - countdownSeconds) * 150, 0.18);
         } else {
             clearInterval(countdownTimer);
-            countDisplay.textContent = "🚨";
+            countDisplay.textContent = "<i class="bi bi-exclamation-triangle-fill text-danger me-1"></i>";
             playBeep(1400, 0.4);
             document.getElementById('sosDirectForm').submit();
         }
@@ -1330,7 +1342,7 @@ function showDownloadToast() {
     if (!toast) {
         toast = document.createElement('div');
         toast.id = 'downloadToast';
-        toast.className = 'position-fixed bottom-0 start-50 translate-middle-x mb-4 p-3 bg-dark text-white rounded-4 shadow-lg d-flex align-items-center gap-3';
+        toast.className = 'position-fixed bottom-0 start-50 translate-middle-x mb-4 p-3 bg-dark text-white rounded-3 shadow-lg d-flex align-items-center gap-3';
         toast.style.zIndex = '9999';
         toast.style.transition = 'all 0.3s ease';
         toast.innerHTML = `

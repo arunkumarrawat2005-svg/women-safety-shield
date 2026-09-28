@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
-{% block title %}My Profile — Women Safety Shield{% endblock %}
+{% block title %}My Profile: Women Safety Shield{% endblock %}
 
 {% block content %}
 <div class="container my-4" style="max-width:760px;">
     
     <!-- Profile & Trust Header -->
-    <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
+    <div class="card border-0 shadow-sm rounded-3 mb-4 overflow-hidden">
         <div class="card-body p-4 bg-light">
             <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
                 <div class="d-flex align-items-center gap-3">
@@ -23,7 +23,7 @@
                 </div>
 
                 <div>
-                    <a href="{% url 'verification_status' %}" class="btn btn-sm {% if user.badge_identity_verified %}btn-success{% else %}btn-danger{% endif %} rounded-pill px-3 fw-bold shadow-sm">
+                    <a href="{% url 'verification_status' %}" class="btn btn-sm {% if user.badge_identity_verified %}btn-success{% else %}btn-danger{% endif %} rounded-2 px-3 fw-bold shadow-sm">
                         {% if user.badge_identity_verified %}
                         <i class="bi bi-patch-check-fill me-1"></i>Identity Verified
                         {% else %}
@@ -38,30 +38,30 @@
                 <small class="text-muted d-block fw-bold mb-2" style="font-size:0.75rem; letter-spacing:0.04em;">ACCOUNT TRUST BADGES</small>
                 <div class="d-flex gap-2 flex-wrap">
                     {% if user.badge_identity_verified %}
-                    <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill fw-semibold">
-                        🛡️ Identity Verified
+                    <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-2 fw-semibold">
+                        <i class="bi bi-shield-fill-check text-primary me-1"></i> Identity Verified
                     </span>
                     {% else %}
-                    <span class="badge bg-secondary-subtle text-secondary border px-3 py-2 rounded-pill">
-                        🛡️ Identity Pending Verification
+                    <span class="badge bg-secondary-subtle text-secondary border px-3 py-2 rounded-2">
+                        <i class="bi bi-shield-fill-check text-primary me-1"></i> Identity Pending Verification
                     </span>
                     {% endif %}
 
                     {% if user.badge_community_verified %}
-                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill fw-semibold">
-                        ✓ Verified Community Member
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-2 fw-semibold">
+                        <i class="bi bi-check-lg text-success me-1"></i> Verified Community Member
                     </span>
                     {% endif %}
 
                     {% if user.badge_secure_account %}
-                    <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle px-3 py-2 rounded-pill fw-semibold">
-                        ✓ Secure Account
+                    <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle px-3 py-2 rounded-2 fw-semibold">
+                        <i class="bi bi-check-lg text-success me-1"></i> Secure Account
                     </span>
                     {% endif %}
 
                     {% if user.badge_trusted_contact %}
-                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 rounded-pill fw-semibold">
-                        ✓ Trusted Circle Active
+                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 rounded-2 fw-semibold">
+                        <i class="bi bi-check-lg text-success me-1"></i> Trusted Circle Active
                     </span>
                     {% endif %}
                 </div>
@@ -70,7 +70,7 @@
     </div>
 
     <!-- Edit Profile Card -->
-    <div class="card border-0 shadow-sm rounded-4">
+    <div class="card border-0 shadow-sm rounded-3">
         <div class="card-header bg-white border-bottom py-3 px-4">
             <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-pencil-square me-2 text-danger"></i>Manage Profile Details</h5>
         </div>

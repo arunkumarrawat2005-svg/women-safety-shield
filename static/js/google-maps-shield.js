@@ -346,7 +346,7 @@
         },
 
         /**
-         * Create a standard styled Map (Google Maps Platform if key loaded, or seamless Leaflet fallback)
+         * Create a standard styled Map (Google Maps Platform if key loaded, or integrated Leaflet fallback)
          */
         createMap: function (container, options = {}) {
             const el = typeof container === 'string' ? document.getElementById(container) : container;
@@ -449,7 +449,7 @@
                 // High-performance, zero-blocking World Street Map (Esri ArcGIS CDN - No rate limits, no 403 blocks)
                 const tileLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
                     maxZoom: 19,
-                    attribution: 'Tiles &copy; <a href="https://www.esri.com/">Esri</a> &mdash; Street Network'
+                    attribution: 'Tiles &copy; <a href="https://www.esri.com/">Esri</a> ,  Street Network'
                 });
                 
                 // Fallback to World Topo Map if needed
@@ -738,7 +738,7 @@
                     <div style="color:#64748b;font-size:0.8rem;margin-bottom:6px;">
                         GPS: ${parseFloat(lat).toFixed(4)}, ${parseFloat(lng).toFixed(4)}
                     </div>
-                    <span style="background:#dc2626;color:#ffffff;font-size:0.75rem;padding:3px 10px;border-radius:9999px;font-weight:700;">
+                    <span style="background:#dc2626;color:#ffffff;font-size:0.75rem;padding:3px 10px;border-radius: 6px;font-weight:700;">
                         Emergency Beacon Active
                     </span>
                 </div>
@@ -963,7 +963,7 @@
             const popupContent = `
                 <div style="font-family:'Plus Jakarta Sans',sans-serif;padding:6px;min-width:210px;">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-                        <span style="background:#10b981;color:#ffffff;font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:9999px;">
+                        <span style="background:#10b981;color:#ffffff;font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius: 6px;">
                             Verified Citizen
                         </span>
                         <span style="color:#d97706;font-weight:700;font-size:0.8rem;">

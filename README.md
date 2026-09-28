@@ -106,9 +106,9 @@ pip install -r requirements.txt
 
 ### Step 2: Configure Database
 
-For **development** (SQLite — already configured):
+For **development** (SQLite ,  already configured):
 ```python
-# settings.py — default SQLite config works out of the box
+# settings.py ,  default SQLite config works out of the box
 ```
 
 For **production** (PostgreSQL + PostGIS):
@@ -380,4 +380,4 @@ This is a production-quality safety platform. Contributions welcome for:
 
 ---
 
-*Built with ❤️ for women's safety — Women Safety Shield © 2024*
+*Built with ❤️ for women's safety ,  Women Safety Shield © 2024*

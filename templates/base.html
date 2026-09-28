@@ -7,8 +7,15 @@
   <meta name="theme-color" content="#7A1F2B">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>{% block title %}Women Safety Shield — You're never walking alone{% endblock %}</title>
+  <title>{% block title %}Women Safety Shield: You're never walking alone{% endblock %}</title>
   
+  <!-- Favicon & Touch Icons -->
+  <link rel="icon" type="image/svg+xml" href="{% static 'images/favicon.svg' %}">
+  <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+
   <!-- CSS Frameworks & Fonts -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
@@ -126,10 +133,10 @@
             <div class="avatar-circle-sm me-1">{{ user.first_name|first|default:user.username|first }}</div>
             <span class="d-none d-xl-inline small fw-semibold ms-1">{{ user.first_name|default:user.username }}</span>
             {% if user.badge_identity_verified %}
-            <span class="badge bg-success-subtle text-success ms-1 px-1 py-0" style="font-size:0.65rem;" title="Identity Verified">🛡️</span>
+            <span class="badge bg-success-subtle text-success ms-1 px-1 py-0" style="font-size:0.65rem;" title="Identity Verified"><i class="bi bi-shield-fill-check text-primary me-1"></i></span>
             {% endif %}
           </a>
-          <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="border:1px solid var(--line);border-radius:12px;">
+          <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="border:1px solid var(--line);border-radius: 8px;">
             <li><a class="dropdown-item py-2" href="{% url 'profile' %}"><i class="bi bi-person me-2"></i>My Profile</a></li>
             <li><a class="dropdown-item py-2" href="{% url 'permission_model' %}"><i class="bi bi-shield-check me-2 text-primary"></i>Access &amp; Permissions</a></li>
             <li><a class="dropdown-item py-2" href="{% url 'verification_status' %}"><i class="bi bi-shield-lock me-2 text-danger"></i>Identity Verification</a></li>
@@ -220,13 +227,13 @@
           <i class="bi bi-cpu me-1" style="color:var(--gold);"></i>Developed by <strong>Team Shield Matrix</strong>
         </p>
         <div class="d-flex gap-2 flex-wrap">
-          <a href="tel:112" class="badge rounded-pill bg-danger text-white px-3 py-2 text-decoration-none shadow-sm" title="National Emergency Response">
+          <a href="tel:112" class="badge rounded-2 bg-danger text-white px-3 py-2 text-decoration-none shadow-sm" title="National Emergency Response">
             <i class="bi bi-telephone-fill me-1"></i>112 Police
           </a>
-          <a href="tel:1091" class="badge rounded-pill bg-danger text-white px-3 py-2 text-decoration-none shadow-sm" title="Women Helpline">
+          <a href="tel:1091" class="badge rounded-2 bg-danger text-white px-3 py-2 text-decoration-none shadow-sm" title="Women Helpline">
             <i class="bi bi-telephone-fill me-1"></i>1091 Women
           </a>
-          <a href="tel:181" class="badge rounded-pill bg-danger text-white px-3 py-2 text-decoration-none shadow-sm" title="Women in Distress">
+          <a href="tel:181" class="badge rounded-2 bg-danger text-white px-3 py-2 text-decoration-none shadow-sm" title="Women in Distress">
             <i class="bi bi-telephone-fill me-1"></i>181 Helpline
           </a>
         </div>
@@ -272,15 +279,21 @@
           <i class="bi bi-shield-check text-success fs-5"></i>
           <span class="small text-white-50" style="font-size:0.78rem;">Aadhaar &amp; PAN statutory verification standards</span>
         </div>
+        <div class="mt-3 pt-2 border-top" style="border-color:#423934 !important;">
+          <p class="mb-1"><a href="{% url 'privacy' %}" class="text-white-50 text-decoration-none hover-underline"><i class="bi bi-shield-lock me-1"></i>Privacy Policy</a></p>
+          <p class="mb-0"><a href="{% url 'terms' %}" class="text-white-50 text-decoration-none hover-underline"><i class="bi bi-file-earmark-text me-1"></i>Terms &amp; Conditions</a></p>
+        </div>
       </div>
     </div>
 
     <!-- Bottom Bar -->
     <div class="footer-bottom d-flex justify-content-between align-items-center flex-wrap gap-2 pt-3 mt-4 border-top" style="border-color:#423934 !important; font-size:0.82rem; color:#9a8f8a;">
-      <div>© 2026 Women Safety Shield — Team Shield Matrix. All rights reserved. Help finds you, from every direction.</div>
-      <div class="d-flex align-items-center gap-2">
+      <div>© 2026 Women Safety Shield: Team Shield Matrix. All rights reserved. Help finds you, from every direction.</div>
+      <div class="d-flex align-items-center gap-3">
+        <a href="{% url 'privacy' %}" class="text-white-50 text-decoration-none">Privacy Policy</a>
+        <span class="text-white-50">&bull;</span>
+        <a href="{% url 'terms' %}" class="text-white-50 text-decoration-none">Terms and Conditions</a>
         <span class="badge bg-dark border border-secondary text-white-50 px-2 py-1">ERSS 112 Integrated</span>
-        <span>Emergency Dispatch Protocol v2.5</span>
       </div>
     </div>
   </div>
@@ -338,18 +351,18 @@ function triggerMobileSosNav(e) {
 <!-- Citizen Rescue Live Emergency Alert Modal -->
 <div class="modal fade" id="citizenRescueModal" tabindex="-1" aria-labelledby="citizenRescueModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-danger shadow-lg rounded-4" style="border-width:3px !important;overflow:hidden;">
+    <div class="modal-content border-danger shadow-lg rounded-3" style="border-width:3px !important;overflow:hidden;">
       <div class="modal-header bg-danger text-white py-3">
         <h5 class="modal-title fw-800 d-flex align-items-center gap-2" id="citizenRescueModalLabel">
           <span class="spinner-grow spinner-grow-sm text-warning" role="status"></span>
-          🚨 URGENT CITIZEN RESCUE ALERT
+          <i class="bi bi-exclamation-triangle-fill text-danger me-1"></i> URGENT CITIZEN RESCUE ALERT
         </h5>
       </div>
       <div class="modal-body p-4 text-center">
-        <div style="font-size:3.5rem;animation:pulse 1s infinite;">🆘</div>
+        <div style="font-size:3.5rem;animation:pulse 1s infinite;"><i class="bi bi-exclamation-octagon-fill text-danger me-1"></i></div>
         <h4 class="fw-800 text-danger mt-2 mb-1">A Woman Needs Help Near You!</h4>
-        <div class="badge bg-danger-subtle text-danger px-3 py-2 fs-6 rounded-pill my-2" id="rescueDistanceBadge">
-          📍 ~<span id="rescueDistanceText">10 m</span> away from your position
+        <div class="badge bg-danger-subtle text-danger px-3 py-2 fs-6 rounded-2 my-2" id="rescueDistanceBadge">
+          <i class="bi bi-geo-alt-fill me-1"></i> ~<span id="rescueDistanceText">10 m</span> away from your position
         </div>
         <p class="text-dark fs-5 mt-2 mb-1">
           Distress beacon from: <strong id="rescueVictimName">Citizen in Distress</strong>
@@ -360,10 +373,10 @@ function triggerMobileSosNav(e) {
 
         <div class="d-grid gap-2 mt-3">
           <a id="rescueAcceptBtn" href="#" class="btn btn-success btn-lg fw-bold shadow-sm py-3" style="font-size:1.1rem;">
-            <i class="bi bi-shield-fill-check me-2"></i>✅ Accept &amp; Respond to SOS
+            <i class="bi bi-shield-fill-check me-2"></i><i class="bi bi-check-circle-fill text-success me-1"></i> Accept &amp; Respond to SOS
           </a>
           <a id="rescueTrackBtn" href="#" class="btn btn-outline-danger fw-semibold py-2">
-            <i class="bi bi-compass me-1"></i>🗺️ View Live Incident Tracker
+            <i class="bi bi-compass me-1"></i><i class="bi bi-map-fill me-1"></i> View Live Incident Tracker
           </a>
           <button type="button" class="btn btn-link text-muted btn-sm text-decoration-none mt-1" data-bs-dismiss="modal" id="rescueDismissBtn">
             Dismiss for now

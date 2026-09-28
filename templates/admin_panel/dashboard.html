@@ -7,7 +7,7 @@
     background: #ffffff;
     border: 1px solid var(--line);
     border-left: 6px solid var(--crimson) !important;
-    border-radius: 20px;
+    border-radius: 6px;
     padding: 2rem 2.5rem;
     box-shadow: 0 6px 25px rgba(122, 31, 43, 0.05);
     margin-bottom: 2rem;
@@ -28,7 +28,7 @@
   .admin-stat-card {
     background: #ffffff;
     border: 1px solid var(--line);
-    border-radius: 18px;
+    border-radius: 8px;
     padding: 1.6rem 1.8rem;
     box-shadow: 0 4px 18px rgba(122, 31, 43, 0.04);
     transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
@@ -43,7 +43,7 @@
   .stat-icon-badge {
     width: 46px;
     height: 46px;
-    border-radius: 12px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -59,7 +59,7 @@
     border: 1px solid var(--line);
     color: var(--charcoal);
     padding: 0.5rem 1.15rem;
-    border-radius: 50px;
+    border-radius: 6px;
     font-size: 0.88rem;
     font-weight: 600;
     text-decoration: none;
@@ -89,7 +89,7 @@
         <span class="badge bg-danger px-2 py-1">COMMAND CENTER</span>
         <span class="small text-muted">Platform Governance</span>
       </div>
-      <h3 class="fw-bold mb-1" style="color:var(--maroon);">⚙️ Admin Control Panel</h3>
+      <h3 class="fw-bold mb-1" style="color:var(--maroon);"><i class="bi bi-gear-fill me-1"></i> Admin Control Panel</h3>
       <p class="mb-0 text-muted small">Central command for emergency dispatch, citizen verification, and incident records</p>
     </div>
     <div class="d-flex gap-2 flex-wrap">
@@ -284,7 +284,7 @@
               <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
                 <div>
                   <a href="{% url 'emergency_track' em.id %}" class="text-decoration-none fw-bold text-dark">
-                    #{{ em.id }} — {{ em.victim.full_name|default:em.victim.username }}
+                    #{{ em.id }}, {{ em.victim.full_name|default:em.victim.username }}
                   </a>
                   <div class="small text-muted">
                     {{ em.created_at|date:"d M H:i" }} &bull; Trigger: {{ em.get_trigger_type_display }}
@@ -299,7 +299,7 @@
                   {% endif %}
                 </div>
                 <div class="d-flex align-items-center gap-2">
-                  <span class="badge {% if em.status == 'ACTIVE' %}bg-danger{% elif em.status == 'ACCEPTED' %}bg-warning text-dark{% elif em.status == 'HELP_REACHED' %}bg-info{% elif em.status == 'CLOSED' %}bg-secondary{% else %}bg-dark{% endif %} rounded-pill">
+                  <span class="badge {% if em.status == 'ACTIVE' %}bg-danger{% elif em.status == 'ACCEPTED' %}bg-warning text-dark{% elif em.status == 'HELP_REACHED' %}bg-info{% elif em.status == 'CLOSED' %}bg-secondary{% else %}bg-dark{% endif %} rounded-2">
                     {{ em.status }}
                   </span>
                   {% if em.status == 'ACTIVE' or em.status == 'ACCEPTED' %}
@@ -329,7 +329,7 @@
 <!-- Broadcast Safety Advisory Modal -->
 <div class="modal fade" id="broadcastModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content" style="border-radius:18px;border:1.5px solid var(--line);">
+    <div class="modal-content" style="border-radius: 8px;border:1.5px solid var(--line);">
       <div class="modal-header" style="background:var(--maroon);color:#fff;">
         <h5 class="modal-title fw-bold text-white"><i class="bi bi-broadcast me-2"></i>Send Platform Safety Advisory</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>

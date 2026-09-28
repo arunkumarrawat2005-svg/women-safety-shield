@@ -22,7 +22,7 @@
             </div>
         </div>
     </div>
-    <div class="card border-0 shadow-sm rounded-4 mb-4">
+    <div class="card border-0 shadow-sm rounded-3 mb-4">
         <div class="card-body p-4">
             <div class="d-flex align-items-center gap-4 mb-4">
                 <div class="avatar-circle flex-shrink-0" style="width:80px;height:80px;font-size:2.2rem;background:{% if resident.is_verified or guardian.is_verified %}#27ae60{% else %}#f39c12{% endif %};">
@@ -60,7 +60,7 @@
         </div>
     </div>
     {% if not resident.is_verified and not guardian.is_verified %}
-    <div class="alert alert-warning rounded-4 shadow-sm p-4 mb-4 border-0">
+    <div class="alert alert-warning rounded-3 shadow-sm p-4 mb-4 border-0">
         <div class="d-flex align-items-start gap-3">
             <i class="bi bi-shield-exclamation fs-2 text-warning"></i>
             <div>

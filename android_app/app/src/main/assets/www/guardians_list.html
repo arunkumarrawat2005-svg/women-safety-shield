@@ -43,13 +43,13 @@
   .radar-map-container {
     height: 380px;
     width: 100%;
-    border-radius: 16px;
+    border-radius: 8px;
     border: 1px solid var(--line);
     overflow: hidden;
   }
   .category-pill {
     white-space: nowrap;
-    border-radius: 20px;
+    border-radius: 6px;
     padding: 0.4rem 1rem;
     font-size: 0.82rem;
     font-weight: 600;
@@ -69,7 +69,7 @@
     box-shadow: 0 4px 12px rgba(196, 30, 61, 0.25);
   }
   .guardian-step-card {
-    border-radius: 16px;
+    border-radius: 8px;
     background: #ffffff;
     border: 1px solid var(--line);
     padding: 1.15rem 1.25rem;
@@ -80,20 +80,20 @@
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(0,0,0,0.05);
   }
-  .stat-card-elevated {
-    border-radius: 16px;
+  .stat-card-active {
+    border-radius: 8px;
     border: 1px solid var(--line);
     background: #ffffff;
     padding: 1.1rem 1.25rem;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     height: 100%;
   }
-  .stat-card-elevated:hover {
+  .stat-card-active:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 18px rgba(0,0,0,0.05);
   }
   .guardian-compact-card {
-    border-radius: 20px;
+    border-radius: 6px;
     background: #ffffff;
     border: 1.5px solid #edf2f7 !important;
     padding: 1.45rem 1.4rem 1.35rem !important;
@@ -108,14 +108,14 @@
   .guardian-meta-strip {
     background: #f8fafc;
     border: 1px solid #edf2f7;
-    border-radius: 12px;
+    border-radius: 8px;
     padding: 0.65rem 0.9rem;
     margin: 0.85rem 0;
   }
   .avatar-monogram {
     width: 52px;
     height: 52px;
-    border-radius: 16px;
+    border-radius: 8px;
     font-size: 1.15rem;
     font-weight: 800;
     display: flex;
@@ -169,7 +169,7 @@
     color: #1e293b;
   }
   .safe-haven-card {
-    border-radius: 20px;
+    border-radius: 6px;
     background: linear-gradient(135deg, #ffffff 0%, #fffafb 100%);
     border: 1.5px dashed rgba(196, 30, 61, 0.35) !important;
     transition: all 0.2s ease;
@@ -335,7 +335,7 @@
 <div class="container-fluid px-3 px-xl-4 my-4">
 
   <!-- 1. Header & Quick Actions -->
-  <div class="card border-0 shadow-sm rounded-4 mb-4" style="background: linear-gradient(135deg, #ffffff 0%, #fff7f8 50%, #fdf2f4 100%); border-left: 6px solid var(--crimson) !important;">
+  <div class="card border-0 shadow-sm rounded-3 mb-4" style="background: linear-gradient(135deg, #ffffff 0%, #fff7f8 50%, #fdf2f4 100%); border-left: 6px solid var(--crimson) !important;">
     <div class="card-body p-4 p-md-5">
       <div class="d-flex justify-content-between align-items-center flex-wrap gap-4">
         <div>
@@ -382,7 +382,7 @@
     <div class="col-md-4">
       <div class="guardian-step-card">
         <div class="d-flex align-items-center gap-3 mb-2">
-          <div style="width:42px; height:42px; border-radius:12px; background:#fbecee; color:var(--crimson); display:flex; align-items:center; justify-content:center; font-size:1.25rem;">
+          <div style="width:42px; height:42px; border-radius: 8px; background:#fbecee; color:var(--crimson); display:flex; align-items:center; justify-content:center; font-size:1.25rem;">
             <i class="bi bi-broadcast-pin"></i>
           </div>
           <div>
@@ -400,7 +400,7 @@
     <div class="col-md-4">
       <div class="guardian-step-card">
         <div class="d-flex align-items-center gap-3 mb-2">
-          <div style="width:42px; height:42px; border-radius:12px; background:#e8f8f0; color:#10B981; display:flex; align-items:center; justify-content:center; font-size:1.25rem;">
+          <div style="width:42px; height:42px; border-radius: 8px; background:#e8f8f0; color:#10B981; display:flex; align-items:center; justify-content:center; font-size:1.25rem;">
             <i class="bi bi-person-walking"></i>
           </div>
           <div>
@@ -418,7 +418,7 @@
     <div class="col-md-4">
       <div class="guardian-step-card">
         <div class="d-flex align-items-center gap-3 mb-2">
-          <div style="width:42px; height:42px; border-radius:12px; background:#fef5e7; color:#f39c12; display:flex; align-items:center; justify-content:center; font-size:1.25rem;">
+          <div style="width:42px; height:42px; border-radius: 8px; background:#fef5e7; color:#f39c12; display:flex; align-items:center; justify-content:center; font-size:1.25rem;">
             <i class="bi bi-patch-check-fill"></i>
           </div>
           <div>
@@ -436,7 +436,7 @@
   <!-- 3. Key Network Metrics -->
   <div class="row g-3 mb-4">
     <div class="col-6 col-lg-3">
-      <div class="stat-card-elevated" style="border-left: 4px solid #10B981 !important;">
+      <div class="stat-card-active" style="border-left: 4px solid #10B981 !important;">
         <div class="d-flex justify-content-between align-items-center mb-1">
           <span class="text-muted small fw-bold text-uppercase" style="letter-spacing:0.04em;">VERIFIED GUARDIANS</span>
           <div style="width:32px; height:32px; border-radius:50%; background:#e8f8f0; color:#10B981; display:flex; align-items:center; justify-content:center;">
@@ -449,7 +449,7 @@
     </div>
 
     <div class="col-6 col-lg-3">
-      <div class="stat-card-elevated" style="border-left: 4px solid #2980b9 !important;">
+      <div class="stat-card-active" style="border-left: 4px solid #2980b9 !important;">
         <div class="d-flex justify-content-between align-items-center mb-1">
           <span class="text-muted small fw-bold text-uppercase" style="letter-spacing:0.04em;">SAFETY RADAR</span>
           <div style="width:32px; height:32px; border-radius:50%; background:#eaf2f8; color:#2980b9; display:flex; align-items:center; justify-content:center;">
@@ -462,7 +462,7 @@
     </div>
 
     <div class="col-6 col-lg-3">
-      <div class="stat-card-elevated" style="border-left: 4px solid var(--crimson) !important;">
+      <div class="stat-card-active" style="border-left: 4px solid var(--crimson) !important;">
         <div class="d-flex justify-content-between align-items-center mb-1">
           <span class="text-muted small fw-bold text-uppercase" style="letter-spacing:0.04em;">DISPATCH SPEED</span>
           <div style="width:32px; height:32px; border-radius:50%; background:#fbecee; color:var(--crimson); display:flex; align-items:center; justify-content:center;">
@@ -475,7 +475,7 @@
     </div>
 
     <div class="col-6 col-lg-3">
-      <div class="stat-card-elevated" style="border-left: 4px solid #f39c12 !important;">
+      <div class="stat-card-active" style="border-left: 4px solid #f39c12 !important;">
         <div class="d-flex justify-content-between align-items-center mb-1">
           <span class="text-muted small fw-bold text-uppercase" style="letter-spacing:0.04em;">NETWORK TRUST</span>
           <div style="width:32px; height:32px; border-radius:50%; background:#fef5e7; color:#f39c12; display:flex; align-items:center; justify-content:center;">
@@ -489,7 +489,7 @@
   </div>
 
   <!-- 4. Interactive Google Maps Community Radar Map -->
-  <div class="card border-0 shadow-sm rounded-4 mb-4">
+  <div class="card border-0 shadow-sm rounded-3 mb-4">
     <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
       <div>
         <h5 class="fw-bold mb-0" style="color:var(--maroon);font-family:'Plus Jakarta Sans',sans-serif;">
@@ -513,8 +513,8 @@
       <div id="residentRadarMap" class="radar-map-container"></div>
       <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-2 px-1">
         <div class="small text-muted d-flex align-items-center gap-3 flex-wrap">
-          <span><span class="badge bg-success rounded-pill me-1">&bull;</span>Available On-Duty (1.5 KM Ring)</span>
-          <span><span class="badge bg-secondary rounded-pill me-1">&bull;</span>Verified (Standby / Offline)</span>
+          <span><span class="badge bg-success rounded-2 me-1">&bull;</span>Available On-Duty (1.5 KM Ring)</span>
+          <span><span class="badge bg-secondary rounded-2 me-1">&bull;</span>Verified (Standby / Offline)</span>
           <span><i class="bi bi-shield-shaded text-danger me-1"></i>3 KM Safety Radius</span>
         </div>
         <div class="small text-muted">
@@ -525,7 +525,7 @@
   </div>
 
   <!-- 5. 24/7 Verified Community Safe Havens (Interesting Interactive Highlight) -->
-  <div class="card border-0 shadow-sm rounded-4 mb-4 p-3 bg-white">
+  <div class="card border-0 shadow-sm rounded-3 mb-4 p-3 bg-white">
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
       <div>
         <h6 class="fw-bold mb-0" style="color:var(--maroon);">
@@ -594,7 +594,7 @@
   </div>
 
   <!-- 6. Filter & Search Toolbar with View Mode Toggle -->
-  <div class="card border-0 shadow-sm rounded-4 mb-4 p-3 bg-white">
+  <div class="card border-0 shadow-sm rounded-3 mb-4 p-3 bg-white">
     <div class="row g-3 align-items-center">
       <!-- Search Input -->
       <div class="col-lg-4">
@@ -686,7 +686,7 @@
             <!-- On-Duty Pill -->
             <div class="flex-shrink-0">
               
-              <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-2.5 py-1 fw-bold" style="font-size:0.72rem;">
+              <span class="badge rounded-2 bg-success-subtle text-success border border-success-subtle px-2.5 py-1 fw-bold" style="font-size:0.72rem;">
                 <span class="pulse-online me-1"></span>On-Duty
               </span>
               
@@ -790,7 +790,7 @@
             <!-- On-Duty Pill -->
             <div class="flex-shrink-0">
               
-              <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-2.5 py-1 fw-bold" style="font-size:0.72rem;">
+              <span class="badge rounded-2 bg-success-subtle text-success border border-success-subtle px-2.5 py-1 fw-bold" style="font-size:0.72rem;">
                 <span class="pulse-online me-1"></span>On-Duty
               </span>
               
@@ -905,7 +905,7 @@
   </div>
 
   <!-- 10. LIST VIEW: Ultra-Compact Table Strip (Toggled via button) -->
-  <div id="guardiansListView" class="card border-0 shadow-sm rounded-4 mb-4 p-3 bg-white d-none">
+  <div id="guardiansListView" class="card border-0 shadow-sm rounded-3 mb-4 p-3 bg-white d-none">
     <div class="table-responsive">
       <table class="table table-hover align-middle mb-0">
         <thead class="table-light small">
@@ -923,7 +923,7 @@
           <tr>
             <td>
               <div class="d-flex align-items-center gap-2">
-                <div class="avatar-monogram" style="width:38px; height:38px; font-size:0.9rem; border-radius:10px; background:#7A1F2B;">
+                <div class="avatar-monogram" style="width:38px; height:38px; font-size:0.9rem; border-radius: 8px; background:#7A1F2B;">
                   AR
                 </div>
                 <div>
@@ -980,7 +980,7 @@
           <tr>
             <td>
               <div class="d-flex align-items-center gap-2">
-                <div class="avatar-monogram" style="width:38px; height:38px; font-size:0.9rem; border-radius:10px; background:#059669;">
+                <div class="avatar-monogram" style="width:38px; height:38px; font-size:0.9rem; border-radius: 8px; background:#059669;">
                   AR
                 </div>
                 <div>
@@ -1038,7 +1038,7 @@
   </div>
 
   <!-- 11. "Become a Local Guardian" Community Pillar Banner -->
-  <div class="card border-0 shadow-lg rounded-4 p-4 p-lg-5 text-white position-relative overflow-hidden mb-4"
+  <div class="card border-0 shadow-lg rounded-3 p-4 p-lg-5 text-white position-relative overflow-hidden mb-4"
        style="background: radial-gradient(circle at 85% 50%, rgba(217, 164, 65, 0.22) 0%, transparent 55%), linear-gradient(135deg, #54111a 0%, #7A1F2B 45%, #B3243A 100%) !important; border: 1px solid rgba(255,255,255,0.12) !important;">
     
     <!-- Decorative Ambient Shield Watermark -->
@@ -1082,7 +1082,7 @@
 
       <!-- Action Button Card -->
       <div class="col-lg-4 text-lg-end">
-        <div class="p-4 rounded-4 text-center text-lg-end" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(8px);">
+        <div class="p-4 rounded-3 text-center text-lg-end" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(8px);">
           <div class="mb-3 d-none d-lg-block">
             <span class="text-white fw-semibold small d-block mb-1">Empower Your Street</span>
             <span class="text-white-50" style="font-size:0.8rem;">Takes less than 2 minutes to apply</span>
@@ -1105,7 +1105,7 @@
 <!-- MODAL 1: Request Safe Walk Escort -->
 <div class="modal fade" id="safeEscortModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content rounded-4 border-0 shadow">
+    <div class="modal-content rounded-3 border-0 shadow">
       <div class="modal-header border-bottom py-3" style="background:var(--cream);">
         <h6 class="modal-title fw-bold" style="color:var(--maroon);font-family:'Plus Jakarta Sans',sans-serif;">
           <i class="bi bi-person-walking text-danger me-2"></i>Request Safe Walk Companion
@@ -1174,7 +1174,7 @@
             <i class="bi bi-shield-lock-fill me-1"></i>Your request is strictly private and shared only with verified, background-checked community guardians.
           </div>
         </div>
-        <div class="modal-footer border-top py-2 bg-light rounded-bottom-4">
+        <div class="modal-footer border-top py-2 bg-light rounded-bottom-3">
           <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
           <button type="submit" class="btn btn-sm btn-danger fw-bold px-3">
             <i class="bi bi-send-fill me-1"></i>Submit Escort Request
@@ -1231,7 +1231,7 @@ function initRadarMap() {
         <div style="font-family:'Plus Jakarta Sans',sans-serif; min-width:220px; padding:6px 4px;">
           <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;">
             <strong style="color:#7A1F2B; font-size:14px;">${r.name}</strong>
-            <span style="font-size:10px; padding:2px 6px; border-radius:10px; font-weight:700; ${isOnline ? 'background:#dcfce7; color:#15803d;' : 'background:#f1f5f9; color:#64748b;'}">
+            <span style="font-size:10px; padding:2px 6px; border-radius: 8px; font-weight:700; ${isOnline ? 'background:#dcfce7; color:#15803d;' : 'background:#f1f5f9; color:#64748b;'}">
               ${isOnline ? '● On-Duty' : 'Standby'}
             </span>
           </div>
@@ -1420,13 +1420,13 @@ document.addEventListener('DOMContentLoaded', () => {
           <i class="bi bi-cpu me-1" style="color:var(--gold);"></i>Developed by <strong>Team Shield Matrix</strong>
         </p>
         <div class="d-flex gap-2 flex-wrap">
-          <a href="tel:112" class="badge rounded-pill bg-danger text-white px-3 py-2 text-decoration-none shadow-sm" title="National Emergency Response">
+          <a href="tel:112" class="badge rounded-2 bg-danger text-white px-3 py-2 text-decoration-none shadow-sm" title="National Emergency Response">
             <i class="bi bi-telephone-fill me-1"></i>112 Police
           </a>
-          <a href="tel:1091" class="badge rounded-pill bg-danger text-white px-3 py-2 text-decoration-none shadow-sm" title="Women Helpline">
+          <a href="tel:1091" class="badge rounded-2 bg-danger text-white px-3 py-2 text-decoration-none shadow-sm" title="Women Helpline">
             <i class="bi bi-telephone-fill me-1"></i>1091 Women
           </a>
-          <a href="tel:181" class="badge rounded-pill bg-danger text-white px-3 py-2 text-decoration-none shadow-sm" title="Women in Distress">
+          <a href="tel:181" class="badge rounded-2 bg-danger text-white px-3 py-2 text-decoration-none shadow-sm" title="Women in Distress">
             <i class="bi bi-telephone-fill me-1"></i>181 Helpline
           </a>
         </div>
@@ -1473,7 +1473,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     <!-- Bottom Bar -->
     <div class="footer-bottom d-flex justify-content-between align-items-center flex-wrap gap-2 pt-3 mt-4 border-top" style="border-color:#423934 !important; font-size:0.82rem; color:#9a8f8a;">
-      <div>© 2026 Women Safety Shield — Team Shield Matrix. All rights reserved. Help finds you, from every direction.</div>
+      <div>© 2026 Women Safety Shield: Team Shield Matrix. All rights reserved. Help finds you, from every direction.</div>
       <div class="d-flex align-items-center gap-2">
         <span class="badge bg-dark border border-secondary text-white-50 px-2 py-1">ERSS 112 Integrated</span>
         <span>Emergency Dispatch Protocol v2.5</span>
@@ -1528,12 +1528,12 @@ function triggerMobileSosNav(e) {
 <!-- First-Time Onboarding Experience Modal: "See How It Works" -->
 <div class="modal fade" id="onboardingModal" tabindex="-1" aria-labelledby="onboardingModalLabel" aria-hidden="true" data-bs-backdrop="static">
   <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden" style="background:#ffffff;">
+    <div class="modal-content border-0 rounded-3 shadow-lg overflow-hidden" style="background:#ffffff;">
       
       <!-- Modal Top Bar -->
       <div class="d-flex justify-content-between align-items-center px-4 pt-3 pb-2 border-bottom bg-light">
         <div class="d-flex align-items-center gap-2">
-          <span class="badge rounded-pill bg-danger-subtle text-danger fw-bold px-3 py-1" style="font-size:0.75rem; letter-spacing:0.04em;">
+          <span class="badge rounded-2 bg-danger-subtle text-danger fw-bold px-3 py-1" style="font-size:0.75rem; letter-spacing:0.04em;">
             <i class="bi bi-shield-check me-1"></i>UNDERSTAND → VERIFY → PROTECT
           </span>
           <span class="text-muted small d-none d-sm-inline">Platform Tour</span>
@@ -1561,7 +1561,7 @@ function triggerMobileSosNav(e) {
                    style="width:96px; height:96px; background:linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); border:2px solid #fecaca; box-shadow:0 8px 24px rgba(220,38,38,0.15);">
                 <span style="font-size:3.2rem;">🛡️</span>
               </div>
-              <span class="badge bg-danger-subtle text-danger px-3 py-1 rounded-pill fw-semibold mb-2" style="font-size:0.75rem;">SCREEN 1 OF 4</span>
+              <span class="badge bg-danger-subtle text-danger px-3 py-1 rounded-2 fw-semibold mb-2" style="font-size:0.75rem;">SCREEN 1 OF 4</span>
               <h3 class="fw-bold mb-2" style="color:var(--maroon); font-family:'Plus Jakarta Sans',sans-serif;">Stay Protected</h3>
               <blockquote class="blockquote my-2">
                 <p class="fst-italic fw-semibold text-danger fs-5 mb-1">"Your safety. Your people. Your connection."</p>
@@ -1586,7 +1586,7 @@ function triggerMobileSosNav(e) {
                    style="width:96px; height:96px; background:linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%); border:2px solid #fecdd3; box-shadow:0 8px 24px rgba(225,29,72,0.18);">
                 <span style="font-size:3.2rem;">🆘</span>
               </div>
-              <span class="badge bg-danger-subtle text-danger px-3 py-1 rounded-pill fw-semibold mb-2" style="font-size:0.75rem;">SCREEN 2 OF 4</span>
+              <span class="badge bg-danger-subtle text-danger px-3 py-1 rounded-2 fw-semibold mb-2" style="font-size:0.75rem;">SCREEN 2 OF 4</span>
               <h3 class="fw-bold mb-2" style="color:var(--maroon); font-family:'Plus Jakarta Sans',sans-serif;">One Tap Emergency Assistance</h3>
               <blockquote class="blockquote my-2">
                 <p class="fst-italic fw-semibold text-danger fs-5 mb-1">"One tap can connect you to help."</p>
@@ -1607,7 +1607,7 @@ function triggerMobileSosNav(e) {
                    style="width:96px; height:96px; background:linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border:2px solid #bfdbfe; box-shadow:0 8px 24px rgba(37,99,235,0.15);">
                 <span style="font-size:3.2rem;">📍</span>
               </div>
-              <span class="badge bg-primary-subtle text-primary px-3 py-1 rounded-pill fw-semibold mb-2" style="font-size:0.75rem;">SCREEN 3 OF 4</span>
+              <span class="badge bg-primary-subtle text-primary px-3 py-1 rounded-2 fw-semibold mb-2" style="font-size:0.75rem;">SCREEN 3 OF 4</span>
               <h3 class="fw-bold mb-2" style="color:var(--navy); font-family:'Plus Jakarta Sans',sans-serif;">Know Who Is Around You</h3>
               <blockquote class="blockquote my-2">
                 <p class="fst-italic fw-semibold text-primary fs-5 mb-1">"Help can be closer than you think."</p>
@@ -1629,7 +1629,7 @@ function triggerMobileSosNav(e) {
                    style="width:96px; height:96px; background:linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border:2px solid #bbf7d0; box-shadow:0 8px 24px rgba(22,163,74,0.15);">
                 <span style="font-size:3.2rem;">🤝</span>
               </div>
-              <span class="badge bg-success-subtle text-success px-3 py-1 rounded-pill fw-semibold mb-2" style="font-size:0.75rem;">SCREEN 4 OF 4</span>
+              <span class="badge bg-success-subtle text-success px-3 py-1 rounded-2 fw-semibold mb-2" style="font-size:0.75rem;">SCREEN 4 OF 4</span>
               <h3 class="fw-bold mb-2" style="color:#14532d; font-family:'Plus Jakarta Sans',sans-serif;">Verified &amp; Trusted Community</h3>
               <blockquote class="blockquote my-2">
                 <p class="fst-italic fw-semibold text-success fs-5 mb-1">"Safety starts with trust."</p>
@@ -1653,25 +1653,25 @@ function triggerMobileSosNav(e) {
       <!-- Modal Footer Controls -->
       <div class="modal-footer d-flex justify-content-between align-items-center bg-light px-4 py-3 border-top">
         <div>
-          <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal" onclick="markOnboardingComplete()">
+          <button type="button" class="btn btn-sm btn-outline-secondary rounded-2 px-3" data-bs-dismiss="modal" onclick="markOnboardingComplete()">
             Skip / Explore as Guest
           </button>
         </div>
 
         <div class="d-flex gap-2 align-items-center">
-          <button type="button" class="btn btn-sm btn-light border rounded-pill px-3" onclick="prevOnboardingSlide()">
+          <button type="button" class="btn btn-sm btn-light border rounded-2 px-3" onclick="prevOnboardingSlide()">
             <i class="bi bi-chevron-left me-1"></i>Back
           </button>
-          <button type="button" class="btn btn-sm btn-danger rounded-pill px-3 fw-bold" id="onboardingNextBtn" onclick="nextOnboardingSlide()">
+          <button type="button" class="btn btn-sm btn-danger rounded-2 px-3 fw-bold" id="onboardingNextBtn" onclick="nextOnboardingSlide()">
             Next<i class="bi bi-chevron-right ms-1"></i>
           </button>
           
           <!-- Final Action Buttons (Hidden on slides 1-3, shown on slide 4) -->
           <div id="onboardingFinalActions" class="d-none gap-2">
-            <a href="login.html" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-bold" onclick="markOnboardingComplete()">
+            <a href="login.html" class="btn btn-sm btn-outline-danger rounded-2 px-3 fw-bold" onclick="markOnboardingComplete()">
               <i class="bi bi-box-arrow-in-right me-1"></i>Login
             </a>
-            <a href="register.html" class="btn btn-sm btn-danger rounded-pill px-3 fw-bold shadow-sm" onclick="markOnboardingComplete()">
+            <a href="register.html" class="btn btn-sm btn-danger rounded-2 px-3 fw-bold shadow-sm" onclick="markOnboardingComplete()">
               <i class="bi bi-person-plus-fill me-1"></i>Register
             </a>
           </div>

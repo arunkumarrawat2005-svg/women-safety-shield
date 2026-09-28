@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}User Access Levels & Permission Model — Women Safety Shield{% endblock %}
+{% block title %}User Access Levels & Permission Model: Women Safety Shield{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -14,12 +14,12 @@
   .principle-banner {
     background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
     border: 2px solid #fecaca;
-    border-radius: 18px;
+    border-radius: 8px;
     padding: 1.75rem 2rem;
   }
   .tier-card {
     border: 1px solid var(--line);
-    border-radius: 18px;
+    border-radius: 8px;
     background: #ffffff;
     padding: 2rem 1.8rem;
     height: 100%;
@@ -49,7 +49,7 @@
 <!-- Hero Header -->
 <div class="perm-hero text-center mb-4">
   <div class="container" style="max-width:880px;">
-    <span class="badge rounded-pill bg-danger px-3 py-2 text-uppercase fw-bold mb-3 shadow-sm" style="letter-spacing:0.06em; font-size:0.75rem;">
+    <span class="badge rounded-2 bg-danger px-3 py-2 text-uppercase fw-bold mb-3 shadow-sm" style="letter-spacing:0.06em; font-size:0.75rem;">
       <i class="bi bi-shield-lock-fill me-1"></i>Security Architecture &amp; Governance
     </span>
     <h1 class="display-6 fw-bold mb-2" style="font-family:'Plus Jakarta Sans',sans-serif;">
@@ -65,7 +65,7 @@
 
   <!-- Core Product Principle Banner -->
   <div class="principle-banner mb-5 text-center shadow-sm">
-    <span class="badge bg-danger text-white px-3 py-1 rounded-pill fw-bold text-uppercase mb-2" style="font-size:0.72rem;">CORE PRODUCT PRINCIPLE</span>
+    <span class="badge bg-danger text-white px-3 py-1 rounded-2 fw-bold text-uppercase mb-2" style="font-size:0.72rem;">CORE PRODUCT PRINCIPLE</span>
     <h3 class="fw-bold text-danger mb-2" style="font-family:'Plus Jakarta Sans',sans-serif;">
       "Anyone can seek help, but only verified users can provide community assistance."
     </h3>
@@ -77,7 +77,7 @@
 
   <!-- Current User Access Level Card (if authenticated) -->
   {% if user.is_authenticated %}
-  <div class="card border-0 shadow-sm rounded-4 mb-5 overflow-hidden border-start border-4 {% if user.can_act_as_helper %}border-success{% else %}border-warning{% endif %}">
+  <div class="card border-0 shadow-sm rounded-3 mb-5 overflow-hidden border-start border-4 {% if user.can_act_as_helper %}border-success{% else %}border-warning{% endif %}">
     <div class="card-body p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
       <div class="d-flex align-items-center gap-3">
         <div class="rounded-circle {% if user.can_act_as_helper %}bg-success text-white{% else %}bg-warning text-dark{% endif %} p-2 d-flex align-items-center justify-content-center" style="width:54px;height:54px;flex-shrink:0;">
@@ -88,7 +88,7 @@
           {% endif %}
         </div>
         <div>
-          <span class="badge {% if user.can_act_as_helper %}bg-success-subtle text-success{% else %}bg-warning-subtle text-warning-emphasis{% endif %} px-2 py-1 rounded-pill small fw-bold mb-1">
+          <span class="badge {% if user.can_act_as_helper %}bg-success-subtle text-success{% else %}bg-warning-subtle text-warning-emphasis{% endif %} px-2 py-1 rounded-2 small fw-bold mb-1">
             CURRENT ACCESS LEVEL
           </span>
           <h5 class="fw-bold text-dark mb-0">{{ user.access_level_display }}</h5>
@@ -98,11 +98,11 @@
 
       <div class="d-flex gap-2 align-items-center">
         {% if user.is_basic_user %}
-        <a href="{% url 'verification_status' %}" class="btn btn-danger rounded-pill px-4 fw-bold shadow-sm">
+        <a href="{% url 'verification_status' %}" class="btn btn-danger rounded-2 px-4 fw-bold shadow-sm">
           <i class="bi bi-shield-check me-1"></i>Upgrade to Verified Helper
         </a>
         {% elif user.badge_identity_verified %}
-        <span class="badge bg-success px-3 py-2 rounded-pill fs-6">
+        <span class="badge bg-success px-3 py-2 rounded-2 fs-6">
           <i class="bi bi-check-circle me-1"></i>Community Helper Enabled
         </span>
         {% endif %}
@@ -118,7 +118,7 @@
     <div class="col-lg-6">
       <div class="tier-card border-top border-4 border-primary">
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <span class="badge bg-primary-subtle text-primary px-3 py-1 rounded-pill fw-bold">TIER 1 &bull; STEP 1</span>
+          <span class="badge bg-primary-subtle text-primary px-3 py-1 rounded-2 fw-bold">TIER 1 &bull; STEP 1</span>
           <span class="badge bg-light text-muted border">Immediate Access</span>
         </div>
         <h4 class="fw-bold text-dark mb-1">Basic User</h4>
@@ -129,14 +129,14 @@
             <i class="bi bi-check-circle-fill me-1"></i>PERMITTED (Seeking Protection):
           </strong>
           <ul class="list-unstyled mb-0 small text-muted">
-            <li class="mb-1">✅ Trigger One-Tap SOS emergency distress beacon.</li>
-            <li class="mb-1">✅ Live Google Maps location sharing during emergencies.</li>
-            <li class="mb-1">✅ AI Safe Routes &amp; well-lit corridor navigation.</li>
-            <li class="mb-1">✅ Safe Journey Mode with continuous deviation monitoring.</li>
-            <li class="mb-1">✅ Add and manage personal trusted emergency contacts.</li>
-            <li class="mb-1">✅ View nearby available helpers and safe havens on map.</li>
-            <li class="mb-1">✅ Request Safe Walk escort accompaniment from verified guardians.</li>
-            <li>✅ Receive automated emergency alerts and 112 police dispatch.</li>
+            <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-1"></i> Trigger One-Tap SOS emergency distress beacon.</li>
+            <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-1"></i> Live Google Maps location sharing during emergencies.</li>
+            <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-1"></i> AI Safe Routes &amp; well-lit corridor navigation.</li>
+            <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-1"></i> Safe Journey Mode with continuous deviation monitoring.</li>
+            <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-1"></i> Add and manage personal trusted emergency contacts.</li>
+            <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-1"></i> View nearby available helpers and safe havens on map.</li>
+            <li class="mb-1"><i class="bi bi-check-circle-fill text-success me-1"></i> Request Safe Walk escort accompaniment from verified guardians.</li>
+            <li><i class="bi bi-check-circle-fill text-success me-1"></i> Receive automated emergency alerts and 112 police dispatch.</li>
           </ul>
         </div>
 
@@ -145,12 +145,12 @@
             <i class="bi bi-x-circle-fill me-1"></i>RESTRICTIONS (Cannot Assist Others):
           </strong>
           <ul class="list-unstyled mb-0 small text-dark">
-            <li class="mb-1">❌ Cannot accept or respond to another citizen's SOS.</li>
-            <li class="mb-1">❌ Cannot join the active guardian / responder pool.</li>
-            <li class="mb-1">❌ Cannot toggle active responder availability.</li>
-            <li class="mb-1">❌ Cannot accompany or accept safe walk escort requests.</li>
-            <li class="mb-1">❌ Cannot access victim personal information or private dossiers.</li>
-            <li>❌ Cannot represent themselves as a verified community helper.</li>
+            <li class="mb-1"><i class="bi bi-x-circle-fill text-danger me-1"></i> Cannot accept or respond to another citizen's SOS.</li>
+            <li class="mb-1"><i class="bi bi-x-circle-fill text-danger me-1"></i> Cannot join the active guardian / responder pool.</li>
+            <li class="mb-1"><i class="bi bi-x-circle-fill text-danger me-1"></i> Cannot toggle active responder availability.</li>
+            <li class="mb-1"><i class="bi bi-x-circle-fill text-danger me-1"></i> Cannot accompany or accept safe walk escort requests.</li>
+            <li class="mb-1"><i class="bi bi-x-circle-fill text-danger me-1"></i> Cannot access victim personal information or private dossiers.</li>
+            <li><i class="bi bi-x-circle-fill text-danger me-1"></i> Cannot represent themselves as a verified community helper.</li>
           </ul>
         </div>
       </div>
@@ -160,7 +160,7 @@
     <div class="col-lg-6">
       <div class="tier-card border-top border-4 border-success">
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <span class="badge bg-success-subtle text-success px-3 py-1 rounded-pill fw-bold">TIER 2 &bull; STEP 2 &amp; 3</span>
+          <span class="badge bg-success-subtle text-success px-3 py-1 rounded-2 fw-bold">TIER 2 &bull; STEP 2 &amp; 3</span>
           <span class="badge bg-success text-white">Admin Approved</span>
         </div>
         <h4 class="fw-bold text-dark mb-1">Verified Community Helper</h4>
@@ -180,11 +180,11 @@
             <i class="bi bi-shield-check me-1"></i>COMMUNITY HELPER PERMISSIONS:
           </strong>
           <ul class="list-unstyled mb-0 small text-dark">
-            <li class="mb-1">🛡️ <strong>Verified Local Citizen Helper:</strong> Receives nearby SOS alerts in 3km radius.</li>
-            <li class="mb-1">🛡️ <strong>Verified Community Guardian:</strong> Toggles live availability &amp; accepts emergencies.</li>
-            <li class="mb-1">🛡️ <strong>Verified Organization Member:</strong> Campus/NGO safe havens &amp; monitored shelters.</li>
-            <li class="mb-1">🛡️ <strong>Verified Security/Support Personnel:</strong> On-arrival crisis protocol &amp; escort coordination.</li>
-            <li>🛡️ <strong>Need-to-Know Emergency Access:</strong> Dispatched location &amp; status for safe intervention.</li>
+            <li class="mb-1"><i class="bi bi-shield-fill-check text-primary me-1"></i> <strong>Verified Local Citizen Helper:</strong> Receives nearby SOS alerts in 3km radius.</li>
+            <li class="mb-1"><i class="bi bi-shield-fill-check text-primary me-1"></i> <strong>Verified Community Guardian:</strong> Toggles live availability &amp; accepts emergencies.</li>
+            <li class="mb-1"><i class="bi bi-shield-fill-check text-primary me-1"></i> <strong>Verified Organization Member:</strong> Campus/NGO safe havens &amp; monitored shelters.</li>
+            <li class="mb-1"><i class="bi bi-shield-fill-check text-primary me-1"></i> <strong>Verified Security/Support Personnel:</strong> On-arrival crisis protocol &amp; escort coordination.</li>
+            <li><i class="bi bi-shield-fill-check text-primary me-1"></i> <strong>Need-to-Know Emergency Access:</strong> Dispatched location &amp; status for safe intervention.</li>
           </ul>
         </div>
 
@@ -199,7 +199,7 @@
   </div>
 
   <!-- Permission Matrix Table -->
-  <div class="card border-0 shadow-sm rounded-4 mb-5 overflow-hidden">
+  <div class="card border-0 shadow-sm rounded-3 mb-5 overflow-hidden">
     <div class="card-header bg-white border-bottom py-3 px-4">
       <h5 class="fw-bold mb-0 text-dark">
         <i class="bi bi-table me-2 text-danger"></i>Platform Permission Matrix by Role
@@ -222,66 +222,66 @@
         <tbody>
           <tr>
             <td><strong>Trigger One-Tap SOS</strong></td>
-            <td class="text-center text-success fw-bold">✅ Yes</td>
-            <td class="text-center text-success fw-bold">✅ Yes</td>
-            <td class="text-center text-success fw-bold">✅ Yes</td>
-            <td class="text-center text-success fw-bold">✅ Yes</td>
-            <td class="text-center text-success fw-bold">✅ Yes</td>
+            <td class="text-center text-success fw-bold"><i class="bi bi-check-circle-fill text-success me-1"></i> Yes</td>
+            <td class="text-center text-success fw-bold"><i class="bi bi-check-circle-fill text-success me-1"></i> Yes</td>
+            <td class="text-center text-success fw-bold"><i class="bi bi-check-circle-fill text-success me-1"></i> Yes</td>
+            <td class="text-center text-success fw-bold"><i class="bi bi-check-circle-fill text-success me-1"></i> Yes</td>
+            <td class="text-center text-success fw-bold"><i class="bi bi-check-circle-fill text-success me-1"></i> Yes</td>
           </tr>
           <tr>
             <td><strong>View Google Maps &amp; Safe Routes</strong></td>
-            <td class="text-center text-success fw-bold">✅ Yes</td>
-            <td class="text-center text-success fw-bold">✅ Yes</td>
-            <td class="text-center text-success fw-bold">✅ Yes</td>
-            <td class="text-center text-success fw-bold">✅ Yes</td>
-            <td class="text-center text-success fw-bold">✅ Yes</td>
+            <td class="text-center text-success fw-bold"><i class="bi bi-check-circle-fill text-success me-1"></i> Yes</td>
+            <td class="text-center text-success fw-bold"><i class="bi bi-check-circle-fill text-success me-1"></i> Yes</td>
+            <td class="text-center text-success fw-bold"><i class="bi bi-check-circle-fill text-success me-1"></i> Yes</td>
+            <td class="text-center text-success fw-bold"><i class="bi bi-check-circle-fill text-success me-1"></i> Yes</td>
+            <td class="text-center text-success fw-bold"><i class="bi bi-check-circle-fill text-success me-1"></i> Yes</td>
           </tr>
           <tr>
             <td><strong>Safe Journey Mode</strong></td>
-            <td class="text-center text-success fw-bold">✅ Yes</td>
-            <td class="text-center text-success fw-bold">✅ Yes</td>
-            <td class="text-center text-success fw-bold">✅ Yes</td>
-            <td class="text-center text-success fw-bold">✅ Yes</td>
-            <td class="text-center text-success fw-bold">✅ Yes</td>
+            <td class="text-center text-success fw-bold"><i class="bi bi-check-circle-fill text-success me-1"></i> Yes</td>
+            <td class="text-center text-success fw-bold"><i class="bi bi-check-circle-fill text-success me-1"></i> Yes</td>
+            <td class="text-center text-success fw-bold"><i class="bi bi-check-circle-fill text-success me-1"></i> Yes</td>
+            <td class="text-center text-success fw-bold"><i class="bi bi-check-circle-fill text-success me-1"></i> Yes</td>
+            <td class="text-center text-success fw-bold"><i class="bi bi-check-circle-fill text-success me-1"></i> Yes</td>
           </tr>
           <tr>
             <td><strong>Receive Emergency Help</strong></td>
-            <td class="text-center text-success fw-bold">✅ Yes</td>
-            <td class="text-center text-success fw-bold">✅ Yes</td>
-            <td class="text-center text-success fw-bold">✅ Yes</td>
-            <td class="text-center text-success fw-bold">✅ Yes</td>
-            <td class="text-center text-success fw-bold">✅ Yes</td>
+            <td class="text-center text-success fw-bold"><i class="bi bi-check-circle-fill text-success me-1"></i> Yes</td>
+            <td class="text-center text-success fw-bold"><i class="bi bi-check-circle-fill text-success me-1"></i> Yes</td>
+            <td class="text-center text-success fw-bold"><i class="bi bi-check-circle-fill text-success me-1"></i> Yes</td>
+            <td class="text-center text-success fw-bold"><i class="bi bi-check-circle-fill text-success me-1"></i> Yes</td>
+            <td class="text-center text-success fw-bold"><i class="bi bi-check-circle-fill text-success me-1"></i> Yes</td>
           </tr>
           <tr>
             <td><strong>Request Safe Walk Escort</strong></td>
-            <td class="text-center text-success fw-bold">✅ Yes</td>
-            <td class="text-center text-success fw-bold">✅ Yes</td>
-            <td class="text-center text-success fw-bold">✅ Yes</td>
-            <td class="text-center text-success fw-bold">✅ Yes</td>
-            <td class="text-center text-muted">—</td>
+            <td class="text-center text-success fw-bold"><i class="bi bi-check-circle-fill text-success me-1"></i> Yes</td>
+            <td class="text-center text-success fw-bold"><i class="bi bi-check-circle-fill text-success me-1"></i> Yes</td>
+            <td class="text-center text-success fw-bold"><i class="bi bi-check-circle-fill text-success me-1"></i> Yes</td>
+            <td class="text-center text-success fw-bold"><i class="bi bi-check-circle-fill text-success me-1"></i> Yes</td>
+            <td class="text-center text-muted">, </td>
           </tr>
           <tr class="table-light">
             <td><strong>Respond to Citizen SOS</strong></td>
-            <td class="text-center text-danger fw-bold">❌ Denied</td>
+            <td class="text-center text-danger fw-bold"><i class="bi bi-x-circle-fill text-danger me-1"></i> Denied</td>
             <td class="text-center text-muted">Eligible</td>
-            <td class="text-center text-success fw-bold">✅ Yes</td>
-            <td class="text-center text-success fw-bold">✅ Yes*</td>
-            <td class="text-center text-primary fw-bold">✅ 112 Dispatch</td>
+            <td class="text-center text-success fw-bold"><i class="bi bi-check-circle-fill text-success me-1"></i> Yes</td>
+            <td class="text-center text-success fw-bold"><i class="bi bi-check-circle-fill text-success me-1"></i> Yes*</td>
+            <td class="text-center text-primary fw-bold"><i class="bi bi-check-circle-fill text-success me-1"></i> 112 Dispatch</td>
           </tr>
           <tr class="table-light">
             <td><strong>Join Guardian Responder Network</strong></td>
-            <td class="text-center text-danger fw-bold">❌ Denied</td>
+            <td class="text-center text-danger fw-bold"><i class="bi bi-x-circle-fill text-danger me-1"></i> Denied</td>
             <td class="text-center text-muted">Awaiting Role</td>
-            <td class="text-center text-success fw-bold">✅ Active</td>
-            <td class="text-center text-success fw-bold">✅ Haven Node</td>
-            <td class="text-center text-muted">—</td>
+            <td class="text-center text-success fw-bold"><i class="bi bi-check-circle-fill text-success me-1"></i> Active</td>
+            <td class="text-center text-success fw-bold"><i class="bi bi-check-circle-fill text-success me-1"></i> Haven Node</td>
+            <td class="text-center text-muted">, </td>
           </tr>
           <tr class="table-light">
             <td><strong>Accompany Safe Walk Escort</strong></td>
-            <td class="text-center text-danger fw-bold">❌ Denied</td>
+            <td class="text-center text-danger fw-bold"><i class="bi bi-x-circle-fill text-danger me-1"></i> Denied</td>
             <td class="text-center text-muted">Eligible</td>
-            <td class="text-center text-success fw-bold">✅ Yes</td>
-            <td class="text-center text-success fw-bold">✅ Security Staff</td>
+            <td class="text-center text-success fw-bold"><i class="bi bi-check-circle-fill text-success me-1"></i> Yes</td>
+            <td class="text-center text-success fw-bold"><i class="bi bi-check-circle-fill text-success me-1"></i> Security Staff</td>
             <td class="text-center text-primary fw-bold">Patrol Beat</td>
           </tr>
           <tr>
@@ -294,10 +294,10 @@
           </tr>
           <tr>
             <td><strong>Admin Verification Required</strong></td>
-            <td class="text-center text-muted">—</td>
-            <td class="text-center text-success fw-bold">✅ Yes</td>
-            <td class="text-center text-success fw-bold">✅ Yes</td>
-            <td class="text-center text-success fw-bold">✅ Yes</td>
+            <td class="text-center text-muted">, </td>
+            <td class="text-center text-success fw-bold"><i class="bi bi-check-circle-fill text-success me-1"></i> Yes</td>
+            <td class="text-center text-success fw-bold"><i class="bi bi-check-circle-fill text-success me-1"></i> Yes</td>
+            <td class="text-center text-success fw-bold"><i class="bi bi-check-circle-fill text-success me-1"></i> Yes</td>
             <td class="text-center text-primary fw-bold">Gov Credentials</td>
           </tr>
         </tbody>
@@ -309,7 +309,7 @@
   </div>
 
   <!-- Important Privacy & Data Minimization Section -->
-  <div class="card border-0 shadow-sm rounded-4 mb-5 overflow-hidden">
+  <div class="card border-0 shadow-sm rounded-3 mb-5 overflow-hidden">
     <div class="card-header bg-white border-bottom py-3 px-4">
       <h5 class="fw-bold mb-0 text-dark">
         <i class="bi bi-shield-shaded me-2 text-primary"></i>Important Privacy Rule: Data Minimization
@@ -323,19 +323,19 @@
       <div class="row g-3">
         <div class="col-md-4">
           <div class="p-3 bg-light rounded-3 border h-100">
-            <strong class="text-dark d-block mb-1">📍 Need-to-Know Location</strong>
+            <strong class="text-dark d-block mb-1"><i class="bi bi-geo-alt-fill me-1"></i> Need-to-Know Location</strong>
             <small class="text-muted">Responders receive the incident location necessary for navigation. Home addresses and unrelated location history are never exposed.</small>
           </div>
         </div>
         <div class="col-md-4">
           <div class="p-3 bg-light rounded-3 border h-100">
-            <strong class="text-dark d-block mb-1">🎭 Mutual Identity Reveal</strong>
+            <strong class="text-dark d-block mb-1"><i class="bi bi-person-badge-fill me-1"></i> Mutual Identity Reveal</strong>
             <small class="text-muted">Victim and responder names are masked during the incident. Mutual identification is exchanged only upon explicit bilateral consent.</small>
           </div>
         </div>
         <div class="col-md-4">
           <div class="p-3 bg-light rounded-3 border h-100">
-            <strong class="text-dark d-block mb-1">📜 Tamper-Proof Audit Logs</strong>
+            <strong class="text-dark d-block mb-1"><i class="bi bi-file-earmark-lock-fill me-1"></i> Tamper-Proof Audit Logs</strong>
             <small class="text-muted">Every inquiry, status change, and dispatch event is cryptographically timestamped and logged for Good Samaritan legal protection.</small>
           </div>
         </div>
@@ -348,11 +348,11 @@
     <h4 class="fw-bold text-dark mb-2">Ready to Participate in Community Protection?</h4>
     <p class="text-muted small mb-4">Start by using our emergency tools, then complete identity verification to assist your community.</p>
     {% if not user.is_authenticated %}
-    <a href="{% url 'register' %}" class="btn btn-danger btn-lg rounded-pill px-5 fw-bold shadow">
+    <a href="{% url 'register' %}" class="btn btn-danger btn-lg rounded-2 px-5 fw-bold shadow">
       Register &amp; Get Protected
     </a>
     {% else %}
-    <a href="{% url 'verification_status' %}" class="btn btn-danger btn-lg rounded-pill px-5 fw-bold shadow">
+    <a href="{% url 'verification_status' %}" class="btn btn-danger btn-lg rounded-2 px-5 fw-bold shadow">
       Check Identity Verification Status
     </a>
     {% endif %}

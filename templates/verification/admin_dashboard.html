@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Admin Verification Command Center — Women Safety Shield{% endblock %}
+{% block title %}Admin Verification Command Center: Women Safety Shield{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -21,7 +21,7 @@
   .doc-preview-box {
     background: #f1f5f9;
     border: 1px dashed #cbd5e1;
-    border-radius: 12px;
+    border-radius: 8px;
     padding: 0.75rem;
     text-align: center;
   }
@@ -51,7 +51,7 @@
   <!-- Header & Statistics Bar -->
   <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
     <div>
-      <span class="badge bg-danger px-3 py-1 rounded-pill fw-bold text-uppercase" style="letter-spacing:0.04em;">
+      <span class="badge bg-danger px-3 py-1 rounded-2 fw-bold text-uppercase" style="letter-spacing:0.04em;">
         <i class="bi bi-shield-lock-fill me-1"></i>Official Verification Queue
       </span>
       <h3 class="fw-bold mt-1 mb-0" style="color:var(--maroon); font-family:'Plus Jakarta Sans',sans-serif;">
@@ -60,10 +60,10 @@
       <p class="text-muted small mb-0">Human administrative review panel with AI document verification &amp; civic attitude orientation signals.</p>
     </div>
     <div class="d-flex gap-2">
-      <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+      <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-secondary btn-sm rounded-2 px-3">
         <i class="bi bi-speedometer2 me-1"></i>Admin Dashboard
       </a>
-      <a href="{% url 'police_portal' %}" class="btn btn-primary btn-sm rounded-pill px-3">
+      <a href="{% url 'police_portal' %}" class="btn btn-primary btn-sm rounded-2 px-3">
         <i class="bi bi-shield-shaded me-1"></i>Police Access Portal
       </a>
     </div>
@@ -150,7 +150,7 @@
     
     <!-- LEFT: Request Queue (List) -->
     <div class="col-lg-4">
-      <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+      <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
         <div class="card-header bg-light border-0 py-2 px-3 d-flex justify-content-between align-items-center">
           <small class="fw-bold text-muted text-uppercase" style="font-size:0.75rem;">SUBMISSION QUEUE ({{ requests|length }})</small>
         </div>
@@ -196,7 +196,7 @@
     <!-- RIGHT: Detailed Inspection & Actions Panel -->
     <div class="col-lg-8">
       {% if selected_req %}
-      <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+      <div class="card border-0 shadow-sm rounded-3 overflow-hidden mb-4">
         
         <!-- Header -->
         <div class="card-header bg-white border-bottom py-3 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
@@ -204,7 +204,7 @@
             <h5 class="fw-bold mb-0 text-dark">
               Inspection: @{{ selected_req.user.username }}
               {% if selected_req.user.badge_identity_verified %}
-              <span class="badge bg-success text-white ms-1" style="font-size:0.75rem;">🛡️ Identity Verified</span>
+              <span class="badge bg-success text-white ms-1" style="font-size:0.75rem;"><i class="bi bi-shield-fill-check text-primary me-1"></i> Identity Verified</span>
               {% endif %}
             </h5>
             <small class="text-muted">
@@ -413,7 +413,7 @@
         </div>
       </div>
       {% else %}
-      <div class="card border-0 shadow-sm rounded-4 p-5 text-center bg-white">
+      <div class="card border-0 shadow-sm rounded-3 p-5 text-center bg-white">
         <i class="bi bi-shield-lock display-3 text-muted mb-3"></i>
         <h5 class="fw-bold text-dark">No Verification Application Selected</h5>
         <p class="text-muted small">Select an applicant from the submission queue on the left to inspect documents and take action.</p>

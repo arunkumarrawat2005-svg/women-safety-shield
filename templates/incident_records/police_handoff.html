@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Official Responder Dispatch Certificate — SOS #{{ emergency.id }}{% endblock %}
+{% block title %}Official Responder Dispatch Certificate, SOS #{{ emergency.id }}{% endblock %}
 
 {% block extra_css %}
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -31,7 +31,7 @@ body {
 .certificate-hero-card {
   background: linear-gradient(135deg, #24161B 0%, #3D141C 50%, #5E1824 100%);
   color: #ffffff;
-  border-radius: 20px 20px 0 0;
+  border-radius: 6px 20px 0 0;
   padding: 2.5rem 2.5rem 2rem;
   position: relative;
   overflow: hidden;
@@ -76,7 +76,7 @@ body {
 .metric-pill-card {
   background: #ffffff;
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: 8px;
   padding: 1rem 1.25rem;
   display: flex;
   align-items: center;
@@ -87,7 +87,7 @@ body {
 .metric-icon-box {
   width: 44px;
   height: 44px;
-  border-radius: 12px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -100,7 +100,7 @@ body {
   background: linear-gradient(135deg, #FFF8F6 0%, #FFFFFF 100%);
   border: 1.5px solid #F0D5D8;
   border-left: 6px solid var(--crimson);
-  border-radius: 16px;
+  border-radius: 8px;
   padding: 1.6rem 2rem;
   margin-bottom: 2rem;
   box-shadow: 0 4px 20px rgba(179,36,58,0.05);
@@ -115,7 +115,7 @@ body {
   font-weight: 700;
   font-size: 0.78rem;
   padding: 0.35rem 0.75rem;
-  border-radius: 30px;
+  border-radius: 6px;
   letter-spacing: 0.03em;
   text-transform: uppercase;
   margin-bottom: 0.6rem;
@@ -168,7 +168,7 @@ body {
 .dossier-card {
   background: #ffffff;
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: 8px;
   height: 100%;
   box-shadow: 0 4px 18px rgba(43,35,32,0.04);
   overflow: hidden;
@@ -230,7 +230,7 @@ body {
 .radar-active-box {
   background: linear-gradient(135deg, #FCF8F6 0%, #FAF1EE 100%);
   border: 1.5px dashed var(--crimson);
-  border-radius: 14px;
+  border-radius: 8px;
   padding: 2rem 1.5rem;
   text-align: center;
 }
@@ -260,7 +260,7 @@ body {
 #handoffMap {
   height: 420px;
   width: 100%;
-  border-radius: 14px;
+  border-radius: 8px;
   border: 1px solid var(--line);
   box-shadow: inset 0 2px 6px rgba(0,0,0,0.06);
 }
@@ -286,31 +286,31 @@ body {
 
   <!-- Top Action Navigation Bar -->
   <div class="mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2 no-print">
-    <a href="{% url 'emergency_track' emergency.id %}" class="btn btn-outline-secondary rounded-pill px-3 fw-semibold">
+    <a href="{% url 'emergency_track' emergency.id %}" class="btn btn-outline-secondary rounded-2 px-3 fw-semibold">
       <i class="bi bi-arrow-left me-1"></i>Back to Live Track
     </a>
     <div class="d-flex gap-2">
-      <a href="{{ google_maps_url }}" target="_blank" class="btn btn-outline-danger rounded-pill px-3 fw-semibold">
+      <a href="{{ google_maps_url }}" target="_blank" class="btn btn-outline-danger rounded-2 px-3 fw-semibold">
         <i class="bi bi-compass me-1"></i>Open in Google Maps
       </a>
-      <button onclick="window.print()" class="btn btn-dark rounded-pill px-3 fw-semibold">
+      <button onclick="window.print()" class="btn btn-dark rounded-2 px-3 fw-semibold">
         <i class="bi bi-printer me-1"></i>Print / Export Certificate
       </button>
     </div>
   </div>
 
   <!-- Master Certificate Card -->
-  <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5">
+  <div class="card border-0 shadow-sm rounded-3 overflow-hidden mb-5">
     
     <!-- 1. OFFICIAL HERO HEADER -->
     <div class="certificate-hero-card">
       <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
         <div>
-          <span class="badge rounded-pill bg-danger px-3 py-2 fw-bold" style="letter-spacing:0.04em;">
+          <span class="badge rounded-2 bg-danger px-3 py-2 fw-bold" style="letter-spacing:0.04em;">
             <i class="bi bi-shield-shaded me-1"></i>OFFICIAL POLICE &amp; FIRST RESPONDER HANDOFF
           </span>
           <h1 class="certificate-hero-title">
-            Women Safety Shield — Verified Responder Dispatch Certificate
+            Women Safety Shield: Verified Responder Dispatch Certificate
           </h1>
           <p class="certificate-hero-subtitle">
             Automated Platform Verification Packet for Law Enforcement, ERSS 112 &amp; Emergency Health Services
@@ -318,7 +318,7 @@ body {
         </div>
 
         <div class="text-md-end">
-          <div class="badge bg-white text-dark px-3 py-2 rounded-pill fs-6 fw-bold shadow-sm mb-1">
+          <div class="badge bg-white text-dark px-3 py-2 rounded-2 fs-6 fw-bold shadow-sm mb-1">
             <span class="text-danger me-1">&bull;</span>SOS INCIDENT #{{ emergency.id }}
           </div>
           <div class="small text-white-50">
@@ -612,11 +612,11 @@ body {
       </div>
 
       <!-- 5. INTERACTIVE MAP & ROUTE TRAIL -->
-      <div class="card border rounded-4 p-4 mb-4 bg-white shadow-sm">
+      <div class="card border rounded-3 p-4 mb-4 bg-white shadow-sm">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
           <div>
             <h5 class="fw-bold mb-0" style="color:var(--maroon);">
-              🗺️ Responder Verified GPS Route Trail (Append-Only Server Log)
+              <i class="bi bi-map-fill me-1"></i> Responder Verified GPS Route Trail (Append-Only Server Log)
             </h5>
             <small class="text-muted">
               Live geo-fencing radar showing scene epicenter, responder route trail, and the 3 KM immediate response perimeter.
@@ -633,7 +633,7 @@ body {
       </div>
 
       <!-- 6. IMMUTABLE GPS BREADCRUMB TELEMETRY LOG -->
-      <div class="card border rounded-4 overflow-hidden mb-4 bg-white shadow-sm">
+      <div class="card border rounded-3 overflow-hidden mb-4 bg-white shadow-sm">
         <div class="card-header bg-light py-3 d-flex justify-content-between align-items-center">
           <h6 class="fw-bold mb-0 text-dark">
             <i class="bi bi-receipt-cutoff me-2 text-danger"></i>Immutable GPS Breadcrumb Log ({{ breadcrumbs|length }} Points Recorded)
@@ -678,7 +678,7 @@ body {
       </div>
 
       <!-- 7. OFFICIAL HANDOVER & SIGN-OFF BLOCK (FOR POLICE & MEDICAL PRINTING) -->
-      <div class="p-4 rounded-4 border bg-light mt-4">
+      <div class="p-4 rounded-3 border bg-light mt-4">
         <h6 class="fw-bold text-dark mb-3">
           <i class="bi bi-file-earmark-check-fill text-danger me-2"></i>Official First Responder &amp; Law Enforcement Handover Docket
         </h6>
@@ -689,7 +689,7 @@ body {
           </div>
           <div class="col-md-4">
             <label class="text-muted d-block fw-semibold mb-1">Station / Unit Reference ID:</label>
-            <div class="p-2 bg-white border rounded" style="min-height:38px;">ERSS Sector 112 — UP Central</div>
+            <div class="p-2 bg-white border rounded" style="min-height:38px;">ERSS Sector 112, UP Central</div>
           </div>
           <div class="col-md-4">
             <label class="text-muted d-block fw-semibold mb-1">Officer Signature / Seal:</label>
@@ -738,7 +738,7 @@ function initHandoffMap() {
     });
 
     // 1. Victim / Emergency Scene Marker (Pulsing Red SOS beacon)
-    victimMarker = GoogleMapsShield.createSOSMarker(map, victimLat, victimLng, '🚨 Emergency Scene (Victim)');
+    victimMarker = GoogleMapsShield.createSOSMarker(map, victimLat, victimLng, '<i class="bi bi-exclamation-triangle-fill text-danger me-1"></i> Emergency Scene (Victim)');
 
     // 2. Protective Citizen Coverage Radius Circle (3 KM)
     GoogleMapsShield.createRadiusCircle(map, victimLat, victimLng, 3000, {
@@ -765,7 +765,7 @@ function initHandoffMap() {
             color: '#198754',
             scale: 8,
             title: 'Responder Dispatch Origin',
-            popupContent: '<b>🟢 Responder Dispatch Origin</b>'
+            popupContent: '<b><i class="bi bi-geo-alt-fill text-success me-1"></i> Responder Dispatch Origin</b>'
         });
 
         // Current / Last Known Point Marker (Blue)
@@ -775,7 +775,7 @@ function initHandoffMap() {
             color: '#0d6efd',
             scale: 9,
             title: 'Responder Last Known Point',
-            popupContent: '<b>🔵 Responder Last Known Point</b>'
+            popupContent: '<b><i class="bi bi-circle-fill text-primary me-1"></i> Responder Last Known Point</b>'
         });
 
         GoogleMapsShield.fitBounds(map, [{ lat: victimLat, lng: victimLng }, ...pathCoords]);

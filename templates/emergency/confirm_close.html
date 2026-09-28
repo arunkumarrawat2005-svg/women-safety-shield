@@ -7,7 +7,7 @@
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-6 col-md-8">
-            <div class="card border-0 shadow-lg rounded-4 overflow-hidden text-center p-4">
+            <div class="card border-0 shadow-lg rounded-3 overflow-hidden text-center p-4">
                 <div class="rounded-circle bg-success-subtle text-success mx-auto d-flex align-items-center justify-content-center mb-3" style="width:72px;height:72px;">
                     <i class="bi bi-shield-check fs-1"></i>
                 </div>
@@ -23,12 +23,12 @@
                 </div>
 
                 <div class="d-flex gap-3 justify-content-center">
-                    <a href="{% url 'emergency_track' pk=emergency.id %}" class="btn btn-outline-secondary px-4 py-2 rounded-pill fw-semibold">
+                    <a href="{% url 'emergency_track' pk=emergency.id %}" class="btn btn-outline-secondary px-4 py-2 rounded-2 fw-semibold">
                         <i class="bi bi-arrow-left me-1"></i>Return to Live Tracker
                     </a>
                     <form method="post" action="{% url 'close_emergency' pk=emergency.id %}" class="d-inline">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-danger px-4 py-2 rounded-pill fw-bold shadow-sm">
+                        <button type="submit" class="btn btn-danger px-4 py-2 rounded-2 fw-bold shadow-sm">
                             <i class="bi bi-check-circle-fill me-1"></i>Yes, I Am Safe (Close Alert)
                         </button>
                     </form>

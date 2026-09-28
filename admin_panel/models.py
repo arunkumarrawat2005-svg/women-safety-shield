@@ -1,1 +1,1 @@
-# No models needed — uses Django admin
+# No models needed, uses Django admin

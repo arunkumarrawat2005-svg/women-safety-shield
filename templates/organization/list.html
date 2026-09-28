@@ -8,7 +8,7 @@
   .org-hero {
     background: linear-gradient(135deg, #1b0c11 0%, #3d0d19 45%, #6a1626 100%);
     color: #ffffff !important;
-    border-radius: 22px;
+    border-radius: 8px;
     padding: 2.75rem 2.25rem;
     margin-bottom: 2rem;
     position: relative;
@@ -49,7 +49,7 @@
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.22);
-    border-radius: 14px;
+    border-radius: 8px;
     padding: 0.9rem 1.35rem;
     display: flex;
     align-items: center;
@@ -66,7 +66,7 @@
   .stat-icon-wrap {
     width: 46px;
     height: 46px;
-    border-radius: 12px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -86,7 +86,7 @@
   }
   .filter-pill {
     padding: 0.5rem 1.2rem;
-    border-radius: 50px;
+    border-radius: 6px;
     font-size: 0.9rem;
     font-weight: 600;
     text-decoration: none;
@@ -107,7 +107,7 @@
   .org-card {
     background: #ffffff;
     border: 1px solid var(--line);
-    border-radius: 16px;
+    border-radius: 8px;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     height: 100%;
     display: flex;
@@ -121,7 +121,7 @@
   }
   #orgMap {
     height: 380px;
-    border-radius: 16px;
+    border-radius: 8px;
     border: 1px solid var(--line);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
   }
@@ -130,7 +130,7 @@
     color: #ffffff;
     font-size: 0.75rem;
     padding: 0.35rem 0.65rem;
-    border-radius: 50px;
+    border-radius: 6px;
     font-weight: 600;
   }
   .safe-haven-tag {
@@ -153,10 +153,10 @@
     <div class="row align-items-center position-relative" style="z-index: 2;">
       <div class="col-lg-7 col-xl-8">
         <div class="d-inline-flex align-items-center gap-2 mb-3">
-          <span class="badge rounded-pill bg-danger text-white px-3 py-1 fw-bold shadow-sm" style="font-size: 0.76rem; letter-spacing: 0.5px;">
+          <span class="badge rounded-2 bg-danger text-white px-3 py-1 fw-bold shadow-sm" style="font-size: 0.76rem; letter-spacing: 0.5px;">
             <i class="bi bi-shield-shaded me-1"></i>INSTITUTIONAL NETWORK
           </span>
-          <span class="badge rounded-pill bg-white text-dark px-3 py-1 fw-semibold small bg-opacity-75">
+          <span class="badge rounded-2 bg-white text-dark px-3 py-1 fw-semibold small bg-opacity-75">
             Campuses • Hospitals • Safe Havens
           </span>
         </div>
@@ -208,7 +208,7 @@
   </div>
 
   <!-- Interactive Map Section -->
-  <div class="card border-0 shadow-sm rounded-4 p-3 mb-4 bg-white">
+  <div class="card border-0 shadow-sm rounded-3 p-3 mb-4 bg-white">
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
       <div>
         <h5 class="fw-bold mb-0" style="color:var(--maroon);">
@@ -226,7 +226,7 @@
   </div>
 
   <!-- Search & Category Filters -->
-  <div class="card border-0 shadow-sm rounded-4 p-3 mb-4 bg-white" id="campusDirectory">
+  <div class="card border-0 shadow-sm rounded-3 p-3 mb-4 bg-white" id="campusDirectory">
     <form method="GET" action="{% url 'org_list' %}" class="row g-2 align-items-center">
       <div class="col-md-5">
         <div class="input-group">
@@ -348,7 +348,7 @@
     </div>
     {% empty %}
     <div class="col-12">
-      <div class="card border-0 shadow-sm rounded-4 p-5 text-center bg-white">
+      <div class="card border-0 shadow-sm rounded-3 p-5 text-center bg-white">
         <i class="bi bi-building-exclamation text-muted display-4 mb-3"></i>
         <h4 class="fw-bold">No Organizations Found</h4>
         <p class="text-muted mb-4">No verified institutional partners match your search criteria. Try expanding your search or category filter.</p>
@@ -362,7 +362,7 @@
   </div>
 
   <!-- Bottom CTA -->
-  <div class="card border-0 shadow-sm rounded-4 p-4 mt-5 text-center bg-white" style="border-left:6px solid var(--crimson) !important;">
+  <div class="card border-0 shadow-sm rounded-3 p-4 mt-5 text-center bg-white" style="border-left:6px solid var(--crimson) !important;">
     <div class="row align-items-center">
       <div class="col-md-8 text-md-start">
         <h5 class="fw-bold mb-1" style="color:var(--maroon);">Is your College, Tech Park, or Hospital equipped to protect women?</h5>

@@ -21,7 +21,7 @@
 #routesMap {
     height: 620px;
     width: 100%;
-    border-radius: 16px;
+    border-radius: 8px;
     z-index: 1;
     background: #eef2f5;
 }
@@ -43,7 +43,7 @@
     background: rgba(255, 255, 255, 0.96);
     backdrop-filter: blur(8px);
     padding: 12px 16px;
-    border-radius: 14px;
+    border-radius: 8px;
     box-shadow: 0 6px 22px rgba(0,0,0,0.16);
     font-size: 0.8rem;
     z-index: 1000;
@@ -69,7 +69,7 @@
 @media (max-width: 768px) {
     #routesMap {
         height: 480px !important;
-        border-radius: 12px;
+        border-radius: 8px;
     }
     .map-toolbar {
         top: 10px;
@@ -85,13 +85,13 @@
         left: 12px;
         max-width: calc(100% - 75px);
         padding: 8px 12px;
-        border-radius: 12px;
+        border-radius: 8px;
         font-size: 0.75rem;
     }
     .preset-chip {
         font-size: 0.78rem !important;
         padding: 6px 12px !important;
-        border-radius: 9999px !important;
+        border-radius: 6px !important;
     }
 }
 .map-legend-item {
@@ -131,7 +131,7 @@
     left: 0;
     right: 0;
     background: white;
-    border-radius: 12px;
+    border-radius: 8px;
     box-shadow: 0 8px 24px rgba(0,0,0,0.15);
     z-index: 1050;
     max-height: 220px;
@@ -204,7 +204,7 @@
     font-weight: 600;
     font-size: 0.85rem;
     color: #6c757d;
-    border-radius: 10px;
+    border-radius: 8px;
     padding: 6px 14px;
 }
 .nav-pills .nav-link.active {
@@ -393,7 +393,7 @@
     <div class="page-header d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4 shadow-sm" style="margin-top: 0.5rem;">
         <div>
             <h4 class="fw-800 mb-1" style="color: var(--maroon);">🧭 AI Safe Routes &amp; Community Safety Map</h4>
-            <p class="mb-0 text-muted">Unified real-time safety intelligence — turn-by-turn safe routes, crowd-sourced hazard reports, and active responder geofencing.</p>
+            <p class="mb-0 text-muted">Unified real-time safety intelligence, turn-by-turn safe routes, crowd-sourced hazard reports, and active responder geofencing.</p>
         </div>
         <div class="d-flex align-items-center gap-2">
             <button type="button" class="btn btn-outline-danger btn-sm fw-700 shadow-sm" data-bs-toggle="modal" data-bs-target="#reportHazardModal">
@@ -409,7 +409,7 @@
         <!-- Left Panel: Navigator & Community Feed -->
         <div class="col-lg-5">
             <!-- Navigator Card -->
-            <div class="card border-0 shadow-sm rounded-4 mb-4">
+            <div class="card border-0 shadow-sm rounded-3 mb-4">
                 <div class="card-body p-3">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h6 class="fw-700 mb-0 text-dark"><i class="bi bi-compass me-1 text-danger"></i>Safe Route Navigator</h6>
@@ -421,7 +421,7 @@
                         <div class="position-relative">
                             <label class="small fw-700 text-muted mb-1 d-flex justify-content-between align-items-center">
                                 <span>🟢 Source Location (Starting Point)</span>
-                                <button type="button" class="btn btn-xs btn-outline-success py-1 px-2 fw-600 rounded-pill shadow-xs" id="gpsBtn" onclick="useCurrentLocation()">
+                                <button type="button" class="btn btn-xs btn-outline-success py-1 px-2 fw-600 rounded-2 shadow-xs" id="gpsBtn" onclick="useCurrentLocation()">
                                     <i class="bi bi-crosshair me-1"></i>My GPS
                                 </button>
                             </label>
@@ -493,7 +493,7 @@
             </div>
 
             <!-- Tabs: Route Candidates vs. Community Incident Reports -->
-            <ul class="nav nav-pills nav-fill mb-3 bg-white p-1 rounded-4 shadow-sm" id="pills-tab" role="tablist">
+            <ul class="nav nav-pills nav-fill mb-3 bg-white p-1 rounded-3 shadow-sm" id="pills-tab" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active" id="pills-routes-tab" data-bs-toggle="pill" data-bs-target="#pills-routes" type="button" role="tab">
                         <i class="bi bi-signpost-2 me-1"></i>Safe Routes (1)
@@ -510,7 +510,7 @@
                 <!-- Tab 1: Scored Routes -->
                 <div class="tab-pane fade show active" id="pills-routes" role="tabpanel">
                     
-                    <div class="card border-0 shadow-sm rounded-4 mb-3 route-card selected" id="card-route-0" onclick="selectRoute(0)">
+                    <div class="card border-0 shadow-sm rounded-3 mb-3 route-card selected" id="card-route-0" onclick="selectRoute(0)">
                         <div class="card-body p-3">
                             <div class="d-flex justify-content-between align-items-start mb-2">
                                 <div>
@@ -599,14 +599,14 @@
 
                 <!-- Tab 2: Community Incident Reports Feed -->
                 <div class="tab-pane fade" id="pills-feed" role="tabpanel">
-                    <div class="card border-0 shadow-sm rounded-4 mb-3">
+                    <div class="card border-0 shadow-sm rounded-3 mb-3">
                         <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
                             <h6 class="fw-700 mb-0"><i class="bi bi-exclamation-circle text-danger me-1"></i>Recent Community Incident Reports</h6>
                             <button type="button" class="btn btn-xs btn-outline-danger py-0 px-2 fw-600" data-bs-toggle="modal" data-bs-target="#reportHazardModal">
                                 + Report Hazard
                             </button>
                         </div>
-                        <div class="list-group list-group-flush rounded-bottom-4" style="max-height: 520px; overflow-y: auto;">
+                        <div class="list-group list-group-flush rounded-bottom-3" style="max-height: 520px; overflow-y: auto;">
                             
                             <div class="text-center py-4 text-muted">
                                 <i class="bi bi-shield-check text-success fs-2"></i>
@@ -621,7 +621,7 @@
 
         <!-- Right Panel: Interactive Map View -->
         <div class="col-lg-7">
-            <div class="card border-0 shadow-sm rounded-4">
+            <div class="card border-0 shadow-sm rounded-3">
                 <div class="card-body p-2 map-wrapper">
                     <div id="routesMap"></div>
 
@@ -630,7 +630,7 @@
                         <button type="button" class="btn btn-light btn-sm fw-700 text-danger shadow-sm" data-bs-toggle="modal" data-bs-target="#reportHazardModal" title="Report a hazard at your location">
                             <i class="bi bi-megaphone-fill me-1"></i>Report Hazard
                         </button>
-                        <a href="/emergency/sos/" class="btn btn-danger btn-sm fw-800 floating-sos-btn rounded-pill px-3" title="Trigger Instant Emergency SOS">
+                        <a href="/emergency/sos/" class="btn btn-danger btn-sm fw-800 floating-sos-btn rounded-2 px-3" title="Trigger Instant Emergency SOS">
                             <i class="bi bi-exclamation-triangle-fill me-1"></i>SOS
                         </a>
                     </div>
@@ -671,7 +671,7 @@
             </div>
 
             <!-- Map Guidance Tip -->
-            <div class="alert alert-light border rounded-4 mt-3 py-2 px-3 d-flex align-items-center justify-content-between small text-muted">
+            <div class="alert alert-light border rounded-3 mt-3 py-2 px-3 d-flex align-items-center justify-content-between small text-muted">
                 <span><i class="bi bi-info-circle text-primary me-1"></i><b>Map Guide:</b> Click anywhere on the map to set points or report a hazard. Drag pins A 🟢 or B 🏁 to update routes!</span>
                 <span class="badge bg-success-subtle text-success border border-success-subtle"><i class="bi bi-shield-lock-fill me-1"></i>Esri HD Street Network</span>
             </div>
@@ -682,7 +682,7 @@
 <!-- Report Safety Hazard Modal -->
 <div class="modal fade" id="reportHazardModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content border-0 shadow-lg rounded-4">
+        <div class="modal-content border-0 shadow-lg rounded-3">
             <form method="post" action="/safety-map/report/">
                 <input type="hidden" name="csrfmiddlewaretoken" value="UI0DWVIjQAiJn5jl8WoTU4wnb0nIsot9p8nPd4vB4b2d20ngarUhlc9jwmIx6dzJ">
                 <div class="modal-header bg-danger text-white">
@@ -745,7 +745,7 @@
 <!-- Share Route Modal -->
 <div class="modal fade" id="shareRouteModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content border-0 shadow-lg rounded-4">
+        <div class="modal-content border-0 shadow-lg rounded-3">
             <div class="modal-header bg-success text-white">
                 <h5 class="modal-title fw-700"><i class="bi bi-share me-2"></i>Share Safe Route with Trusted Circle</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
@@ -772,7 +772,7 @@
 <!-- Journey Watchdog Modal -->
 <div class="modal fade" id="watchdogModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content border-0 shadow-lg rounded-4">
+        <div class="modal-content border-0 shadow-lg rounded-3">
             <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title fw-700"><i class="bi bi-shield-shaded me-2"></i>Safe Journey Watchdog</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
@@ -815,13 +815,13 @@
           <i class="bi bi-cpu me-1" style="color:var(--gold);"></i>Developed by <strong>Team Shield Matrix</strong>
         </p>
         <div class="d-flex gap-2 flex-wrap">
-          <a href="tel:112" class="badge rounded-pill bg-danger text-white px-3 py-2 text-decoration-none shadow-sm" title="National Emergency Response">
+          <a href="tel:112" class="badge rounded-2 bg-danger text-white px-3 py-2 text-decoration-none shadow-sm" title="National Emergency Response">
             <i class="bi bi-telephone-fill me-1"></i>112 Police
           </a>
-          <a href="tel:1091" class="badge rounded-pill bg-danger text-white px-3 py-2 text-decoration-none shadow-sm" title="Women Helpline">
+          <a href="tel:1091" class="badge rounded-2 bg-danger text-white px-3 py-2 text-decoration-none shadow-sm" title="Women Helpline">
             <i class="bi bi-telephone-fill me-1"></i>1091 Women
           </a>
-          <a href="tel:181" class="badge rounded-pill bg-danger text-white px-3 py-2 text-decoration-none shadow-sm" title="Women in Distress">
+          <a href="tel:181" class="badge rounded-2 bg-danger text-white px-3 py-2 text-decoration-none shadow-sm" title="Women in Distress">
             <i class="bi bi-telephone-fill me-1"></i>181 Helpline
           </a>
         </div>
@@ -868,7 +868,7 @@
 
     <!-- Bottom Bar -->
     <div class="footer-bottom d-flex justify-content-between align-items-center flex-wrap gap-2 pt-3 mt-4 border-top" style="border-color:#423934 !important; font-size:0.82rem; color:#9a8f8a;">
-      <div>© 2026 Women Safety Shield — Team Shield Matrix. All rights reserved. Help finds you, from every direction.</div>
+      <div>© 2026 Women Safety Shield: Team Shield Matrix. All rights reserved. Help finds you, from every direction.</div>
       <div class="d-flex align-items-center gap-2">
         <span class="badge bg-dark border border-secondary text-white-50 px-2 py-1">ERSS 112 Integrated</span>
         <span>Emergency Dispatch Protocol v2.5</span>
@@ -923,12 +923,12 @@ function triggerMobileSosNav(e) {
 <!-- First-Time Onboarding Experience Modal: "See How It Works" -->
 <div class="modal fade" id="onboardingModal" tabindex="-1" aria-labelledby="onboardingModalLabel" aria-hidden="true" data-bs-backdrop="static">
   <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden" style="background:#ffffff;">
+    <div class="modal-content border-0 rounded-3 shadow-lg overflow-hidden" style="background:#ffffff;">
       
       <!-- Modal Top Bar -->
       <div class="d-flex justify-content-between align-items-center px-4 pt-3 pb-2 border-bottom bg-light">
         <div class="d-flex align-items-center gap-2">
-          <span class="badge rounded-pill bg-danger-subtle text-danger fw-bold px-3 py-1" style="font-size:0.75rem; letter-spacing:0.04em;">
+          <span class="badge rounded-2 bg-danger-subtle text-danger fw-bold px-3 py-1" style="font-size:0.75rem; letter-spacing:0.04em;">
             <i class="bi bi-shield-check me-1"></i>UNDERSTAND → VERIFY → PROTECT
           </span>
           <span class="text-muted small d-none d-sm-inline">Platform Tour</span>
@@ -956,7 +956,7 @@ function triggerMobileSosNav(e) {
                    style="width:96px; height:96px; background:linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); border:2px solid #fecaca; box-shadow:0 8px 24px rgba(220,38,38,0.15);">
                 <span style="font-size:3.2rem;">🛡️</span>
               </div>
-              <span class="badge bg-danger-subtle text-danger px-3 py-1 rounded-pill fw-semibold mb-2" style="font-size:0.75rem;">SCREEN 1 OF 4</span>
+              <span class="badge bg-danger-subtle text-danger px-3 py-1 rounded-2 fw-semibold mb-2" style="font-size:0.75rem;">SCREEN 1 OF 4</span>
               <h3 class="fw-bold mb-2" style="color:var(--maroon); font-family:'Plus Jakarta Sans',sans-serif;">Stay Protected</h3>
               <blockquote class="blockquote my-2">
                 <p class="fst-italic fw-semibold text-danger fs-5 mb-1">"Your safety. Your people. Your connection."</p>
@@ -981,7 +981,7 @@ function triggerMobileSosNav(e) {
                    style="width:96px; height:96px; background:linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%); border:2px solid #fecdd3; box-shadow:0 8px 24px rgba(225,29,72,0.18);">
                 <span style="font-size:3.2rem;">🆘</span>
               </div>
-              <span class="badge bg-danger-subtle text-danger px-3 py-1 rounded-pill fw-semibold mb-2" style="font-size:0.75rem;">SCREEN 2 OF 4</span>
+              <span class="badge bg-danger-subtle text-danger px-3 py-1 rounded-2 fw-semibold mb-2" style="font-size:0.75rem;">SCREEN 2 OF 4</span>
               <h3 class="fw-bold mb-2" style="color:var(--maroon); font-family:'Plus Jakarta Sans',sans-serif;">One Tap Emergency Assistance</h3>
               <blockquote class="blockquote my-2">
                 <p class="fst-italic fw-semibold text-danger fs-5 mb-1">"One tap can connect you to help."</p>
@@ -1002,7 +1002,7 @@ function triggerMobileSosNav(e) {
                    style="width:96px; height:96px; background:linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border:2px solid #bfdbfe; box-shadow:0 8px 24px rgba(37,99,235,0.15);">
                 <span style="font-size:3.2rem;">📍</span>
               </div>
-              <span class="badge bg-primary-subtle text-primary px-3 py-1 rounded-pill fw-semibold mb-2" style="font-size:0.75rem;">SCREEN 3 OF 4</span>
+              <span class="badge bg-primary-subtle text-primary px-3 py-1 rounded-2 fw-semibold mb-2" style="font-size:0.75rem;">SCREEN 3 OF 4</span>
               <h3 class="fw-bold mb-2" style="color:var(--navy); font-family:'Plus Jakarta Sans',sans-serif;">Know Who Is Around You</h3>
               <blockquote class="blockquote my-2">
                 <p class="fst-italic fw-semibold text-primary fs-5 mb-1">"Help can be closer than you think."</p>
@@ -1024,7 +1024,7 @@ function triggerMobileSosNav(e) {
                    style="width:96px; height:96px; background:linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border:2px solid #bbf7d0; box-shadow:0 8px 24px rgba(22,163,74,0.15);">
                 <span style="font-size:3.2rem;">🤝</span>
               </div>
-              <span class="badge bg-success-subtle text-success px-3 py-1 rounded-pill fw-semibold mb-2" style="font-size:0.75rem;">SCREEN 4 OF 4</span>
+              <span class="badge bg-success-subtle text-success px-3 py-1 rounded-2 fw-semibold mb-2" style="font-size:0.75rem;">SCREEN 4 OF 4</span>
               <h3 class="fw-bold mb-2" style="color:#14532d; font-family:'Plus Jakarta Sans',sans-serif;">Verified &amp; Trusted Community</h3>
               <blockquote class="blockquote my-2">
                 <p class="fst-italic fw-semibold text-success fs-5 mb-1">"Safety starts with trust."</p>
@@ -1048,25 +1048,25 @@ function triggerMobileSosNav(e) {
       <!-- Modal Footer Controls -->
       <div class="modal-footer d-flex justify-content-between align-items-center bg-light px-4 py-3 border-top">
         <div>
-          <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal" onclick="markOnboardingComplete()">
+          <button type="button" class="btn btn-sm btn-outline-secondary rounded-2 px-3" data-bs-dismiss="modal" onclick="markOnboardingComplete()">
             Skip / Explore as Guest
           </button>
         </div>
 
         <div class="d-flex gap-2 align-items-center">
-          <button type="button" class="btn btn-sm btn-light border rounded-pill px-3" onclick="prevOnboardingSlide()">
+          <button type="button" class="btn btn-sm btn-light border rounded-2 px-3" onclick="prevOnboardingSlide()">
             <i class="bi bi-chevron-left me-1"></i>Back
           </button>
-          <button type="button" class="btn btn-sm btn-danger rounded-pill px-3 fw-bold" id="onboardingNextBtn" onclick="nextOnboardingSlide()">
+          <button type="button" class="btn btn-sm btn-danger rounded-2 px-3 fw-bold" id="onboardingNextBtn" onclick="nextOnboardingSlide()">
             Next<i class="bi bi-chevron-right ms-1"></i>
           </button>
           
           <!-- Final Action Buttons (Hidden on slides 1-3, shown on slide 4) -->
           <div id="onboardingFinalActions" class="d-none gap-2">
-            <a href="login.html" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-bold" onclick="markOnboardingComplete()">
+            <a href="login.html" class="btn btn-sm btn-outline-danger rounded-2 px-3 fw-bold" onclick="markOnboardingComplete()">
               <i class="bi bi-box-arrow-in-right me-1"></i>Login
             </a>
-            <a href="register.html" class="btn btn-sm btn-danger rounded-pill px-3 fw-bold shadow-sm" onclick="markOnboardingComplete()">
+            <a href="register.html" class="btn btn-sm btn-danger rounded-2 px-3 fw-bold shadow-sm" onclick="markOnboardingComplete()">
               <i class="bi bi-person-plus-fill me-1"></i>Register
             </a>
           </div>

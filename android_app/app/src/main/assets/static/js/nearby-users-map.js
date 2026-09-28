@@ -48,7 +48,7 @@
                         <i class="bi bi-exclamation-octagon-fill me-1"></i>${label}
                     </strong>
                     <div class="small text-muted mb-1">GPS: ${lat.toFixed(4)}, ${lng.toFixed(4)}</div>
-                    <span class="badge bg-danger text-white rounded-pill px-2">Distress Active</span>
+                    <span class="badge bg-danger text-white rounded-2 px-2">Distress Active</span>
                 </div>
             `);
             return marker;

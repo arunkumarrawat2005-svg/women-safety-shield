@@ -5,7 +5,7 @@
 <div class="container my-4">
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
         <div>
-            <h4 class="fw-800 mb-0">🛡️ Dispatch Record #IR-{{ record.id }} (SOS #{{ record.sos.id }})</h4>
+            <h4 class="fw-800 mb-0"><i class="bi bi-shield-fill-check text-primary me-1"></i> Dispatch Record #IR-{{ record.id }} (SOS #{{ record.sos.id }})</h4>
             <span class="badge bg-dark">{{ record.get_network_source_display }}</span>
             <span class="badge bg-{% if record.status == 'arrived' %}success{% else %}warning text-dark{% endif %}">{{ record.get_status_display }}</span>
         </div>
@@ -20,9 +20,9 @@
     </div>
 
     <!-- Responder Identity Card (Audited) -->
-    <div class="card border-0 shadow-sm rounded-4 mb-4">
+    <div class="card border-0 shadow-sm rounded-3 mb-4">
         <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
-            <h5 class="fw-700 mb-0">👤 Responder Identity (Audited Scope)</h5>
+            <h5 class="fw-700 mb-0"><i class="bi bi-person-fill me-1"></i> Responder Identity (Audited Scope)</h5>
             {% if is_unmasked %}
             <span class="badge bg-warning text-dark"><i class="bi bi-unlock-fill me-1"></i>Unmasked for Current Session</span>
             {% else %}
@@ -46,16 +46,16 @@
                 </div>
                 <div class="col-md-3">
                     <small class="text-muted d-block">Phone Number</small>
-                    <strong>{{ record.responder.phone|default:"—" }}</strong>
+                    <strong>{{ record.responder.phone|default:", " }}</strong>
                 </div>
                 <div class="col-md-3">
                     <small class="text-muted d-block">Email Address</small>
-                    <strong>{{ record.responder.email|default:"—" }}</strong>
+                    <strong>{{ record.responder.email|default:", " }}</strong>
                 </div>
             </div>
             {% else %}
             <div class="p-3 bg-light rounded-3 text-center">
-                <div class="fs-3 mb-1">🔒</div>
+                <div class="fs-3 mb-1"><i class="bi bi-lock-fill me-1"></i></div>
                 <h6 class="fw-700">Responder Identity Protected</h6>
                 <p class="text-muted small mb-3">
                     Masked Identifier: <code>{{ record.masked_responder_id }}</code><br>
@@ -77,8 +77,8 @@
     <!-- Dispatch & Proximity Metrics -->
     <div class="row g-4 mb-4">
         <div class="col-md-6">
-            <div class="card border-0 shadow-sm rounded-4 h-100 p-3">
-                <h6 class="fw-700 mb-3">⏱️ Dispatch &amp; Arrival Timestamps (Immutable)</h6>
+            <div class="card border-0 shadow-sm rounded-3 h-100 p-3">
+                <h6 class="fw-700 mb-3"><i class="bi bi-stopwatch me-1"></i> Dispatch &amp; Arrival Timestamps (Immutable)</h6>
                 <table class="table table-sm table-borderless mb-0">
                     <tr>
                         <td class="text-muted fw-600" width="40%">SOS Created</td>
@@ -115,8 +115,8 @@
 
         <!-- Audit History for this Record -->
         <div class="col-md-6">
-            <div class="card border-0 shadow-sm rounded-4 h-100 p-3">
-                <h6 class="fw-700 mb-3">📋 Admin Access Audit Trail ({{ audit_logs.count }})</h6>
+            <div class="card border-0 shadow-sm rounded-3 h-100 p-3">
+                <h6 class="fw-700 mb-3"><i class="bi bi-card-checklist me-1"></i> Admin Access Audit Trail ({{ audit_logs.count }})</h6>
                 <div class="table-responsive" style="max-height: 180px; overflow-y: auto;">
                     <table class="table table-sm small mb-0">
                         <thead>
@@ -143,7 +143,7 @@
 <!-- Unmask Modal -->
 <div class="modal fade" id="unmaskModal" tabindex="-1">
     <div class="modal-dialog">
-        <div class="modal-content border-0 rounded-4 shadow">
+        <div class="modal-content border-0 rounded-3 shadow">
             <form method="POST">
                 {% csrf_token %}
                 <input type="hidden" name="unmask_identity" value="1">

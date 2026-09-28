@@ -4,7 +4,7 @@
 
 {% block extra_css %}
 <style>
-#safetyMap { height: 520px; border-radius: 16px; }
+#safetyMap { height: 520px; border-radius: 8px; }
 .report-form-card { position: sticky; top: 80px; }
 .legend-dot { width: 14px; height: 14px; border-radius: 50%; display: inline-block; }
 .category-badge { font-size: 0.72rem; }
@@ -17,11 +17,11 @@
         <!-- Map -->
         <div class="col-lg-8">
             <div class="page-header mb-3">
-                <h4 class="fw-800 mb-1" style="color:var(--maroon);">🗺️ Community Safety Map</h4>
-                <p class="text-muted small mb-0">Community-powered safety intelligence — real-time incident reports</p>
+                <h4 class="fw-800 mb-1" style="color:var(--maroon);"><i class="bi bi-map-fill me-1"></i> Community Safety Map</h4>
+                <p class="text-muted small mb-0">Community-powered safety intelligence, real-time incident reports</p>
             </div>
 
-            <div class="card border-0 shadow-sm rounded-4 mb-3">
+            <div class="card border-0 shadow-sm rounded-3 mb-3">
                 <div class="card-body p-3">
                     <!-- Legend -->
                     <div class="d-flex gap-3 mb-3 flex-wrap">
@@ -37,9 +37,9 @@
             </div>
 
             <!-- Recent Reports -->
-            <div class="card border-0 shadow-sm rounded-4">
+            <div class="card border-0 shadow-sm rounded-3">
                 <div class="card-header bg-white border-0 py-3">
-                    <h6 class="fw-700 mb-0">📋 Recent Community Reports</h6>
+                    <h6 class="fw-700 mb-0"><i class="bi bi-card-checklist me-1"></i> Recent Community Reports</h6>
                 </div>
                 <div class="card-body p-0">
                     {% if recent_reports %}
@@ -58,7 +58,7 @@
                             {% for report in recent_reports %}
                             <tr>
                                 <td>
-                                    <span class="badge rounded-pill category-badge
+                                    <span class="badge rounded-2 category-badge
                                         {% if report.category == 'safe' %}bg-success
                                         {% elif report.category in 'harassment,theft' %}bg-danger
                                         {% else %}bg-warning text-dark{% endif %}">
@@ -71,7 +71,7 @@
                                 <td>
                                     <button class="btn btn-xs btn-outline-secondary py-0 px-2"
                                         onclick="flyTo({{ report.latitude }}, {{ report.longitude }})"
-                                        style="font-size:0.72rem;">📍 View</button>
+                                        style="font-size:0.72rem;"><i class="bi bi-geo-alt-fill me-1"></i> View</button>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -80,7 +80,7 @@
                     </div>
                     {% else %}
                     <div class="text-center py-4 text-muted">
-                        <div style="font-size:2rem;">📍</div>
+                        <div style="font-size:2rem;"><i class="bi bi-geo-alt-fill me-1"></i></div>
                         <p class="mt-2">No reports yet. Be the first to report!</p>
                     </div>
                     {% endif %}
@@ -91,9 +91,9 @@
         <!-- Report Form -->
         <div class="col-lg-4">
             <div class="report-form-card">
-                <div class="card border-0 shadow-sm rounded-4 mb-3">
-                    <div class="card-header bg-danger text-white py-3 border-0 rounded-top-4">
-                        <h6 class="fw-700 mb-0">📢 Report an Incident</h6>
+                <div class="card border-0 shadow-sm rounded-3 mb-3">
+                    <div class="card-header bg-danger text-white py-3 border-0 rounded-top-3">
+                        <h6 class="fw-700 mb-0"><i class="bi bi-megaphone me-1"></i> Report an Incident</h6>
                     </div>
                     <div class="card-body">
                         <form method="post" action="{% url 'submit_safety_report' %}">
@@ -105,15 +105,15 @@
                                 <label class="form-label fw-600 small">Category *</label>
                                 <select name="category" class="form-select" required>
                                     <option value="">Select category...</option>
-                                    <option value="harassment">😰 Harassment</option>
-                                    <option value="theft">💰 Theft/Robbery</option>
-                                    <option value="unsafe_area">⚠️ Unsafe Area</option>
-                                    <option value="poor_lighting">🌑 Poor Lighting</option>
-                                    <option value="no_crowd">🚶 Isolated Area</option>
-                                    <option value="accident">🚗 Accident</option>
-                                    <option value="suspicious">👁️ Suspicious Activity</option>
-                                    <option value="safe">✅ Safe Area</option>
-                                    <option value="other">📌 Other</option>
+                                    <option value="harassment"> Harassment</option>
+                                    <option value="theft"> Theft/Robbery</option>
+                                    <option value="unsafe_area"><i class="bi bi-exclamation-triangle me-1"></i> Unsafe Area</option>
+                                    <option value="poor_lighting"> Poor Lighting</option>
+                                    <option value="no_crowd"><i class="bi bi-person-walking me-1"></i> Isolated Area</option>
+                                    <option value="accident"> Accident</option>
+                                    <option value="suspicious"> Suspicious Activity</option>
+                                    <option value="safe"><i class="bi bi-check-circle-fill text-success me-1"></i> Safe Area</option>
+                                    <option value="other"><i class="bi bi-pin-map-fill me-1"></i> Other</option>
                                 </select>
                             </div>
 
@@ -129,7 +129,7 @@
 
                             <div class="mb-3">
                                 <div class="p-2 bg-light rounded-3 text-center" id="reportLocationDisplay">
-                                    <small class="text-muted">📍 Click on the map to set location, or use current location</small>
+                                    <small class="text-muted"><i class="bi bi-geo-alt-fill me-1"></i> Click on the map to set location, or use current location</small>
                                 </div>
                                 <button type="button" class="btn btn-outline-secondary btn-sm w-100 mt-2" onclick="useCurrentLocation()">
                                     <i class="bi bi-geo-alt-fill me-1"></i>Use My Current Location
@@ -151,9 +151,9 @@
                 </div>
 
                 <!-- Safety Tips Box -->
-                <div class="card border-0 shadow-sm rounded-4">
+                <div class="card border-0 shadow-sm rounded-3">
                     <div class="card-body">
-                        <h6 class="fw-700 mb-2">💡 Safety Tip</h6>
+                        <h6 class="fw-700 mb-2"><i class="bi bi-lightbulb me-1"></i> Safety Tip</h6>
                         <p class="text-muted small mb-0">Avoid isolated areas after dark. Always share your live location with trusted contacts when travelling alone. Report any suspicious activity to help your community stay safe.</p>
                     </div>
                 </div>
@@ -164,7 +164,7 @@
 {% endblock %}
 
 {% block extra_js %}
-{# Pass Django data to JS via JSON script tags — avoids template tags inside JS blocks #}
+{# Pass Django data to JS via JSON script tags, avoids template tags inside JS blocks #}
 <script id="zonesData" type="application/json">
 [{% for zone in zones %}{"lat":{{ zone.latitude }},"lng":{{ zone.longitude }},"name":"{{ zone.name|escapejs }}","status":"{{ zone.status }}","risk":{{ zone.risk_score }},"radius":{{ zone.radius_meters }}}{% if not forloop.last %},{% endif %}{% endfor %}]
 </script>
@@ -217,7 +217,7 @@ function initCommunitySafetyMap() {
         }
     });
 
-    // Plot safety zones — data from JSON script tags
+    // Plot safety zones, data from JSON script tags
     try {
         const zones = JSON.parse(document.getElementById('zonesData').textContent);
         zones.forEach(zone => {
@@ -271,7 +271,7 @@ function initCommunitySafetyMap() {
         const lng = e.latLng.lng().toFixed(6);
         document.getElementById('report_lat').value = lat;
         document.getElementById('report_lng').value = lng;
-        document.getElementById('reportLocationDisplay').innerHTML = `<small class='text-success fw-600'>✅ Location: ${lat}, ${lng}</small>`;
+        document.getElementById('reportLocationDisplay').innerHTML = `<small class='text-success fw-600'><i class="bi bi-check-circle-fill text-success me-1"></i> Location: ${lat}, ${lng}</small>`;
         document.getElementById('submitReportBtn').disabled = false;
 
         if (reportMarker) reportMarker.setMap(null);
@@ -281,7 +281,7 @@ function initCommunitySafetyMap() {
             color: '#e74c3c',
             scale: 9,
             title: 'Selected Location',
-            popupContent: '📍 Selected Location'
+            popupContent: '<i class="bi bi-geo-alt-fill me-1"></i> Selected Location'
         });
         reportMarker.openPopup();
     });
@@ -293,7 +293,7 @@ function useCurrentLocation() {
         const lng = pos.coords.longitude.toFixed(6);
         document.getElementById('report_lat').value = lat;
         document.getElementById('report_lng').value = lng;
-        document.getElementById('reportLocationDisplay').innerHTML = `<small class='text-success fw-600'>✅ Current Location: ${lat}, ${lng}</small>`;
+        document.getElementById('reportLocationDisplay').innerHTML = `<small class='text-success fw-600'><i class="bi bi-check-circle-fill text-success me-1"></i> Current Location: ${lat}, ${lng}</small>`;
         document.getElementById('submitReportBtn').disabled = false;
         if (safetyMap) {
             safetyMap.setCenter({ lat: parseFloat(lat), lng: parseFloat(lng) });

@@ -54,7 +54,7 @@ class UserOnboardingAndVerificationTests(TestCase):
 
 
     def test_registration_and_redirect_to_verification(self):
-        """Test new user registration seamlessly directs to Step 2: Verification."""
+        """Test new user registration smoothly directs to Step 2: Verification."""
         post_data = {
             'username': 'anita_verma',
             'first_name': 'Anita',

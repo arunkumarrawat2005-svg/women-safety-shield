@@ -20,6 +20,7 @@ urlpatterns = [
     path('how-it-works/', views.how_it_works_view, name='how_it_works'),
     path('permissions/', views.permission_model_view, name='permission_model'),
     path('terms/', views.terms_view, name='terms'),
+    path('privacy/', views.privacy_view, name='privacy'),
 
     path("save-token/", save_fcm_token, name="save_token"),
     path('download/apk/', views.download_apk_view, name='download_apk'),

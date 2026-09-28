@@ -201,7 +201,7 @@ class UpgradeSpecTestCase(TestCase):
         self.assertEqual(target['user_name'], 'Anonymous')
 
     def test_07_backward_compatible_endpoints(self):
-        """Test /api/guardians/nearby/ route returns residents seamlessly."""
+        """Test /api/guardians/nearby/ route returns residents smoothly."""
         self.client.force_authenticate(user=self.victim)
         resp = self.client.get('/api/guardians/nearby/?lat=19.0760&lng=72.8770&radius=3')
         self.assertEqual(resp.status_code, 200)

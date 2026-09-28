@@ -79,11 +79,11 @@ class IncidentRecord(models.Model):
     def get_masked_label(self, distance_km=None, eta_mins=None):
         source_name = "Local Resident" if self.network_source == 'local_resident' else "Organization Volunteer"
         if eta_mins is not None and eta_mins > 0:
-            return f"{source_name} — {int(eta_mins)} min away"
+            return f"{source_name}, {int(eta_mins)} min away"
         if distance_km is not None:
             if distance_km < 1.0:
-                return f"{source_name} — {int(distance_km * 1000)}m away"
-            return f"{source_name} — {distance_km:.1f}km away"
+                return f"{source_name}, {int(distance_km * 1000)}m away"
+            return f"{source_name}, {distance_km:.1f}km away"
         return self.masked_responder_id or f"Verified Responder #{self.id}"
 
     def get_masked_phone(self):

@@ -7,7 +7,7 @@
   #addContactTabs {
     background: #f1f5f9;
     padding: 5px;
-    border-radius: 12px;
+    border-radius: 8px;
     border: 1px solid #e2e8f0;
     gap: 6px;
   }
@@ -18,7 +18,7 @@
     color: #475569 !important;
     background: transparent !important;
     border: none !important;
-    border-radius: 9px !important;
+    border-radius: 8px !important;
     font-weight: 600;
     font-size: 0.85rem;
     padding: 8px 12px;
@@ -47,7 +47,7 @@
     font-weight: 700;
     font-size: 0.92rem;
     padding: 0.65rem 1.25rem;
-    border-radius: 10px;
+    border-radius: 8px;
     box-shadow: 0 4px 14px rgba(196, 30, 61, 0.28);
     transition: all 0.25s ease;
     display: inline-flex;
@@ -95,7 +95,7 @@
 <div class="container-fluid px-3 px-xl-4 my-4">
 
   <!-- 1. Header & Safety Readiness Console -->
-  <div class="card border-0 shadow-sm rounded-4 mb-4" style="background: linear-gradient(135deg, #ffffff 0%, #fdf8f6 100%); border-left: 6px solid var(--crimson) !important;">
+  <div class="card border-0 shadow-sm rounded-3 mb-4" style="background: linear-gradient(135deg, #ffffff 0%, #fdf8f6 100%); border-left: 6px solid var(--crimson) !important;">
     <div class="card-body p-4">
       <div class="row align-items-center g-3">
         <div class="col-lg-7">
@@ -132,7 +132,7 @@
 
         <!-- Circle Strength Meter Card -->
         <div class="col-lg-5">
-          <div class="p-3 rounded-4 bg-white border shadow-sm">
+          <div class="p-3 rounded-3 bg-white border shadow-sm">
             <div class="d-flex justify-content-between align-items-center mb-2">
               <span class="small fw-bold text-muted text-uppercase" style="letter-spacing: 0.05em;">Circle Protection Level</span>
               <span class="badge bg-{{ score_color }} text-white fw-bold fs-6">{{ score }}%</span>
@@ -184,7 +184,7 @@
       <div class="row g-3">
         {% for tc in contacts %}
         <div class="col-md-6 col-xl-6">
-          <div class="card h-100 rounded-4 shadow-sm border-0 transition-hover position-relative"
+          <div class="card h-100 rounded-3 shadow-sm border-0 transition-hover position-relative"
                style="background: #ffffff; border: 1px solid {% if tc.is_primary %}#D9A441 !important; box-shadow: 0 4px 15px rgba(217, 164, 65, 0.18) !important;{% else %}var(--line) !important;{% endif %}">
             
             {% if tc.is_primary %}
@@ -221,14 +221,14 @@
                 <!-- Contact Meta: Relation & Phone -->
                 <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
                   <span class="badge bg-light text-dark border px-2 py-1 fw-semibold" style="font-size:0.78rem;">
-                    {% if tc.relation == 'family' %}👨‍👩‍👧 Family
-                    {% elif tc.relation == 'parent' %}🛡️ Parent / Guardian
-                    {% elif tc.relation == 'sibling' %}👫 Sister / Brother
-                    {% elif tc.relation == 'spouse' %}💍 Spouse / Partner
-                    {% elif tc.relation == 'friend' %}🤝 Friend
-                    {% elif tc.relation == 'colleague' %}💼 Colleague
-                    {% elif tc.relation == 'neighbor' %}🏠 Neighbor
-                    {% else %}👤 Other{% endif %}
+                    {% if tc.relation == 'family' %} Family
+                    {% elif tc.relation == 'parent' %}<i class="bi bi-shield-fill-check text-primary me-1"></i> Parent / Guardian
+                    {% elif tc.relation == 'sibling' %} Sister / Brother
+                    {% elif tc.relation == 'spouse' %} Spouse / Partner
+                    {% elif tc.relation == 'friend' %}<i class="bi bi-person-heart me-1"></i> Friend
+                    {% elif tc.relation == 'colleague' %}<i class="bi bi-briefcase me-1"></i> Colleague
+                    {% elif tc.relation == 'neighbor' %}<i class="bi bi-house me-1"></i> Neighbor
+                    {% else %}<i class="bi bi-person-fill me-1"></i> Other{% endif %}
                   </span>
                   
                   {% if tc.display_phone %}
@@ -337,7 +337,7 @@
         <!-- Edit Modal for this contact -->
         <div class="modal fade" id="editModal{{ tc.id }}" tabindex="-1" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content rounded-4 border-0 shadow">
+            <div class="modal-content rounded-3 border-0 shadow">
               <div class="modal-header border-bottom py-3" style="background:var(--cream);">
                 <h6 class="modal-title fw-bold" style="color:var(--maroon);font-family:'Plus Jakarta Sans',sans-serif;">
                   <i class="bi bi-pencil-square me-2"></i>Edit {{ tc.display_name }}
@@ -389,7 +389,7 @@
                     <label class="form-check-label small fw-semibold" for="loc{{ tc.id }}">Grant live tracker access during emergency</label>
                   </div>
                 </div>
-                <div class="modal-footer border-top py-2 bg-light rounded-bottom-4">
+                <div class="modal-footer border-top py-2 bg-light rounded-bottom-3">
                   <button type="button" class="btn btn-sm btn-light border px-3" data-bs-dismiss="modal">Cancel</button>
                   <button type="submit" class="btn btn-sm btn-trusted-submit fw-semibold px-3">Save Changes</button>
                 </div>
@@ -401,7 +401,7 @@
       </div>
       {% else %}
       <!-- Empty State -->
-      <div class="card border-0 shadow-sm rounded-4 text-center py-5 px-4" style="background:#fff;">
+      <div class="card border-0 shadow-sm rounded-3 text-center py-5 px-4" style="background:#fff;">
         <div class="mb-3">
           <div style="width:72px; height:72px; background:var(--cream); color:var(--crimson); border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:2.2rem;">
             <i class="bi bi-shield-x"></i>
@@ -420,7 +420,7 @@
       {% endif %}
 
       <!-- 24/7 National Emergency Helplines Horizontal Bar -->
-      <div class="card border-0 shadow-sm rounded-4 mt-4 p-3" style="background:#ffffff; border-left: 4px solid var(--gold) !important;">
+      <div class="card border-0 shadow-sm rounded-3 mt-4 p-3" style="background:#ffffff; border-left: 4px solid var(--gold) !important;">
         <div class="d-flex justify-content-between align-items-center mb-2">
           <h6 class="fw-bold mb-0 text-dark" style="font-family:'Plus Jakarta Sans',sans-serif;">
             <i class="bi bi-telephone-fill text-warning me-2"></i>Official 24/7 Women Helplines (Direct Tap)
@@ -430,25 +430,25 @@
         <div class="row g-2 mt-1">
           <div class="col-6 col-md-3">
             <a href="tel:112" class="btn btn-light border w-100 text-start p-2 rounded-3 text-decoration-none hover-lift">
-              <span class="d-block fw-bold text-danger fs-6">🚨 112</span>
+              <span class="d-block fw-bold text-danger fs-6"><i class="bi bi-exclamation-triangle-fill text-danger me-1"></i> 112</span>
               <span class="text-muted small" style="font-size:0.75rem;">National Emergency</span>
             </a>
           </div>
           <div class="col-6 col-md-3">
             <a href="tel:1091" class="btn btn-light border w-100 text-start p-2 rounded-3 text-decoration-none hover-lift">
-              <span class="d-block fw-bold text-danger fs-6">👩 1091</span>
+              <span class="d-block fw-bold text-danger fs-6"> 1091</span>
               <span class="text-muted small" style="font-size:0.75rem;">Women Helpline</span>
             </a>
           </div>
           <div class="col-6 col-md-3">
             <a href="tel:181" class="btn btn-light border w-100 text-start p-2 rounded-3 text-decoration-none hover-lift">
-              <span class="d-block fw-bold text-primary fs-6">🛡️ 181</span>
+              <span class="d-block fw-bold text-primary fs-6"><i class="bi bi-shield-fill-check text-primary me-1"></i> 181</span>
               <span class="text-muted small" style="font-size:0.75rem;">Women in Distress</span>
             </a>
           </div>
           <div class="col-6 col-md-3">
             <a href="tel:100" class="btn btn-light border w-100 text-start p-2 rounded-3 text-decoration-none hover-lift">
-              <span class="d-block fw-bold text-dark fs-6">🚔 100</span>
+              <span class="d-block fw-bold text-dark fs-6"><i class="bi bi-shield-lock me-1"></i> 100</span>
               <span class="text-muted small" style="font-size:0.75rem;">Police Control</span>
             </a>
           </div>
@@ -458,13 +458,13 @@
 
     <!-- Right Column: Add Contact Form & Rules -->
     <div class="col-lg-5 col-xl-4">
-      <div class="card border-0 shadow-sm rounded-4 sticky-top" style="top:90px;">
-        <div class="card-header border-0 rounded-top-4 p-3 text-white" style="background: linear-gradient(135deg, var(--maroon, #7A1F2B) 0%, var(--crimson, #C41E3D) 100%) !important;">
+      <div class="card border-0 shadow-sm rounded-3 sticky-top" style="top:90px;">
+        <div class="card-header border-0 rounded-top-3 p-3 text-white" style="background: linear-gradient(135deg, var(--maroon, #7A1F2B) 0%, var(--crimson, #C41E3D) 100%) !important;">
           <div class="d-flex justify-content-between align-items-center">
             <h6 class="fw-bold mb-0 text-white" style="font-family:'Plus Jakarta Sans',sans-serif;">
               <i class="bi bi-person-plus-fill me-2"></i>Add to Trusted Circle
             </h6>
-            <span class="badge rounded-pill fw-bold px-2 py-1" style="background: rgba(255,255,255,0.22); color: #ffffff; backdrop-filter: blur(4px); font-size: 0.72rem; letter-spacing: 0.04em;">UNIVERSAL ADD</span>
+            <span class="badge rounded-2 fw-bold px-2 py-1" style="background: rgba(255,255,255,0.22); color: #ffffff; backdrop-filter: blur(4px); font-size: 0.72rem; letter-spacing: 0.04em;">UNIVERSAL ADD</span>
           </div>
         </div>
 
@@ -507,14 +507,14 @@
                 <div class="mb-3">
                   <label class="form-label small fw-bold">Relationship <span class="text-danger">*</span></label>
                   <select name="relation" class="form-select rounded-3">
-                    <option value="parent">🛡️ Parent / Guardian</option>
-                    <option value="family" selected>👨‍👩‍👧 Family</option>
-                    <option value="sibling">👫 Sister / Brother</option>
-                    <option value="spouse">💍 Spouse / Partner</option>
-                    <option value="friend">🤝 Friend / Roommate</option>
-                    <option value="colleague">💼 Colleague / Work</option>
-                    <option value="neighbor">🏠 Local Neighbor</option>
-                    <option value="other">👤 Other</option>
+                    <option value="parent"><i class="bi bi-shield-fill-check text-primary me-1"></i> Parent / Guardian</option>
+                    <option value="family" selected> Family</option>
+                    <option value="sibling"> Sister / Brother</option>
+                    <option value="spouse"> Spouse / Partner</option>
+                    <option value="friend"><i class="bi bi-person-heart me-1"></i> Friend / Roommate</option>
+                    <option value="colleague"><i class="bi bi-briefcase me-1"></i> Colleague / Work</option>
+                    <option value="neighbor"><i class="bi bi-house me-1"></i> Local Neighbor</option>
+                    <option value="other"><i class="bi bi-person-fill me-1"></i> Other</option>
                   </select>
                 </div>
 
@@ -526,7 +526,7 @@
                 <div class="form-check p-3 rounded-3 bg-light border mb-3">
                   <input class="form-check-input ms-0 me-2" type="checkbox" name="is_primary" id="isPrimaryCheckPhone" {% if not primary_contact %}checked{% endif %}>
                   <label class="form-check-label small fw-bold text-dark" for="isPrimaryCheckPhone">
-                    ⭐ Designate as Primary Emergency Guardian
+                    <i class="bi bi-star-fill text-warning me-1"></i> Designate as Primary Emergency Guardian
                   </label>
                   <small class="text-muted d-block mt-1" style="font-size:0.73rem;">
                     First person to receive automated voice call and instant priority SMS.
@@ -561,21 +561,21 @@
                 <div class="mb-3">
                   <label class="form-label small fw-bold">Relationship <span class="text-danger">*</span></label>
                   <select name="relation" class="form-select rounded-3">
-                    <option value="family">👨‍👩‍👧 Family</option>
-                    <option value="parent">🛡️ Parent / Guardian</option>
-                    <option value="sibling">👫 Sister / Brother</option>
-                    <option value="spouse">💍 Spouse / Partner</option>
-                    <option value="friend" selected>🤝 Friend</option>
-                    <option value="colleague">💼 Colleague</option>
-                    <option value="neighbor">🏠 Neighbor</option>
-                    <option value="other">👤 Other</option>
+                    <option value="family"> Family</option>
+                    <option value="parent"><i class="bi bi-shield-fill-check text-primary me-1"></i> Parent / Guardian</option>
+                    <option value="sibling"> Sister / Brother</option>
+                    <option value="spouse"> Spouse / Partner</option>
+                    <option value="friend" selected><i class="bi bi-person-heart me-1"></i> Friend</option>
+                    <option value="colleague"><i class="bi bi-briefcase me-1"></i> Colleague</option>
+                    <option value="neighbor"><i class="bi bi-house me-1"></i> Neighbor</option>
+                    <option value="other"><i class="bi bi-person-fill me-1"></i> Other</option>
                   </select>
                 </div>
 
                 <div class="form-check p-3 rounded-3 bg-light border mb-3">
                   <input class="form-check-input ms-0 me-2" type="checkbox" name="is_primary" id="isPrimaryCheckUser">
                   <label class="form-check-label small fw-bold text-dark" for="isPrimaryCheckUser">
-                    ⭐ Designate as Primary Emergency Guardian
+                    <i class="bi bi-star-fill text-warning me-1"></i> Designate as Primary Emergency Guardian
                   </label>
                   <small class="text-muted d-block mt-1" style="font-size:0.73rem;">
                     First person to receive automated voice call and priority notification.
@@ -593,7 +593,7 @@
         </div>
 
         <!-- Safety Circle Protocol Information -->
-        <div class="p-3 border-top bg-light rounded-bottom-4">
+        <div class="p-3 border-top bg-light rounded-bottom-3">
           <h6 class="fw-bold small mb-2 text-dark">
             <i class="bi bi-shield-check text-success me-1"></i>How Circle Alerts Work During SOS
           </h6>
@@ -614,7 +614,7 @@
 <!-- MODAL 1: Safe Check-in ("I Reached Safely") -->
 <div class="modal fade" id="safeCheckinModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content rounded-4 border-0 shadow">
+    <div class="modal-content rounded-3 border-0 shadow">
       <div class="modal-header border-bottom py-3" style="background:var(--cream);">
         <h6 class="modal-title fw-bold" style="color:var(--maroon);font-family:'Plus Jakarta Sans',sans-serif;">
           <i class="bi bi-geo-alt-fill text-danger me-2"></i>Send "I Reached Safely" Check-in
@@ -630,17 +630,17 @@
 
           <label class="form-label small fw-bold">Choose or customize arrival message</label>
           <div class="d-flex flex-wrap gap-2 mb-3">
-            <button type="button" class="btn btn-outline-secondary btn-sm quick-msg-btn rounded-pill" onclick="document.getElementById('checkinMsgInput').value='Reached home safely. All is well!';">
-              🏠 Reached Home Safely
+            <button type="button" class="btn btn-outline-secondary btn-sm quick-msg-btn rounded-2" onclick="document.getElementById('checkinMsgInput').value='Reached home safely. All is well!';">
+              <i class="bi bi-house me-1"></i> Reached Home Safely
             </button>
-            <button type="button" class="btn btn-outline-secondary btn-sm quick-msg-btn rounded-pill" onclick="document.getElementById('checkinMsgInput').value='Reached college / hostel room safely!';">
-              🎓 Reached Hostel / Campus
+            <button type="button" class="btn btn-outline-secondary btn-sm quick-msg-btn rounded-2" onclick="document.getElementById('checkinMsgInput').value='Reached college / hostel room safely!';">
+              <i class="bi bi-mortarboard me-1"></i> Reached Hostel / Campus
             </button>
-            <button type="button" class="btn btn-outline-secondary btn-sm quick-msg-btn rounded-pill" onclick="document.getElementById('checkinMsgInput').value='Safely reached office/work.';">
-              💼 Reached Office
+            <button type="button" class="btn btn-outline-secondary btn-sm quick-msg-btn rounded-2" onclick="document.getElementById('checkinMsgInput').value='Safely reached office/work.';">
+              <i class="bi bi-briefcase me-1"></i> Reached Office
             </button>
-            <button type="button" class="btn btn-outline-secondary btn-sm quick-msg-btn rounded-pill" onclick="document.getElementById('checkinMsgInput').value='Boarded metro/cab safely. On my way!';">
-              🚕 Boarded Transit Safely
+            <button type="button" class="btn btn-outline-secondary btn-sm quick-msg-btn rounded-2" onclick="document.getElementById('checkinMsgInput').value='Boarded metro/cab safely. On my way!';">
+              <i class="bi bi-car-front me-1"></i> Boarded Transit Safely
             </button>
           </div>
 
@@ -650,7 +650,7 @@
             <i class="bi bi-info-circle-fill me-1"></i>Will be dispatched via in-app notifications and simulated SMS to your trusted network.
           </div>
         </div>
-        <div class="modal-footer border-top py-2 bg-light rounded-bottom-4">
+        <div class="modal-footer border-top py-2 bg-light rounded-bottom-3">
           <button type="button" class="btn btn-sm btn-light border px-3" data-bs-dismiss="modal">Cancel</button>
           <button type="submit" class="btn btn-sm btn-trusted-submit fw-bold px-3">
             <i class="bi bi-send-fill me-1"></i>Broadcast Check-in
@@ -664,7 +664,7 @@
 <!-- MODAL 2: Fake Escape Call Simulator -->
 <div class="modal fade" id="fakeCallModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content rounded-4 border-0 shadow">
+    <div class="modal-content rounded-3 border-0 shadow">
       <div class="modal-header border-bottom py-3" style="background:var(--cream);">
         <h6 class="modal-title fw-bold" style="color:var(--maroon);font-family:'Plus Jakarta Sans',sans-serif;">
           <i class="bi bi-telephone-inbound-fill text-danger me-2"></i>Fake Escape Call Trigger
@@ -679,11 +679,11 @@
         <div class="mb-3 text-start">
           <label class="form-label small fw-bold">Select Caller Display</label>
           <select id="fakeCallerSelect" class="form-select rounded-3">
-            <option value="Dad (Papa)">👨 Dad (Papa)</option>
-            <option value="Mom (Maa)">👩 Mom (Maa)</option>
-            <option value="Police Inspector">👮 Police Control / Inspector</option>
-            <option value="Hostel Warden">🏢 Hostel Warden</option>
-            <option value="Pooja (Emergency)">📞 Pooja (Emergency)</option>
+            <option value="Dad (Papa)"> Dad (Papa)</option>
+            <option value="Mom (Maa)"> Mom (Maa)</option>
+            <option value="Police Inspector"><i class="bi bi-shield-lock me-1"></i> Police Control / Inspector</option>
+            <option value="Hostel Warden"><i class="bi bi-building me-1"></i> Hostel Warden</option>
+            <option value="Pooja (Emergency)"><i class="bi bi-telephone-fill me-1"></i> Pooja (Emergency)</option>
           </select>
         </div>
 
@@ -691,13 +691,13 @@
           <label class="form-label small fw-bold">Trigger Delay</label>
           <div class="d-flex gap-2">
             <button type="button" class="btn btn-outline-danger flex-fill active py-2 rounded-3" onclick="triggerFakeCall(2);">
-              ⚡ In 2 Seconds
+              <i class="bi bi-lightning-charge-fill me-1"></i> In 2 Seconds
             </button>
             <button type="button" class="btn btn-outline-secondary flex-fill py-2 rounded-3" onclick="triggerFakeCall(15);">
-              ⏱️ In 15 Seconds
+              <i class="bi bi-stopwatch me-1"></i> In 15 Seconds
             </button>
             <button type="button" class="btn btn-outline-secondary flex-fill py-2 rounded-3" onclick="triggerFakeCall(30);">
-              ⏱️ In 30 Seconds
+              <i class="bi bi-stopwatch me-1"></i> In 30 Seconds
             </button>
           </div>
         </div>

@@ -7,7 +7,7 @@
     .no-print { display: none !important; }
     .card { box-shadow: none !important; border: 1px solid #ddd !important; }
 }
-.report-header { background: linear-gradient(135deg, #c0392b, #e74c3c); color: white; border-radius: 16px 16px 0 0; padding: 2rem; }
+.report-header { background: linear-gradient(135deg, #c0392b, #e74c3c); color: white; border-radius: 8px 16px 0 0; padding: 2rem; }
 </style>
 {% endblock %}
 
@@ -25,12 +25,12 @@
         </a>
     </div>
 
-    <div class="card border-0 shadow-sm rounded-4">
+    <div class="card border-0 shadow-sm rounded-3">
         <!-- Report Header -->
         <div class="report-header">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
-                    <div style="font-size:2rem;">🛡️</div>
+                    <div style="font-size:2rem;"><i class="bi bi-shield-fill-check text-primary me-1"></i></div>
                     <h4 class="fw-800 mb-1">Women Safety Shield</h4>
                     <h6 class="opacity-75">Official Incident Report</h6>
                 </div>
@@ -47,11 +47,11 @@
             <div class="row g-4">
                 <!-- Emergency Overview -->
                 <div class="col-md-6">
-                    <h5 class="fw-700 border-bottom pb-2 mb-3">🆘 Emergency Overview</h5>
+                    <h5 class="fw-700 border-bottom pb-2 mb-3"><i class="bi bi-exclamation-octagon-fill text-danger me-1"></i> Emergency Overview</h5>
                     <table class="table table-sm table-borderless">
                         <tr><td class="text-muted fw-600" width="40%">Emergency ID</td><td><strong>#{{ emergency.id }}</strong></td></tr>
                         <tr><td class="text-muted fw-600">Victim</td><td>{{ emergency.victim.full_name }}</td></tr>
-                        <tr><td class="text-muted fw-600">Contact</td><td>{{ emergency.victim.phone|default:"—" }}</td></tr>
+                        <tr><td class="text-muted fw-600">Contact</td><td>{{ emergency.victim.phone|default:", " }}</td></tr>
                         <tr><td class="text-muted fw-600">Trigger Type</td><td>{{ emergency.get_trigger_type_display }}</td></tr>
                         <tr><td class="text-muted fw-600">Status</td>
                             <td><span class="badge {% if emergency.status == 'CLOSED' %}bg-secondary{% elif emergency.status == 'ACTIVE' %}bg-danger{% else %}bg-warning text-dark{% endif %}">{{ emergency.get_status_display }}</span></td>
@@ -66,7 +66,7 @@
 
                 <!-- Location & Guardian -->
                 <div class="col-md-6">
-                    <h5 class="fw-700 border-bottom pb-2 mb-3">📍 Location & Response</h5>
+                    <h5 class="fw-700 border-bottom pb-2 mb-3"><i class="bi bi-geo-alt-fill me-1"></i> Location & Response</h5>
                     <table class="table table-sm table-borderless">
                         <tr><td class="text-muted fw-600" width="40%">Latitude</td><td>{{ emergency.latitude }}</td></tr>
                         <tr><td class="text-muted fw-600">Longitude</td><td>{{ emergency.longitude }}</td></tr>
@@ -92,7 +92,7 @@
                                 {% if masked_responder.is_masked %}
                                 <code>{{ masked_responder.phone }}</code> <small class="text-muted">(Virtual Relay)</small>
                                 {% else %}
-                                <span>{{ masked_responder.phone|default:"—" }}</span>
+                                <span>{{ masked_responder.phone|default:", " }}</span>
                                 {% endif %}
                             </td>
                         </tr>
@@ -113,7 +113,7 @@
             </div>
 
             <!-- Incident Timeline -->
-            <h5 class="fw-700 border-bottom pb-2 mt-4 mb-3">⏱️ Complete Incident Timeline</h5>
+            <h5 class="fw-700 border-bottom pb-2 mt-4 mb-3"><i class="bi bi-stopwatch me-1"></i> Complete Incident Timeline</h5>
             {% if events %}
             <div class="timeline">
                 {% for event in events %}
@@ -124,7 +124,7 @@
                             <strong>{{ event.get_event_name_display }}</strong>
                             <small class="text-muted">{{ event.timestamp|date:"d M Y, H:i:s" }}</small>
                         </div>
-                        {% if event.latitude %}<small class="text-muted">📍 {{ event.latitude|floatformat:5 }}, {{ event.longitude|floatformat:5 }}</small>{% endif %}
+                        {% if event.latitude %}<small class="text-muted"><i class="bi bi-geo-alt-fill me-1"></i> {{ event.latitude|floatformat:5 }}, {{ event.longitude|floatformat:5 }}</small>{% endif %}
                         {% if event.description %}<p class="mb-0 small mt-1 text-dark fw-500"><i class="bi bi-info-circle-fill text-primary me-1"></i>{{ event.description }}</p>{% endif %}
                     </div>
                 </div>
@@ -136,7 +136,7 @@
 
             <!-- Notified Local Citizens & Community Responders -->
             <h5 class="fw-700 border-bottom pb-2 mt-4 mb-3 d-flex align-items-center justify-content-between">
-                <span>🛡️ Notified Local Citizens &amp; Community Responders</span>
+                <span><i class="bi bi-shield-fill-check text-primary me-1"></i> Notified Local Citizens &amp; Community Responders</span>
                 <span class="badge bg-success-subtle text-success fs-7">3 km Radar Dispatch</span>
             </h5>
             {% if emergency.resident_responses.all %}
@@ -170,7 +170,7 @@
             {% endif %}
 
             <!-- Notified Trusted Circle Contacts -->
-            <h5 class="fw-700 border-bottom pb-2 mt-4 mb-3">👥 Notified Trusted Contacts</h5>
+            <h5 class="fw-700 border-bottom pb-2 mt-4 mb-3"><i class="bi bi-people-fill me-1"></i> Notified Trusted Contacts</h5>
             {% if emergency.notified_contacts.all %}
             <div class="row g-2">
                 {% for contact in emergency.notified_contacts.all %}

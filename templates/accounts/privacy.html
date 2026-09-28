@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Privacy Policy: Women Safety Shield{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9 col-md-10">
+            <div class="card border-0 shadow-sm rounded-3 p-4 p-md-5 bg-white">
+                <div class="mb-4 border-bottom pb-3">
+                    <span class="badge bg-danger-subtle text-danger rounded-2 px-3 py-1 fw-bold mb-2">Data Protection, Privacy &amp; Cryptographic Audit Logs</span>
+                    <h1 class="h2 fw-bold" style="color:var(--maroon);">Privacy Policy</h1>
+                    <p class="text-muted small mb-0">Last Updated: September 2026 &bull; Women Safety Shield Platform</p>
+                </div>
+
+                <div class="alert alert-secondary border-0 rounded-2 p-3 mb-4">
+                    <div class="d-flex align-items-start gap-2">
+                        <i class="bi bi-shield-lock-fill fs-4 flex-shrink-0 text-primary"></i>
+                        <div class="small">
+                            <strong>OUR CORE PRIVACY COMMITMENT:</strong>
+                            Women Safety Shield adheres strictly to purposeful data minimization. Your live location is never tracked continuously or monetized. Telemetry is collected and broadcast strictly during an active emergency SOS distress event or when explicitly requesting a safe escort.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="privacy-content">
+                    <h4 class="fw-bold fs-5 mt-4" style="color:var(--maroon);">1. Information We Collect</h4>
+                    <p class="text-muted small">
+                        To operate reliable emergency response coordination, we collect the following limited categories of information:
+                    </p>
+                    <ul class="text-muted small">
+                        <li><strong>Account Details:</strong> Full name, verified mobile phone number, email address, and emergency contact list.</li>
+                        <li><strong>Identity Verification Records:</strong> Government photo ID (Aadhaar or national identification) and live camera verification for community responders, reviewed under administrative oversight.</li>
+                        <li><strong>Distress Telemetry:</strong> Precise latitude, longitude, speed, battery status, and timestamp, captured strictly during an SOS distress event.</li>
+                        <li><strong>Community Hazard Reports:</strong> Crowd-sourced safety reports (e.g., poor street lighting, desolate roads) submitted voluntarily to assist route safety assessments.</li>
+                    </ul>
+
+                    <h4 class="fw-bold fs-5 mt-4" style="color:var(--maroon);">2. How Telemetry Is Handled During SOS Events</h4>
+                    <p class="text-muted small">
+                        When an SOS alarm is triggered via the panic button, voice command, or emergency shake gesture, your coordinates are transmitted over encrypted TLS channels to:
+                    </p>
+                    <ul class="text-muted small">
+                        <li>Your pre-configured Trusted Circle members.</li>
+                        <li>Aadhaar-verified local community responders located within the active emergency perimeter.</li>
+                        <li>Designated security desk officers at nearby participating institutions (colleges, hospitals, tech parks).</li>
+                        <li>Official emergency police dispatch integration (112 ERSS).</li>
+                    </ul>
+
+                    <h4 class="fw-bold fs-5 mt-4" style="color:var(--maroon);">3. Phone Number Masking &amp; Identity Protection</h4>
+                    <p class="text-muted small">
+                        To protect personal privacy and prevent unsolicited contact, direct telephone numbers between citizens and bystander responders are masked through a privacy relay. Responders see only authorized emergency details necessary to render physical assistance. Full identity unmasking requires mutual consent or lawful administrative police request.
+                    </p>
+
+                    <h4 class="fw-bold fs-5 mt-4" style="color:var(--maroon);">4. Cryptographic Incident Record Preservation</h4>
+                    <p class="text-muted small">
+                        Each distress incident creates an immutable, SHA-256 hashed digital incident certificate. This record documents dispatch timestamps, responder check-ins, and geolocation breadcrumbs. These records are securely preserved to assist official investigations and FIR registration upon victim authorization.
+                    </p>
+
+                    <h4 class="fw-bold fs-5 mt-4" style="color:var(--maroon);">5. Data Retention &amp; User Rights</h4>
+                    <p class="text-muted small">
+                        Users maintain the right to view, update, or request deletion of their profile data at any time from the account settings. Emergency incident records required for statutory police handoff are retained in compliance with applicable public safety laws.
+                    </p>
+
+                    <h4 class="fw-bold fs-5 mt-4" style="color:var(--maroon);">6. Contact Our Data Protection Officer</h4>
+                    <p class="text-muted small">
+                        If you have questions regarding data privacy, security practices, or wish to exercise your data rights, please contact our administrative desk at <strong>security@womensafetyshield.org</strong>.
+                    </p>
+                </div>
+
+                <div class="mt-5 pt-4 border-top d-flex justify-content-between align-items-center flex-wrap gap-3">
+                    <a href="{% url 'home' %}" class="btn btn-outline-secondary rounded-2 px-4 py-2 fw-semibold">
+                        <i class="bi bi-arrow-left me-1"></i>Back to Home
+                    </a>
+                    <a href="{% url 'terms' %}" class="btn btn-outline-primary rounded-2 px-4 py-2 fw-semibold">
+                        View Terms of Service <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

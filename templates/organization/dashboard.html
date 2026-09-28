@@ -6,7 +6,7 @@
   .org-dash-header {
     background: #ffffff;
     border: 1px solid var(--line);
-    border-radius: 20px;
+    border-radius: 6px;
     padding: 2rem 2.4rem;
     box-shadow: 0 4px 20px rgba(122, 31, 43, 0.05);
     margin-bottom: 2rem;
@@ -14,7 +14,7 @@
   .stat-card-org {
     background: #ffffff;
     border: 1px solid var(--line);
-    border-radius: 16px;
+    border-radius: 8px;
     padding: 1.4rem;
     box-shadow: 0 4px 14px rgba(122, 31, 43, 0.04);
     transition: transform 0.2s ease;
@@ -56,7 +56,7 @@
         {% endif %}
       </div>
       <h3 class="fw-bold mb-1" style="color:var(--maroon);">
-        🏢 {{ organization.name }}
+        <i class="bi bi-building me-1"></i> {{ organization.name }}
       </h3>
       <p class="text-muted mb-0 small">
         <i class="bi bi-shield-shaded text-danger me-1"></i>Campus Safety Control Center &amp; Designated Responder Network
@@ -123,7 +123,7 @@
   <div class="row g-4">
     <!-- Left Column: Active Alerts Feed -->
     <div class="col-lg-7">
-      <div class="card border-0 shadow-sm rounded-4 mb-4 bg-white">
+      <div class="card border-0 shadow-sm rounded-3 mb-4 bg-white">
         <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
           <h6 class="fw-bold mb-0" style="color:var(--maroon);">
             <i class="bi bi-broadcast-pin text-danger me-2"></i>Campus Emergency Radar Feed
@@ -178,7 +178,7 @@
                     {% if a.sos_event.status == 'ACTIVE' and not a.volunteer %}
                     <div class="modal fade" id="assignModal{{ a.id }}" tabindex="-1" aria-hidden="true">
                       <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content border-0 shadow rounded-4">
+                        <div class="modal-content border-0 shadow rounded-3">
                           <div class="modal-header border-0">
                             <h6 class="modal-title fw-bold">Dispatch Guard to SOS #{{ a.sos_event.id }}</h6>
                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -225,7 +225,7 @@
 
     <!-- Right Column: Designated Responder Roster -->
     <div class="col-lg-5">
-      <div class="card border-0 shadow-sm rounded-4 bg-white">
+      <div class="card border-0 shadow-sm rounded-3 bg-white">
         <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
           <h6 class="fw-bold mb-0" style="color:var(--maroon);">
             <i class="bi bi-people-fill text-danger me-2"></i>Security Guards &amp; Responders
@@ -279,7 +279,7 @@
 <!-- Modal 1: Add Guard / Responder -->
 <div class="modal fade" id="addGuardModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0 shadow rounded-4">
+    <div class="modal-content border-0 shadow rounded-3">
       <div class="modal-header border-0 pb-0">
         <h5 class="modal-title fw-bold" style="color:var(--maroon);">
           <i class="bi bi-person-plus text-danger me-2"></i>Enroll Campus Responder
@@ -317,7 +317,7 @@
 <!-- Modal 2: Edit Profile & Campus Settings -->
 <div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content border-0 shadow rounded-4">
+    <div class="modal-content border-0 shadow rounded-3">
       <div class="modal-header border-0 pb-0">
         <h5 class="modal-title fw-bold" style="color:var(--maroon);">
           <i class="bi bi-gear-fill text-danger me-2"></i>Campus &amp; Security Settings

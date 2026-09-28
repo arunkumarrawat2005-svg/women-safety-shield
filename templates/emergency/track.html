@@ -4,12 +4,12 @@
 
 {% block extra_css %}
 <style>
-#trackingMap { height: 460px; border-radius: 16px; }
+#trackingMap { height: 460px; border-radius: 8px; }
 .event-badge {
     display: inline-block; padding: 0.3rem 0.75rem;
-    border-radius: 20px; font-size: 0.78rem; font-weight: 600;
+    border-radius: 6px; font-size: 0.78rem; font-weight: 600;
 }
-.status-pill { font-size: 1rem; padding: 0.5rem 1.25rem; border-radius: 30px; font-weight: 700; }
+.status-pill { font-size: 1rem; padding: 0.5rem 1.25rem; border-radius: 6px; font-weight: 700; }
 
 /* Full-Screen On-Arrival Guidance Overlay for Responders */
 #arrivalGuidanceOverlay {
@@ -27,7 +27,7 @@
     max-width: 680px;
     width: 100%;
     background: #ffffff;
-    border-radius: 24px;
+    border-radius: 8px;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     overflow: hidden;
     animation: pulseWarning 2s infinite alternate;
@@ -56,7 +56,7 @@
     <!-- Header -->
     <div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
         <div>
-            <h4 class="mb-1 fw-800">🚨 Emergency #{{ emergency.id }} — Live Incident Command</h4>
+            <h4 class="mb-1 fw-800"><i class="bi bi-exclamation-triangle-fill text-danger me-1"></i> Emergency #{{ emergency.id }}, Live Incident Command</h4>
             <p class="mb-0 opacity-75">
                 {% if is_victim %}Your Emergency Call{% else %}Victim: {{ emergency.victim.full_name }}{% endif %}
                 | {{ emergency.created_at|date:"d M Y, H:i" }}
@@ -84,14 +84,14 @@
     </div>
 
     {% if not twilio_configured %}
-    <div class="alert alert-warning border-0 shadow-sm rounded-4 p-3 mb-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+    <div class="alert alert-warning border-0 shadow-sm rounded-3 p-3 mb-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
         <div class="d-flex align-items-center gap-2">
             <i class="bi bi-info-circle-fill text-warning fs-5 flex-shrink-0"></i>
             <div class="small">
                 <strong>Safety Notice &bull; Direct Calling Recommended:</strong> In-app push and live 3 km community network radar are active. Since telecom SMS gateway is simulated in demo mode, please tap your contacts or <strong>call Police 112 directly</strong> if in immediate danger.
             </div>
         </div>
-        <a href="tel:112" class="btn btn-danger btn-sm px-3 rounded-pill fw-bold shadow-sm">
+        <a href="tel:112" class="btn btn-danger btn-sm px-3 rounded-2 fw-bold shadow-sm">
             <i class="bi bi-telephone-fill me-1"></i>Call 112 Now
         </a>
     </div>
@@ -101,7 +101,7 @@
     {% if is_responder and masked_responder.record %}
         {% for req in masked_responder.record.reveal_requests.all %}
             {% if req.status == 'pending' and req.requested_to == request.user %}
-            <div class="alert alert-warning border-0 shadow-sm rounded-4 d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+            <div class="alert alert-warning border-0 shadow-sm rounded-3 d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
                 <div>
                     <i class="bi bi-person-bounding-box me-2 fs-5"></i>
                     <strong>Mutual Identity Reveal Request:</strong> The victim has requested to exchange verified names for this incident.
@@ -126,7 +126,7 @@
     <div class="row g-4">
         <!-- Map -->
         <div class="col-lg-7">
-            <div class="card border-0 shadow-sm rounded-4">
+            <div class="card border-0 shadow-sm rounded-3">
                 <div class="card-body p-3">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <h6 class="fw-700 mb-0"><i class="bi bi-map-fill text-danger me-1"></i>Live Location &amp; Responder Trail</h6>
@@ -136,9 +136,9 @@
                     </div>
                     <div id="trackingMap"></div>
                     <div class="mt-2 text-muted small d-flex gap-3 flex-wrap">
-                        <span>🔴 Victim location</span>
-                        <span>🔵 Dispatched Responder</span>
-                        <span>🛡️ 3KM Safety Search Radius</span>
+                        <span><i class="bi bi-circle-fill text-danger me-1"></i> Victim location</span>
+                        <span><i class="bi bi-circle-fill text-primary me-1"></i> Dispatched Responder</span>
+                        <span><i class="bi bi-shield-fill-check text-primary me-1"></i> 3KM Safety Search Radius</span>
                     </div>
                 </div>
             </div>
@@ -147,10 +147,10 @@
         <!-- Sidebar -->
         <div class="col-lg-5">
             <!-- Responder Details (Masked for Victim, Identified for Platform) -->
-            <div class="card border-0 shadow-sm rounded-4 mb-3">
+            <div class="card border-0 shadow-sm rounded-3 mb-3">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h6 class="fw-700 mb-0">🛡️ Dispatched Responder</h6>
+                        <h6 class="fw-700 mb-0"><i class="bi bi-shield-fill-check text-primary me-1"></i> Dispatched Responder</h6>
                         {% if masked_responder.is_masked %}
                         <span class="badge bg-dark small"><i class="bi bi-shield-lock-fill me-1"></i>Identity Masked</span>
                         {% else %}
@@ -161,14 +161,14 @@
                     {% if masked_responder %}
                         <div class="d-flex align-items-center gap-3 p-3 bg-light rounded-3 mb-3">
                             <div class="avatar-circle bg-primary text-white" style="width:48px;height:48px;font-size:1.25rem;">
-                                🛡️
+                                <i class="bi bi-shield-fill-check text-primary me-1"></i>
                             </div>
                             <div class="flex-grow-1">
                                 <h6 class="fw-700 mb-0 text-dark">{{ masked_responder.name }}</h6>
                                 <small class="text-muted d-block">{{ masked_responder.label }}</small>
                             </div>
                             <div>
-                                <button type="button" class="btn btn-outline-primary btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#relayCallModal">
+                                <button type="button" class="btn btn-outline-primary btn-sm rounded-2" data-bs-toggle="modal" data-bs-target="#relayCallModal">
                                     <i class="bi bi-telephone-fill me-1"></i>Relay Call
                                 </button>
                             </div>
@@ -179,11 +179,11 @@
                         <div class="border-top pt-2 mt-2">
                             {% if masked_responder.reveal_status == 'none' %}
                             <button type="button" class="btn btn-sm btn-outline-dark w-100" data-bs-toggle="modal" data-bs-target="#requestRevealModal">
-                                🤝 Request Mutual Identity Reveal
+                                <i class="bi bi-person-heart me-1"></i> Request Mutual Identity Reveal
                             </button>
                             {% elif masked_responder.reveal_status == 'pending' %}
                             <div class="alert alert-info py-2 small mb-0">
-                                <i class="bi bi-clock-history me-1"></i>Identity reveal requested — awaiting responder consent.
+                                <i class="bi bi-clock-history me-1"></i>Identity reveal requested, awaiting responder consent.
                             </div>
                             {% elif masked_responder.reveal_status == 'consented' %}
                             <div class="alert alert-success py-2 small mb-0">
@@ -204,9 +204,9 @@
             </div>
 
             <!-- Emergency Details -->
-            <div class="card border-0 shadow-sm rounded-4 mb-3">
+            <div class="card border-0 shadow-sm rounded-3 mb-3">
                 <div class="card-body">
-                    <h6 class="fw-700 mb-3">📋 Incident Coordinates &amp; Status</h6>
+                    <h6 class="fw-700 mb-3"><i class="bi bi-card-checklist me-1"></i> Incident Coordinates &amp; Status</h6>
                     <table class="table table-sm table-borderless mb-0">
                         <tr>
                             <td class="text-muted fw-600">Location</td>
@@ -219,7 +219,7 @@
                         {% if dispatch_record and dispatch_record.arrival_at %}
                         <tr>
                             <td class="text-muted fw-600">Arrival Logged</td>
-                            <td class="text-success fw-600"><small>🏁 {{ dispatch_record.arrival_at|date:"H:i:s" }} (Proximity Inferred)</small></td>
+                            <td class="text-success fw-600"><small><i class="bi bi-flag-fill text-danger me-1"></i> {{ dispatch_record.arrival_at|date:"H:i:s" }} (Proximity Inferred)</small></td>
                         </tr>
                         {% endif %}
                     </table>
@@ -227,9 +227,9 @@
             </div>
 
             <!-- Incident Timeline -->
-            <div class="card border-0 shadow-sm rounded-4">
+            <div class="card border-0 shadow-sm rounded-3">
                 <div class="card-body">
-                    <h6 class="fw-700 mb-3">⏱️ Live Response Timeline</h6>
+                    <h6 class="fw-700 mb-3"><i class="bi bi-stopwatch me-1"></i> Live Response Timeline</h6>
                     {% if events %}
                     <div class="timeline" style="max-height: 200px; overflow-y: auto;">
                         {% for event in events %}
@@ -266,7 +266,7 @@
 <div id="arrivalGuidanceOverlay" class="{% if is_responder and dispatch_record.is_arrival_detected %}d-flex{% endif %}">
     <div class="guidance-modal-card">
         <div class="guidance-header text-center">
-            <div class="fs-1 mb-1">🚨</div>
+            <div class="fs-1 mb-1"><i class="bi bi-exclamation-triangle-fill text-danger me-1"></i></div>
             <h4 class="fw-900 mb-1">YOU HAVE ARRIVED AT THE SCENE</h4>
             <p class="mb-0 opacity-90 small">Official Platform Arrival Timestamp Logged: <strong>{% now "H:i:s" %}</strong> (Record #IR-{{ dispatch_record.id|default:emergency.id }})</p>
         </div>
@@ -303,7 +303,7 @@
                     <i class="bi bi-shield-fill me-1"></i>112 ERSS
                 </a>
                 <button type="button" class="btn btn-success flex-fill py-2 fw-700" onclick="acknowledgeGuidance()">
-                    ✅ I Am On-Scene &amp; Standing By
+                    <i class="bi bi-check-circle-fill text-success me-1"></i> I Am On-Scene &amp; Standing By
                 </button>
             </div>
         </div>
@@ -313,14 +313,14 @@
 <!-- Feature 4: Proxy Relay Call Modal -->
 <div class="modal fade" id="relayCallModal" tabindex="-1">
     <div class="modal-dialog">
-        <div class="modal-content border-0 rounded-4 shadow">
+        <div class="modal-content border-0 rounded-3 shadow">
             <div class="modal-header border-0">
                 <h5 class="modal-title fw-700"><i class="bi bi-shield-check text-primary me-2"></i>Secure Voice Relay</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="p-3 bg-light rounded-3 text-center mb-3">
-                    <div class="fs-1 text-primary mb-2">📞</div>
+                    <div class="fs-1 text-primary mb-2"><i class="bi bi-telephone-fill me-1"></i></div>
                     <h5 class="fw-700 mb-1">{{ masked_responder.phone }}</h5>
                     <span class="badge bg-success">Encrypted Identity Proxy</span>
                 </div>
@@ -340,7 +340,7 @@
 <!-- Feature 4: Request Mutual Reveal Modal -->
 <div class="modal fade" id="requestRevealModal" tabindex="-1">
     <div class="modal-dialog">
-        <div class="modal-content border-0 rounded-4 shadow">
+        <div class="modal-content border-0 rounded-3 shadow">
             <form method="POST" action="{% url 'request_identity_reveal' emergency.id %}">
                 {% csrf_token %}
                 <div class="modal-header border-0">
@@ -415,7 +415,7 @@ function initTrackingMap() {
     if (window.GoogleMapsShield) {
         window.GoogleMapsShield.attachNearbyUsersLayer(trackingMap, emergencyLat, emergencyLng, {
             radiusKm: 3.0,
-            victimLabel: "🚨 Incident Scene Location"
+            victimLabel: "<i class="bi bi-exclamation-triangle-fill text-danger me-1"></i> Incident Scene Location"
         });
     }
 
@@ -426,7 +426,7 @@ function initTrackingMap() {
         color: '#0d6efd',
         scale: 9,
         title: responderLabel,
-        popupContent: '<b>🛡️ ' + responderLabel + '</b><br>Dispatched Responder'
+        popupContent: '<b><i class="bi bi-shield-fill-check text-primary me-1"></i> ' + responderLabel + '</b><br>Dispatched Responder'
     });
 }
 
@@ -452,7 +452,7 @@ ws.onmessage = function(e) {
         if (lat && lng && responderMarker) {
             responderMarker.setPosition(lat, lng);
             if (data.masked_label && responderMarker.infoWindow) {
-                responderMarker.infoWindow.setContent('<b>🛡️ ' + data.masked_label + '</b>');
+                responderMarker.infoWindow.setContent('<b><i class="bi bi-shield-fill-check text-primary me-1"></i> ' + data.masked_label + '</b>');
                 responderMarker.openPopup();
             }
         }

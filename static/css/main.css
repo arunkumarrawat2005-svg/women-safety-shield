@@ -254,7 +254,7 @@ a:hover {
   font-weight: 700;
   padding: 0.46rem 1.1rem !important;
   font-size: 0.84rem !important;
-  border-radius: 50px;
+  border-radius: 6px;
   border: none;
   display: inline-flex;
   align-items: center;
@@ -313,7 +313,7 @@ a:hover {
 .auth-card {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: 8px;
   box-shadow: var(--card-shadow);
   transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -344,7 +344,7 @@ a:hover {
 .page-header {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 18px;
+  border-radius: 8px;
   padding: 1.6rem 2rem;
   box-shadow: var(--card-shadow);
   margin-bottom: 1.8rem;
@@ -370,7 +370,7 @@ a:hover {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.4);
-  border-radius: 18px;
+  border-radius: 8px;
   box-shadow: var(--card-shadow);
 }
 
@@ -410,7 +410,7 @@ a:hover {
 .btn {
   font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
   font-weight: 600;
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 0.55rem 1.15rem;
   font-size: 0.92rem;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
@@ -570,7 +570,7 @@ a:hover {
 .form-control,
 .form-select {
   border: 1px solid var(--line-strong);
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 0.65rem 0.95rem;
   font-size: 0.94rem;
   color: var(--text-primary);
@@ -589,7 +589,7 @@ a:hover {
   background: var(--surface-subtle);
   border: 1px solid var(--line-strong);
   color: var(--text-muted);
-  border-radius: 10px;
+  border-radius: 8px;
 }
 
 .form-label {
@@ -770,7 +770,7 @@ footer a:hover {
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   padding: 0.85rem 1.8rem;
-  border-radius: 12px;
+  border-radius: 8px;
   border: none;
   text-decoration: none;
   display: inline-flex;
@@ -796,7 +796,7 @@ footer a:hover {
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   padding: 0.85rem 1.8rem;
-  border-radius: 12px;
+  border-radius: 8px;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
@@ -838,7 +838,7 @@ footer a:hover {
 .sos-panel-card {
   background: var(--surface) !important;
   border: 1px solid var(--line) !important;
-  border-radius: 24px;
+  border-radius: 8px;
   padding: clamp(2rem, 3vw, 3rem) 2.2rem 2.4rem;
   text-align: center;
   box-shadow: 0 20px 48px -12px rgba(15, 23, 42, 0.12);
@@ -920,7 +920,7 @@ footer a:hover {
   cursor: pointer;
   transition: all 0.2s ease;
   padding: 0.5rem 1rem;
-  border-radius: 12px;
+  border-radius: 8px;
   border: 1.5px solid var(--line);
   background: var(--surface-subtle);
   font-family: 'Plus Jakarta Sans', sans-serif;
@@ -996,7 +996,7 @@ footer a:hover {
 .action-feature-card {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: 8px;
   padding: 1.15rem;
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 600;
@@ -1023,7 +1023,7 @@ footer a:hover {
   border: 1px solid var(--line-strong);
   color: var(--crimson);
   padding: 0.45rem 1rem;
-  border-radius: 50px;
+  border-radius: 6px;
   font-size: 0.84rem;
   font-weight: 700;
   font-family: 'Plus Jakarta Sans', sans-serif;
@@ -1056,7 +1056,7 @@ footer a:hover {
 .how-teaser-banner {
   background: linear-gradient(135deg, var(--surface) 0%, var(--surface-subtle) 100%);
   border: 1.5px solid var(--line);
-  border-radius: 20px;
+  border-radius: 6px;
   padding: 1.8rem 2.2rem;
   cursor: pointer;
   transition: all 0.25s ease;
@@ -1072,7 +1072,7 @@ footer a:hover {
 .how-icon-circle {
   width: 56px;
   height: 56px;
-  border-radius: 16px;
+  border-radius: 8px;
   background: var(--crimson-soft);
   color: var(--crimson);
   display: flex;
@@ -1085,7 +1085,7 @@ footer a:hover {
 .simulator-container {
   background: var(--surface-subtle);
   border: 1px solid var(--line);
-  border-radius: 22px;
+  border-radius: 8px;
   padding: 2.2rem;
   margin-top: 2.2rem;
   margin-bottom: 3.5rem;
@@ -1094,7 +1094,7 @@ footer a:hover {
 
 .step-tab-btn {
   padding: 0.8rem 1.2rem;
-  border-radius: 12px;
+  border-radius: 8px;
   border: 1.5px solid var(--line);
   background: var(--surface);
   font-family: 'Plus Jakarta Sans', sans-serif;
@@ -1145,7 +1145,7 @@ footer a:hover {
 .sim-viewport {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 18px;
+  border-radius: 8px;
   padding: 2rem;
   min-height: 360px;
   display: flex;
@@ -1157,7 +1157,7 @@ footer a:hover {
 .sim-log-box {
   background: #24161B;
   color: #E8D2CF;
-  border-radius: 12px;
+  border-radius: 8px;
   padding: 1rem 1.2rem;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 0.82rem;
@@ -1179,7 +1179,7 @@ footer a:hover {
 #routeMap {
   height: 390px;
   width: 100%;
-  border-radius: 16px;
+  border-radius: 8px;
   border: 1px solid var(--line);
   z-index: 1;
 }
@@ -1187,7 +1187,7 @@ footer a:hover {
 .scanner-box {
   background: var(--surface-subtle);
   border: 1px solid var(--line);
-  border-radius: 18px;
+  border-radius: 8px;
   padding: 1.9rem;
   height: 100%;
   display: flex;
@@ -1216,7 +1216,7 @@ footer a:hover {
 .network-card, .feature-box, .testimonial-card {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 18px;
+  border-radius: 8px;
   padding: 1.8rem;
   height: 100%;
   transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
@@ -1232,7 +1232,7 @@ footer a:hover {
 .network-icon, .feature-icon {
   width: 52px;
   height: 52px;
-  border-radius: 14px;
+  border-radius: 8px;
   background: var(--crimson-soft);
   color: var(--crimson);
   display: flex;
@@ -1286,7 +1286,7 @@ footer a:hover {
 
 .feature-card {
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: 8px;
   padding: 1.8rem;
   height: 100%;
   background: var(--surface);
@@ -1307,7 +1307,7 @@ footer a:hover {
 
 .route-pill-btn {
   padding: 0.75rem 1.1rem;
-  border-radius: 12px;
+  border-radius: 8px;
   border: 1.5px solid var(--line);
   background: var(--surface);
   cursor: pointer;
@@ -1361,7 +1361,7 @@ footer a:hover {
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   padding: 0.9rem 2.2rem;
-  border-radius: 9999px;
+  border-radius: 6px;
   border: none;
   text-decoration: none;
   display: inline-flex;
@@ -1384,7 +1384,7 @@ footer a:hover {
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 700;
   padding: 0.9rem 2.2rem;
-  border-radius: 9999px;
+  border-radius: 6px;
   border: 1px solid rgba(255, 255, 255, 0.25);
   text-decoration: none;
   display: inline-flex;
@@ -1422,7 +1422,7 @@ footer a:hover {
    --------------------------------------------------------- */
 .emergency-mode-modal .modal-content {
   border: 2px solid #ef4444;
-  border-radius: 20px;
+  border-radius: 6px;
   overflow: hidden;
   box-shadow: 0 25px 50px -12px rgba(220, 38, 38, 0.45);
 }
@@ -1440,7 +1440,7 @@ footer a:hover {
   gap: 0.5rem;
   background: rgba(0, 0, 0, 0.35);
   padding: 0.35rem 0.85rem;
-  border-radius: 9999px;
+  border-radius: 6px;
   border: 1px solid rgba(255, 255, 255, 0.25);
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 800;
@@ -1479,7 +1479,7 @@ footer a:hover {
 .metric-pill-icon {
   width: 38px;
   height: 38px;
-  border-radius: 10px;
+  border-radius: 8px;
   background: rgba(239, 68, 68, 0.2);
   color: #ef4444;
   display: flex;
@@ -1502,7 +1502,7 @@ footer a:hover {
   position: relative;
   width: 100%;
   height: 480px;
-  border-radius: 16px;
+  border-radius: 8px;
   overflow: hidden;
   border: 1.5px solid var(--line);
   background: #f1f5f9;
@@ -1528,7 +1528,7 @@ footer a:hover {
   background: rgba(255, 255, 255, 0.94);
   backdrop-filter: blur(8px);
   padding: 0.6rem 0.85rem;
-  border-radius: 12px;
+  border-radius: 8px;
   border: 1px solid rgba(0, 0, 0, 0.08);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
   font-size: 0.78rem;
@@ -1644,7 +1644,7 @@ footer a:hover {
   letter-spacing: 0.02em;
   padding: 0.95rem 1.5rem;
   border: none;
-  border-radius: 14px;
+  border-radius: 8px;
   box-shadow: 0 6px 20px rgba(220, 38, 38, 0.45);
   transition: all 0.2s ease;
   display: inline-flex;
@@ -1668,7 +1668,7 @@ footer a:hover {
   font-weight: 700;
   font-size: 0.98rem;
   padding: 0.85rem 1.25rem;
-  border-radius: 12px;
+  border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.15);
   text-decoration: none;
   display: inline-flex;
@@ -1821,7 +1821,7 @@ footer a:hover {
   position: relative;
   width: 100%;
   height: 620px;
-  border-radius: 20px;
+  border-radius: 6px;
   overflow: hidden;
   border: 2px solid rgba(239, 68, 68, 0.5);
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
@@ -1878,7 +1878,7 @@ footer a:hover {
   background: rgba(15, 23, 42, 0.94);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 16px;
+  border-radius: 8px;
   padding: 0.75rem 1.25rem;
   color: #ffffff;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
@@ -1908,7 +1908,7 @@ footer a:hover {
   align-items: center !important;
   background: #ffffff !important;
   padding: 4px !important;
-  border-radius: 9999px !important;
+  border-radius: 6px !important;
   gap: 4px !important;
   border: 1px solid rgba(0, 0, 0, 0.08) !important;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04) !important;
@@ -1920,7 +1920,7 @@ footer a:hover {
   align-items: center !important;
   gap: 6px !important;
   padding: 6px 16px !important;
-  border-radius: 9999px !important;
+  border-radius: 6px !important;
   font-size: 0.82rem !important;
   font-weight: 600 !important;
   color: #64748b !important;
@@ -1957,7 +1957,7 @@ footer a:hover {
   gap: 10px;
   background: #ffffff;
   padding: 6px 18px;
-  border-radius: 9999px;
+  border-radius: 6px;
   border: 1px solid rgba(0, 0, 0, 0.08);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
   font-size: 0.82rem;
@@ -1990,7 +1990,7 @@ footer a:hover {
   background: #dc2626;
   color: #ffffff;
   border: none;
-  border-radius: 12px;
+  border-radius: 8px;
   padding: 0.6rem 1.25rem;
   font-weight: 700;
   display: inline-flex;
@@ -2041,7 +2041,7 @@ html, body {
 
   /* Cards & Sections */
   .card {
-    border-radius: 16px !important;
+    border-radius: 8px !important;
   }
   .card-body {
     padding: 1rem !important;
@@ -2078,27 +2078,27 @@ html, body {
     margin: 0.75rem !important;
   }
   .modal-content {
-    border-radius: 20px !important;
+    border-radius: 6px !important;
   }
 
   /* Safe Routes & Navigator on Phones */
   #routesMap {
     height: 440px !important;
-    border-radius: 14px !important;
+    border-radius: 8px !important;
   }
   .map-legend {
     bottom: 10px !important;
     left: 10px !important;
     max-width: calc(100% - 70px) !important;
     padding: 8px 12px !important;
-    border-radius: 12px !important;
+    border-radius: 8px !important;
   }
 
   /* Preset Chips */
   .preset-chip {
     padding: 6px 12px !important;
     font-size: 0.78rem !important;
-    border-radius: 9999px !important;
+    border-radius: 6px !important;
   }
 
   /* Emergency HUD Controls */
@@ -2114,7 +2114,7 @@ html, body {
   }
   .hud-panel-glass {
     padding: 0.6rem 0.85rem !important;
-    border-radius: 14px !important;
+    border-radius: 8px !important;
   }
 }
 
@@ -2189,7 +2189,7 @@ html, body {
     color: #c82333;
   }
 
-  /* Elevated Central Glowing SOS Button */
+  /* active Central Glowing SOS Button */
   .mobile-nav-sos {
     position: relative;
     top: -12px;
@@ -2231,6 +2231,15 @@ html, body {
     padding-top: 0.4rem !important;
     padding-bottom: 0.4rem !important;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 

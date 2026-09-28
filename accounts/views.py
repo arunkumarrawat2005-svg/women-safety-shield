@@ -274,8 +274,13 @@ self.addEventListener('fetch', (event) => {
 
 
 def terms_view(request):
-    """Terms of Service, Privacy Policy and Emergency Safety Disclaimer."""
+    """Terms of Service and Emergency Safety Disclaimer."""
     return render(request, 'accounts/terms.html')
+
+
+def privacy_view(request):
+    """Privacy Policy and Data Protection Standards."""
+    return render(request, 'accounts/privacy.html')
 
 
 def favicon_view(request):

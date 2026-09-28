@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Government & Police Access Portal — Women Safety Shield{% endblock %}
+{% block title %}Government & Police Access Portal: Women Safety Shield{% endblock %}
 
 {% block extra_css %}
 <style>
   .portal-header {
     background: linear-gradient(135deg, #0b1120 0%, #1e1b4b 55%, #4a0e17 100%) !important;
     color: #ffffff !important;
-    border-radius: 16px;
+    border-radius: 8px;
     padding: 2.2rem 2.4rem;
     border: 1px solid rgba(255, 255, 255, 0.12);
     box-shadow: 0 10px 30px rgba(11, 17, 32, 0.25);
@@ -30,7 +30,7 @@
     background: rgba(255, 255, 255, 0.15);
     color: #ffffff;
     padding: 0.3rem 0.75rem;
-    border-radius: 20px;
+    border-radius: 6px;
     font-weight: 600;
     border: 1px solid rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(6px);
@@ -46,7 +46,7 @@
   }
   .stat-card-police {
     border: 1px solid var(--line, #e2e8f0);
-    border-radius: 14px;
+    border-radius: 8px;
     padding: 1.15rem 0.85rem;
     background: #ffffff;
     height: 100%;
@@ -71,7 +71,7 @@
     letter-spacing: 0.03em;
     font-weight: 700;
     padding: 3px 8px;
-    border-radius: 20px;
+    border-radius: 6px;
     margin-top: 6px;
     display: inline-block;
     transition: background 0.2s;
@@ -101,7 +101,7 @@
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
       <div>
         <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
-          <span class="badge bg-primary px-3 py-1 rounded-pill text-uppercase fw-bold" style="font-size:0.75rem;">
+          <span class="badge bg-primary px-3 py-1 rounded-2 text-uppercase fw-bold" style="font-size:0.75rem;">
             <i class="bi bi-shield-shaded me-1"></i>Official Law Enforcement &amp; Emergency Portal
           </span>
           <span class="data-min-badge">
@@ -120,7 +120,7 @@
         <div class="d-inline-flex align-items-center gap-2 px-3 py-2 rounded-3" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.16); backdrop-filter: blur(8px);">
           <span class="d-inline-block rounded-circle bg-success" style="width: 8px; height: 8px; box-shadow: 0 0 8px #22c55e;"></span>
           <span class="text-white small fw-bold">Officer: @{{ user.username|cut:"@" }}</span>
-          <span class="badge rounded-pill bg-light text-dark fw-bold px-2 py-1" style="font-size:0.65rem;">{{ user.role|upper }}</span>
+          <span class="badge rounded-2 bg-light text-dark fw-bold px-2 py-1" style="font-size:0.65rem;">{{ user.role|upper }}</span>
         </div>
         <div class="mt-1">
           <small class="text-white-50" style="font-size:0.75rem;">
@@ -209,7 +209,7 @@
   </div>
 
   <!-- Citizen Verification Search (RBAC Controlled) -->
-  <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
+  <div class="card border-0 shadow-sm rounded-3 mb-4 overflow-hidden">
     <div class="card-header bg-white border-bottom py-3 px-4">
       <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
         <div>
@@ -221,7 +221,7 @@
           </p>
         </div>
         {% if query or status_filter or view_all %}
-        <a href="{% url 'police_portal' %}" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+        <a href="{% url 'police_portal' %}" class="btn btn-sm btn-outline-secondary rounded-2 px-3">
           <i class="bi bi-arrow-counterclockwise me-1"></i>Reset Filters
         </a>
         {% endif %}
@@ -254,7 +254,7 @@
         </div>
 
         <div class="col-12 text-end">
-          <button type="submit" class="btn btn-trusted-submit px-4 py-2 fw-bold rounded-pill shadow-sm">
+          <button type="submit" class="btn btn-trusted-submit px-4 py-2 fw-bold rounded-2 shadow-sm">
             <i class="bi bi-search me-2"></i>Execute Authorized Search
           </button>
         </div>
@@ -310,7 +310,7 @@
                 <td>
                   {% if u.is_verified %}
                   <a href="?status=verified" class="badge bg-success-subtle text-success fw-bold text-decoration-none" title="Filter verified users">
-                    🛡️ Identity Verified
+                    <i class="bi bi-shield-fill-check text-primary me-1"></i> Identity Verified
                   </a>
                   {% else %}
                   <a href="?status=pending" class="badge bg-warning-subtle text-warning-emphasis text-decoration-none" title="Filter pending users">
@@ -338,7 +338,7 @@
                 </td>
                 <td>
                   <a href="?user_id={{ u.id }}&q={{ query }}&status={{ status_filter }}&view={{ view_all }}&purpose={{ request.GET.purpose|default:'Operational Inspection' }}" 
-                     class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-semibold">
+                     class="btn btn-sm btn-outline-danger rounded-2 px-3 fw-semibold">
                     <i class="bi bi-file-earmark-person me-1"></i>Inspect Details
                   </a>
                 </td>
@@ -359,13 +359,13 @@
 
   <!-- INSPECTED USER PROFILE (DATA MINIMIZED) -->
   {% if selected_user %}
-  <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden" style="border: 2px solid var(--crimson) !important;">
+  <div class="card border-0 shadow-sm rounded-3 mb-4 overflow-hidden" style="border: 2px solid var(--crimson) !important;">
     <div class="card-header text-white py-3 px-4 d-flex justify-content-between align-items-center" style="background: linear-gradient(135deg, var(--maroon, #7A1F2B) 0%, var(--crimson, #C41E3D) 100%);">
       <h5 class="fw-bold mb-0 text-white" style="font-family:'Plus Jakarta Sans',sans-serif;">
         <i class="bi bi-person-check-fill me-2"></i>Official Citizen File: {{ selected_user.full_name }} (#{{ selected_user.id }})
       </h5>
       <div class="d-flex align-items-center gap-2">
-        <span class="badge bg-white text-danger fw-bold px-3 py-2 rounded-pill">
+        <span class="badge bg-white text-danger fw-bold px-3 py-2 rounded-2">
           {% if selected_user.is_verified %}VERIFIED CITIZEN{% else %}UNVERIFIED CITIZEN{% endif %}
         </span>
         <a href="?q={{ query }}&status={{ status_filter }}&view={{ view_all }}" class="btn btn-sm btn-light py-1 px-2 rounded-circle" title="Close citizen file">
@@ -466,7 +466,7 @@
             </div>
             {% if user.is_staff or user.is_superuser %}
             <div class="mt-3 pt-2 border-top">
-              <a href="{% url 'admin_verification_dashboard' %}?selected_id={{ ver.id }}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+              <a href="{% url 'admin_verification_dashboard' %}?selected_id={{ ver.id }}" class="btn btn-sm btn-outline-primary rounded-2 px-3">
                 <i class="bi bi-shield-lock me-1"></i>Open Full Admin Dossier
               </a>
             </div>
@@ -497,7 +497,7 @@
   {% endif %}
 
   <!-- Officer Access Audit Trail (Transparency & Accountability) -->
-  <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+  <div class="card border-0 shadow-sm rounded-3 overflow-hidden mb-4">
     <div class="card-header bg-light border-0 py-3 px-4">
       <h6 class="fw-bold mb-0 text-dark">
         <i class="bi bi-clock-history text-danger me-2"></i>Officer Inquiry Audit Trail (Logged Sessions)

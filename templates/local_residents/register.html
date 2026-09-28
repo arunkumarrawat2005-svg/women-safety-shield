@@ -4,7 +4,7 @@
 {% block content %}
 <div class="container my-4" style="max-width: 780px;">
     <!-- Step Progress Indicator -->
-    <div class="card border-0 shadow-sm rounded-4 mb-4 p-3 bg-white">
+    <div class="card border-0 shadow-sm rounded-3 mb-4 p-3 bg-white">
         <div class="d-flex align-items-center justify-content-between">
             <div class="d-flex align-items-center gap-2">
                 <span class="badge bg-danger rounded-circle p-2 px-3 fw-bold fs-6">1</span>
@@ -25,9 +25,9 @@
     </div>
 
     <!-- Header Banner -->
-    <div class="card border-0 shadow-sm rounded-4 mb-4" style="background: linear-gradient(135deg, #ffffff 0%, #fff7f8 100%); border-left: 6px solid var(--crimson) !important;">
+    <div class="card border-0 shadow-sm rounded-3 mb-4" style="background: linear-gradient(135deg, #ffffff 0%, #fff7f8 100%); border-left: 6px solid var(--crimson) !important;">
         <div class="card-body p-4 text-center">
-            <div style="font-size:2.5rem; margin-bottom: 0.5rem;">🛡️</div>
+            <div style="font-size:2.5rem; margin-bottom: 0.5rem;"><i class="bi bi-shield-fill-check text-primary me-1"></i></div>
             <h4 class="fw-800 mb-1" style="color:var(--maroon); font-family:'Plus Jakarta Sans',sans-serif;">
                 Join the Local Resident Network
             </h4>
@@ -38,7 +38,7 @@
     </div>
 
     <!-- Core Principle Policy Alert -->
-    <div class="alert alert-warning border-0 rounded-4 shadow-sm p-3 mb-4 d-flex align-items-start gap-3">
+    <div class="alert alert-warning border-0 rounded-3 shadow-sm p-3 mb-4 d-flex align-items-start gap-3">
         <i class="bi bi-shield-lock-fill fs-4 text-warning"></i>
         <div class="small">
             <strong class="text-dark d-block mb-1">Women Safety Shield Verification Policy:</strong>
@@ -48,17 +48,17 @@
         </div>
     </div>
 
-    <div class="card border-0 shadow-sm rounded-4 mb-4">
+    <div class="card border-0 shadow-sm rounded-3 mb-4">
         <div class="card-body p-4 p-md-5">
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="mb-3">
                     <label class="form-label fw-bold small text-dark">Resident Responder Type <span class="text-danger">*</span></label>
                     <select name="local_resident_type" class="form-select rounded-3 py-2" required>
-                        <option value="volunteer" selected>🤝 Volunteer (Community Member / Resident)</option>
-                        <option value="security">🔒 Security Staff (Campus / Society / Private Security)</option>
-                        <option value="ngo">🏢 NGO Member (Women Welfare Advocate)</option>
-                        <option value="citizen">👤 Verified Citizen (Local Shopkeeper / Resident Pillar)</option>
+                        <option value="volunteer" selected><i class="bi bi-person-heart me-1"></i> Volunteer (Community Member / Resident)</option>
+                        <option value="security"><i class="bi bi-lock-fill me-1"></i> Security Staff (Campus / Society / Private Security)</option>
+                        <option value="ngo"><i class="bi bi-building me-1"></i> NGO Member (Women Welfare Advocate)</option>
+                        <option value="citizen"><i class="bi bi-person-fill me-1"></i> Verified Citizen (Local Shopkeeper / Resident Pillar)</option>
                     </select>
                 </div>
 

@@ -5,7 +5,7 @@
 <div class="container-fluid my-4 px-3 px-md-4">
     <div class="page-header d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
         <div>
-            <h4 class="fw-800 mb-1" style="color:var(--maroon);">🗺️ Danger Hotspots &amp; Safety Zones</h4>
+            <h4 class="fw-800 mb-1" style="color:var(--maroon);"><i class="bi bi-map-fill me-1"></i> Danger Hotspots &amp; Safety Zones</h4>
             <p class="mb-0 text-muted small">Establish geofenced high-risk areas, well-lit corridors, and police safety zones</p>
         </div>
         <div class="d-flex gap-2">
@@ -19,7 +19,7 @@
     </div>
 
     <!-- Zones Table -->
-    <div class="card border-0 shadow-sm rounded-4">
+    <div class="card border-0 shadow-sm rounded-3">
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
@@ -69,7 +69,7 @@
 <!-- Create Zone Modal -->
 <div class="modal fade" id="createZoneModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content border-0 shadow-lg rounded-4">
+        <div class="modal-content border-0 shadow-lg rounded-3">
             <form method="post" action="{% url 'admin_create_zone' %}">
                 {% csrf_token %}
                 <div class="modal-header bg-danger text-white">
