@@ -158,28 +158,145 @@
   pointer-events: none !important;
 }
 
-/* Clean Professional Emergency Response Status Chart */
-.chip-status-text {
-  font-size: 0.68rem !important;
-  font-weight: 700 !important;
-  letter-spacing: 0.04em !important;
-  padding: 3px 8px !important;
-  border-radius: 4px !important;
-  text-transform: uppercase !important;
-  display: inline-block !important;
-  line-height: 1.2 !important;
-  border: 1px solid transparent;
+/* Circular Gauge Metric Chart (Image Reference Style) */
+.readiness-gauges-container {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  padding: 1.25rem 0.5rem;
+  background: #ffffff;
+}
+
+.gauge-col {
+  flex: 1 1 0;
+  text-align: center;
+  padding: 0.5rem 0.5rem;
+  position: relative;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background-color 0.15s ease;
+  user-select: none;
+}
+
+.gauge-col:hover {
+  background-color: #f8fafc;
+}
+
+.gauge-col:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 15%;
+  height: 70%;
+  width: 1px;
+  background-color: #e2e8f0;
+}
+
+.gauge-circle-wrap {
+  position: relative;
+  width: 70px;
+  height: 70px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gauge-circle-wrap svg {
+  width: 70px;
+  height: 70px;
+  display: block;
+}
+
+.gauge-center-icon {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.55rem;
+  color: #334155;
+  pointer-events: none;
+}
+
+.gauge-title {
+  font-size: 0.96rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-top: 0.55rem;
+  line-height: 1.2;
+}
+
+.gauge-subtitle {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #64748b;
+  margin-top: 0.25rem;
+  line-height: 1.2;
 }
 
 .chip-status-text {
-  font-size: 0.65rem !important;
-  font-weight: 800 !important;
-  letter-spacing: 0.04em !important;
-  padding: 2px 7px !important;
-  border-radius: 4px !important;
-  text-transform: uppercase !important;
+  font-size: 0.96rem !important;
+  font-weight: 700 !important;
+  color: #0f172a !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
   display: inline-block !important;
   line-height: 1.2 !important;
+  text-transform: none !important;
+}
+
+.chip-status-text.text-success,
+.chip-status-text.bg-success-subtle {
+  color: #16a34a !important;
+  background: transparent !important;
+}
+
+.chip-status-text.text-danger,
+.chip-status-text.bg-danger {
+  color: #dc2626 !important;
+  background: transparent !important;
+}
+
+.chip-status-text.bg-danger-subtle {
+  color: #dc2626 !important;
+  background: transparent !important;
+}
+
+@media (max-width: 576px) {
+  .readiness-gauges-container {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem 0.25rem !important;
+    padding: 0.85rem 0.25rem !important;
+  }
+  .gauge-col:not(:last-child)::after {
+    display: none !important;
+  }
+  .gauge-col {
+    padding: 0.35rem 0.25rem;
+  }
+  .gauge-circle-wrap {
+    width: 62px;
+    height: 62px;
+  }
+  .gauge-circle-wrap svg {
+    width: 62px;
+    height: 62px;
+  }
+  .gauge-center-icon {
+    font-size: 1.35rem;
+  }
+  .gauge-title, .chip-status-text {
+    font-size: 0.88rem !important;
+  }
+  .gauge-subtitle {
+    font-size: 0.68rem;
+  }
 }
 
 .sos-dock-footer {
@@ -562,48 +679,93 @@
           </a>
         </div>
 
-        <!-- Professional Emergency Response Status Chart & Table -->
+        <!-- Professional Emergency Response Status Chart (Image Reference Style) -->
         <div class="card border-0 shadow-sm rounded-3 mt-3 w-100 text-start" style="border: 1px solid #e2e8f0 !important; background: #ffffff;">
           <div class="card-header bg-white border-bottom py-2 px-3 d-flex justify-content-between align-items-center">
             <span class="fw-bold text-dark small text-uppercase" style="font-size: 0.74rem; letter-spacing: 0.04em;">
-              <i class="bi bi-table me-1 text-primary"></i>System Readiness &amp; Response Chart
+              <i class="bi bi-pie-chart-fill me-1 text-primary"></i>System Readiness &amp; Response Chart
             </span>
             <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.68rem; border-radius: 4px;">
               System Online
             </span>
           </div>
-          <div class="table-responsive">
-            <table class="table table-sm table-hover align-middle mb-0" style="font-size: 0.82rem;">
-              <thead class="table-light">
-                <tr>
-                  <th class="ps-3 py-2 text-muted fw-semibold">Trigger Channel</th>
-                  <th class="py-2 text-muted fw-semibold">Activation Method</th>
-                  <th class="py-2 text-muted fw-semibold">Live State</th>
-                  <th class="pe-3 py-2 text-end text-muted fw-semibold">Manual Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr id="chipButton" onclick="triggerSamePageSOS('chip_button')" style="cursor: pointer;">
-                  <td class="ps-3 fw-bold text-dark">One-Tap Dial</td>
-                  <td class="text-secondary">Emergency SOS center button</td>
-                  <td><span class="chip-status-text bg-success-subtle text-success">Active</span></td>
-                  <td class="pe-3 text-end"><span class="btn btn-xs btn-outline-danger py-0 px-2 fw-semibold" style="font-size:0.72rem; border-radius:4px;">Trigger</span></td>
-                </tr>
-                <tr id="chipVoice" onclick="requestMicrophonePermission(true)" style="cursor: pointer;">
-                  <td class="ps-3 fw-bold text-dark">Voice Recognition</td>
-                  <td class="text-secondary">Keyword detection ("Help", "Bachao")</td>
-                  <td><span class="chip-status-text bg-success-subtle text-success" id="voiceStatusText">Listening</span></td>
-                  <td class="pe-3 text-end"><span class="btn btn-xs btn-outline-secondary py-0 px-2 fw-semibold" style="font-size:0.72rem; border-radius:4px;">Enable Mic</span></td>
-                </tr>
-                <tr id="chipShake" onclick="triggerTapSimulation()" style="cursor: pointer;">
-                  <td class="ps-3 fw-bold text-dark">Motion Detection</td>
-                  <td class="text-secondary">Device accelerometer sensor</td>
-                  <td><span class="chip-status-text bg-success-subtle text-success" id="shakeStatusText">Armed</span></td>
-                  <td class="pe-3 text-end"><span class="btn btn-xs btn-outline-secondary py-0 px-2 fw-semibold" style="font-size:0.72rem; border-radius:4px;">Simulate</span></td>
-                </tr>
-              </tbody>
-            </table>
+          
+          <div class="readiness-gauges-container">
+            <!-- 1. One-Tap Dial Gauge (Red Arc, Heart-Pulse Icon) -->
+            <div class="gauge-col" id="chipButton" onclick="triggerSamePageSOS('chip_button')" title="Click to test One-Tap SOS Dial">
+              <div class="gauge-circle-wrap">
+                <svg viewBox="0 0 72 72">
+                  <circle cx="36" cy="36" r="30" stroke="#f1f5f9" stroke-width="4" fill="none" />
+                  <circle cx="36" cy="36" r="30" stroke="#dc2626" stroke-width="4" fill="none"
+                          stroke-dasharray="188.5" stroke-dashoffset="47" stroke-linecap="round"
+                          transform="rotate(-90 36 36)" />
+                </svg>
+                <div class="gauge-center-icon">
+                  <i class="bi bi-heart-pulse"></i>
+                </div>
+              </div>
+              <div class="gauge-title">Active</div>
+              <div class="gauge-subtitle">One-Tap Dial</div>
+            </div>
+
+            <!-- 2. Voice Recognition Gauge (Green Arc, Mic Icon) -->
+            <div class="gauge-col" id="chipVoice" onclick="requestMicrophonePermission(true)" title="Click to test Voice Trigger or enable microphone">
+              <div class="gauge-circle-wrap">
+                <svg viewBox="0 0 72 72">
+                  <circle cx="36" cy="36" r="30" stroke="#f1f5f9" stroke-width="4" fill="none" />
+                  <circle cx="36" cy="36" r="30" stroke="#16a34a" stroke-width="4" fill="none"
+                          stroke-dasharray="188.5" stroke-dashoffset="66" stroke-linecap="round"
+                          transform="rotate(-90 36 36)" />
+                </svg>
+                <div class="gauge-center-icon">
+                  <i class="bi bi-mic" id="voiceIcon"></i>
+                </div>
+              </div>
+              <div class="gauge-title">
+                <span class="chip-status-text text-success" id="voiceStatusText">Listening</span>
+              </div>
+              <div class="gauge-subtitle">Voice Trigger</div>
+            </div>
+
+            <!-- 3. Motion Detection Gauge (Yellow Arc, Shake Icon) -->
+            <div class="gauge-col" id="chipShake" onclick="triggerTapSimulation()" title="Click to simulate Shake Motion Trigger">
+              <div class="gauge-circle-wrap">
+                <svg viewBox="0 0 72 72">
+                  <circle cx="36" cy="36" r="30" stroke="#f1f5f9" stroke-width="4" fill="none" />
+                  <circle cx="36" cy="36" r="30" stroke="#eab308" stroke-width="4" fill="none"
+                          stroke-dasharray="188.5" stroke-dashoffset="94" stroke-linecap="round"
+                          transform="rotate(-90 36 36)" />
+                </svg>
+                <div class="gauge-center-icon">
+                  <i class="bi bi-phone-vibrate"></i>
+                </div>
+              </div>
+              <div class="gauge-title">
+                <span class="chip-status-text" id="shakeStatusText">Armed</span>
+              </div>
+              <div class="gauge-subtitle">Motion Sensor</div>
+            </div>
+
+            <!-- 4. GPS Telemetry Gauge (Brown/Orange Arc, Geo Icon) -->
+            <div class="gauge-col" id="chipLocation" onclick="syncUserLocation()" title="Click to refresh live GPS fix">
+              <div class="gauge-circle-wrap">
+                <svg viewBox="0 0 72 72">
+                  <circle cx="36" cy="36" r="30" stroke="#f1f5f9" stroke-width="4" fill="none" />
+                  <circle cx="36" cy="36" r="30" stroke="#b45309" stroke-width="4" fill="none"
+                          stroke-dasharray="188.5" stroke-dashoffset="113" stroke-linecap="round"
+                          transform="rotate(-90 36 36)" />
+                </svg>
+                <div class="gauge-center-icon">
+                  <i class="bi bi-geo-alt"></i>
+                </div>
+              </div>
+              <div class="gauge-title">
+                <span class="chip-status-text" id="gpsGaugeStatus">Live Fix</span>
+              </div>
+              <div class="gauge-subtitle">GPS Telemetry</div>
+            </div>
           </div>
+
           <div class="card-footer bg-light border-top py-2 px-3 d-flex justify-content-between align-items-center flex-wrap gap-2 text-muted" style="font-size: 0.78rem;">
             <div id="locDisplay" class="d-flex align-items-center gap-1 text-secondary">
               <i class="bi bi-geo-alt-fill text-danger"></i>
@@ -2833,7 +2995,9 @@ function syncUserLocation() {
     }
     const locDisp = document.getElementById('locDisplay');
     const ribLoc = document.getElementById('ribbonLoc');
+    const gpsGauge = document.getElementById('gpsGaugeStatus');
     if (locDisp) locDisp.innerHTML = '<span class="spinner-border spinner-border-sm text-danger"></span> Acquiring GPS...';
+    if (gpsGauge) gpsGauge.textContent = 'Syncing...';
     
     navigator.geolocation.getCurrentPosition(pos => {
         currentLat = pos.coords.latitude;
@@ -2841,6 +3005,7 @@ function syncUserLocation() {
         const coordsStr = `${currentLat.toFixed(4)}, ${currentLng.toFixed(4)}`;
         if (locDisp) locDisp.textContent = `GPS Ready (${coordsStr})`;
         if (ribLoc) ribLoc.textContent = coordsStr;
+        if (gpsGauge) gpsGauge.textContent = 'Locked';
         if (document.getElementById('modalLat')) document.getElementById('modalLat').value = currentLat;
         if (document.getElementById('modalLng')) document.getElementById('modalLng').value = currentLng;
         
@@ -2872,6 +3037,7 @@ function syncUserLocation() {
     }, err => {
         alert('GPS sync error: ' + err.message);
         if (locDisp) locDisp.textContent = 'GPS Ready (28.4703, 77.4939)';
+        if (gpsGauge) gpsGauge.textContent = 'Live Fix';
     });
 }
 
