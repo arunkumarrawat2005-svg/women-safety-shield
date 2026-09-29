@@ -1833,8 +1833,8 @@
 <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places,geometry,marker&loading=async&callback=__initGoogleMapsShield"></script>
 {% endif %}
 <script>
-let currentLat = 28.4703;
-let currentLng = 77.4939;
+let currentLat = 27.4924;
+let currentLng = 77.6737;
 let routeMap = null;
 let radiusCircle = null;
 let currentRouteLayer = null;
@@ -2030,7 +2030,7 @@ const simStepData = {
               <div class="row g-2 text-center small mb-2">
                 <div class="col-4 p-2 bg-light rounded">
                   <span class="text-muted d-block">LAT / LNG</span>
-                  <strong class="text-dark">28.4703, 77.4939</strong>
+                  <strong class="text-dark">27.4924, 77.6737</strong>
                 </div>
                 <div class="col-4 p-2 bg-light rounded">
                   <span class="text-muted d-block">SPEED / HEADING</span>
@@ -2215,7 +2215,8 @@ function initHomeHeroMap() {
             homeHeroMap = GoogleMapsShield.createMap(mapEl, {
                 center: { lat: currentLat, lng: currentLng },
                 zoom: 14,
-                mapId: 'DEMO_MAP_ID'
+                mapId: 'DEMO_MAP_ID',
+                cityName: 'Mathura'
             });
         } else {
             homeHeroMap.setCenter({ lat: currentLat, lng: currentLng });
@@ -2404,7 +2405,8 @@ function initSmartSosMap() {
             smartSosMap = GoogleMapsShield.createMap(mapEl, {
                 center: { lat: currentLat, lng: currentLng },
                 zoom: 14,
-                mapId: 'DEMO_MAP_ID'
+                mapId: 'DEMO_MAP_ID',
+                cityName: 'Mathura'
             });
         } else {
             smartSosMap.setCenter({ lat: currentLat, lng: currentLng });
@@ -3008,25 +3010,25 @@ function syncUserLocation() {
         }
     }, err => {
         alert('GPS sync error: ' + err.message);
-        if (locDisp) locDisp.textContent = 'GPS Ready (28.4703, 77.4939)';
+        if (locDisp) locDisp.textContent = 'GPS Ready (27.4924, 77.6737)';
         if (gpsGauge) gpsGauge.textContent = 'Live Fix';
     });
 }
 
-// ROUTE MAP & RADIUS SCANNER LOGIC
+// ROUTE MAP & RADIUS SCANNER LOGIC (Centered on Mathura)
 const routeCoordinates = {
     'A': [
-        { lat: 28.4703, lng: 77.4939 },
-        { lat: 28.4740, lng: 77.4990 },
-        { lat: 28.4780, lng: 77.5050 },
-        { lat: 28.4815, lng: 77.5110 }
+        { lat: 27.4924, lng: 77.6737 },
+        { lat: 27.4955, lng: 77.6780 },
+        { lat: 27.4990, lng: 77.6825 },
+        { lat: 27.5020, lng: 77.6870 }
     ],
     'B': [
-        { lat: 28.4703, lng: 77.4939 },
-        { lat: 28.4715, lng: 77.4980 },
-        { lat: 28.4750, lng: 77.5010 },
-        { lat: 28.4790, lng: 77.5060 },
-        { lat: 28.4815, lng: 77.5110 }
+        { lat: 27.4924, lng: 77.6737 },
+        { lat: 27.4935, lng: 77.6780 },
+        { lat: 27.4960, lng: 77.6805 },
+        { lat: 27.4995, lng: 77.6840 },
+        { lat: 27.5020, lng: 77.6870 }
     ]
 };
 
@@ -3123,31 +3125,19 @@ function initRouteMap() {
             routeMap = GoogleMapsShield.createMap(mapEl, {
                 center: { lat: currentLat, lng: currentLng },
                 zoom: 14,
-                mapId: 'DEMO_MAP_ID'
+                mapId: 'DEMO_MAP_ID',
+                cityName: 'Mathura'
             });
         }
 
         if (!routeUserMarker) {
-            routeUserMarker = GoogleMapsShield.createCustomMarker(routeMap, {
-                lat: currentLat,
-                lng: currentLng,
-                title: 'Your Current Location',
-                color: '#B3243A',
-                scale: 9,
-                popupContent: '<b>Your Current Location</b>'
-            });
+            routeUserMarker = GoogleMapsShield.createSOSMarker(routeMap, currentLat, currentLng, 'YOU (YOUR LOCATION)');
         } else {
             routeUserMarker.setPosition(currentLat, currentLng);
         }
 
         if (!radiusCircle) {
-            radiusCircle = GoogleMapsShield.createRadiusCircle(routeMap, currentLat, currentLng, 3000, {
-                strokeColor: '#B3243A',
-                strokeOpacity: 0.8,
-                strokeWeight: 1.5,
-                fillColor: '#B3243A',
-                fillOpacity: 0.1
-            });
+            radiusCircle = GoogleMapsShield.createRadiusCircle(routeMap, currentLat, currentLng, 3000);
         } else {
             radiusCircle.setCenter({ lat: currentLat, lng: currentLng });
         }
@@ -3155,13 +3145,16 @@ function initRouteMap() {
         switchRoute('A');
 
         if (!routeCitizenMarker) {
-            routeCitizenMarker = GoogleMapsShield.createCustomMarker(routeMap, {
-                lat: currentLat + 0.005,
-                lng: currentLng + 0.006,
-                title: 'Verified Resident Protector',
-                color: '#D9A441',
-                scale: 8,
-                popupContent: '<b>Verified Resident Protector</b><br>450m away &bull; ETA 3 mins'
+            routeCitizenMarker = GoogleMapsShield.createHelperMarker(routeMap, {
+                lat: currentLat + 0.0050,
+                lng: currentLng + 0.0066,
+                title: 'Police PCR Patrol Beat',
+                badge: 'ERSS 112 Rapid Patrol',
+                type: 'Police',
+                is_police: true,
+                distance_text: '700 m',
+                eta_minutes: 2,
+                trust_score: 5.0
             });
         }
 

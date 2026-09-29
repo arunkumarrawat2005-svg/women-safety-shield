@@ -209,10 +209,12 @@ function initCommunitySafetyMap() {
         }
     }, function() {
         // Fallback default coordinates
+        safetyMap.setCenter({ lat: 27.4924, lng: 77.6737 });
+        safetyMap.setZoom(14);
         if (window.GoogleMapsShield) {
-            window.GoogleMapsShield.attachNearbyUsersLayer(safetyMap, 28.4703, 77.4939, {
+            window.GoogleMapsShield.attachNearbyUsersLayer(safetyMap, 27.4924, 77.6737, {
                 radiusKm: 3.0,
-                victimLabel: "Default Location (NCR)"
+                victimLabel: "Mathura"
             });
         }
     });
