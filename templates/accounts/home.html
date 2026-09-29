@@ -158,19 +158,26 @@
   pointer-events: none !important;
 }
 
-/* Circular Gauge Metric Chart (Image Reference Style) */
+/* Circular Gauge Metric Chart (Compact, Black text & logo, Green full circle) */
+.readiness-gauges-card {
+  max-width: 520px !important;
+  margin: 0.75rem auto 0 !important;
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
 .readiness-gauges-container {
   display: flex;
   align-items: stretch;
   justify-content: space-between;
-  padding: 1.25rem 0.5rem;
+  padding: 0.65rem 0.35rem;
   background: #ffffff;
 }
 
 .gauge-col {
   flex: 1 1 0;
   text-align: center;
-  padding: 0.5rem 0.5rem;
+  padding: 0.25rem 0.35rem;
   position: relative;
   cursor: pointer;
   border-radius: 6px;
@@ -194,8 +201,8 @@
 
 .gauge-circle-wrap {
   position: relative;
-  width: 70px;
-  height: 70px;
+  width: 46px;
+  height: 46px;
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -203,8 +210,8 @@
 }
 
 .gauge-circle-wrap svg {
-  width: 70px;
-  height: 70px;
+  width: 46px;
+  height: 46px;
   display: block;
 }
 
@@ -217,42 +224,42 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.55rem;
-  color: #16a34a !important;
+  font-size: 1.05rem;
+  color: #111827 !important;
   pointer-events: none;
 }
 
 .gauge-title {
-  font-size: 0.96rem;
+  font-size: 0.8rem;
   font-weight: 700;
-  color: #16a34a;
-  margin-top: 0.55rem;
-  line-height: 1.2;
+  color: #111827 !important;
+  margin-top: 0.35rem;
+  line-height: 1.1;
 }
 
 .gauge-subtitle {
-  font-size: 0.72rem;
-  font-weight: 600;
+  font-size: 0.64rem;
+  font-weight: 500;
   color: #64748b;
-  margin-top: 0.25rem;
-  line-height: 1.2;
+  margin-top: 0.15rem;
+  line-height: 1.1;
 }
 
 .chip-status-text {
-  font-size: 0.96rem !important;
+  font-size: 0.8rem !important;
   font-weight: 700 !important;
-  color: #16a34a !important;
+  color: #111827 !important;
   background: transparent !important;
   border: none !important;
   padding: 0 !important;
   display: inline-block !important;
-  line-height: 1.2 !important;
+  line-height: 1.1 !important;
   text-transform: none !important;
 }
 
 .chip-status-text.text-success,
 .chip-status-text.bg-success-subtle {
-  color: #16a34a !important;
+  color: #111827 !important;
   background: transparent !important;
 }
 
@@ -269,33 +276,27 @@
 
 @media (max-width: 576px) {
   .readiness-gauges-container {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 0.75rem 0.25rem !important;
-    padding: 0.85rem 0.25rem !important;
-  }
-  .gauge-col:not(:last-child)::after {
-    display: none !important;
+    padding: 0.5rem 0.2rem !important;
   }
   .gauge-col {
-    padding: 0.35rem 0.25rem;
+    padding: 0.2rem 0.15rem;
   }
   .gauge-circle-wrap {
-    width: 62px;
-    height: 62px;
+    width: 40px;
+    height: 40px;
   }
   .gauge-circle-wrap svg {
-    width: 62px;
-    height: 62px;
+    width: 40px;
+    height: 40px;
   }
   .gauge-center-icon {
-    font-size: 1.35rem;
+    font-size: 0.95rem;
   }
   .gauge-title, .chip-status-text {
-    font-size: 0.88rem !important;
+    font-size: 0.74rem !important;
   }
   .gauge-subtitle {
-    font-size: 0.68rem;
+    font-size: 0.58rem;
   }
 }
 
@@ -679,21 +680,22 @@
           </a>
         </div>
 
-        <!-- Professional Emergency Response Status Chart (Full Green Circle Gauges) -->
-        <div class="card border-0 shadow-sm rounded-3 mt-3 w-100 text-start" style="border: 1px solid #e2e8f0 !important; background: #ffffff;">
+        <!-- Professional Emergency Response Status Chart (Compact, Black text/logo, Full Green Circle) -->
+        <div class="card border-0 shadow-sm rounded-3 mt-3 readiness-gauges-card text-start">
+          <span id="locDisplay" class="d-none"></span>
           <div class="readiness-gauges-container">
             <!-- 1. One-Tap Dial Gauge (Full Green Circle, Heart-Pulse Icon) -->
             <div class="gauge-col" id="chipButton" onclick="triggerSamePageSOS('chip_button')" title="Click to test One-Tap SOS Dial">
               <div class="gauge-circle-wrap">
-                <svg viewBox="0 0 72 72">
-                  <circle cx="36" cy="36" r="30" stroke="#16a34a" stroke-width="3.5" fill="none" />
+                <svg viewBox="0 0 48 48">
+                  <circle cx="24" cy="24" r="20" stroke="#16a34a" stroke-width="2.75" fill="none" />
                 </svg>
                 <div class="gauge-center-icon">
                   <i class="bi bi-heart-pulse"></i>
                 </div>
               </div>
               <div class="gauge-title">
-                <span class="chip-status-text text-success">Active</span>
+                <span class="chip-status-text">Active</span>
               </div>
               <div class="gauge-subtitle">One-Tap Dial</div>
             </div>
@@ -701,15 +703,15 @@
             <!-- 2. Voice Recognition Gauge (Full Green Circle, Mic Icon) -->
             <div class="gauge-col" id="chipVoice" onclick="requestMicrophonePermission(true)" title="Click to test Voice Trigger or enable microphone">
               <div class="gauge-circle-wrap">
-                <svg viewBox="0 0 72 72">
-                  <circle cx="36" cy="36" r="30" stroke="#16a34a" stroke-width="3.5" fill="none" />
+                <svg viewBox="0 0 48 48">
+                  <circle cx="24" cy="24" r="20" stroke="#16a34a" stroke-width="2.75" fill="none" />
                 </svg>
                 <div class="gauge-center-icon">
                   <i class="bi bi-mic" id="voiceIcon"></i>
                 </div>
               </div>
               <div class="gauge-title">
-                <span class="chip-status-text text-success" id="voiceStatusText">Listening</span>
+                <span class="chip-status-text" id="voiceStatusText">Listening</span>
               </div>
               <div class="gauge-subtitle">Voice Trigger</div>
             </div>
@@ -717,15 +719,15 @@
             <!-- 3. Motion Detection Gauge (Full Green Circle, Shake Icon) -->
             <div class="gauge-col" id="chipShake" onclick="triggerTapSimulation()" title="Click to simulate Shake Motion Trigger">
               <div class="gauge-circle-wrap">
-                <svg viewBox="0 0 72 72">
-                  <circle cx="36" cy="36" r="30" stroke="#16a34a" stroke-width="3.5" fill="none" />
+                <svg viewBox="0 0 48 48">
+                  <circle cx="24" cy="24" r="20" stroke="#16a34a" stroke-width="2.75" fill="none" />
                 </svg>
                 <div class="gauge-center-icon">
                   <i class="bi bi-phone-vibrate"></i>
                 </div>
               </div>
               <div class="gauge-title">
-                <span class="chip-status-text text-success" id="shakeStatusText">Armed</span>
+                <span class="chip-status-text" id="shakeStatusText">Armed</span>
               </div>
               <div class="gauge-subtitle">Motion Sensor</div>
             </div>
@@ -733,28 +735,17 @@
             <!-- 4. GPS Telemetry Gauge (Full Green Circle, Geo Icon) -->
             <div class="gauge-col" id="chipLocation" onclick="syncUserLocation()" title="Click to refresh live GPS fix">
               <div class="gauge-circle-wrap">
-                <svg viewBox="0 0 72 72">
-                  <circle cx="36" cy="36" r="30" stroke="#16a34a" stroke-width="3.5" fill="none" />
+                <svg viewBox="0 0 48 48">
+                  <circle cx="24" cy="24" r="20" stroke="#16a34a" stroke-width="2.75" fill="none" />
                 </svg>
                 <div class="gauge-center-icon">
                   <i class="bi bi-geo-alt"></i>
                 </div>
               </div>
               <div class="gauge-title">
-                <span class="chip-status-text text-success" id="gpsGaugeStatus">Live Fix</span>
+                <span class="chip-status-text" id="gpsGaugeStatus">Live Fix</span>
               </div>
               <div class="gauge-subtitle">GPS Telemetry</div>
-            </div>
-          </div>
-
-          <div class="card-footer bg-light border-top py-2 px-3 d-flex justify-content-between align-items-center flex-wrap gap-2 text-muted" style="font-size: 0.78rem;">
-            <div id="locDisplay" class="d-flex align-items-center gap-1 text-secondary">
-              <i class="bi bi-geo-alt-fill text-danger"></i>
-              <span>Live Location Armed &bull; Continuous Tracking Ready</span>
-            </div>
-            <div class="d-flex align-items-center gap-2 text-secondary">
-              <span class="badge bg-white text-dark border" style="font-size:0.7rem; border-radius:4px;">3 km Resident Radar</span>
-              <span class="badge bg-white text-dark border" style="font-size:0.7rem; border-radius:4px;">ERSS 112 Connected</span>
             </div>
           </div>
         </div>
