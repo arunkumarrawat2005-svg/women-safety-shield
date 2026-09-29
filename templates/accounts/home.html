@@ -218,14 +218,14 @@
   align-items: center;
   justify-content: center;
   font-size: 1.55rem;
-  color: #334155;
+  color: #16a34a !important;
   pointer-events: none;
 }
 
 .gauge-title {
   font-size: 0.96rem;
   font-weight: 700;
-  color: #0f172a;
+  color: #16a34a;
   margin-top: 0.55rem;
   line-height: 1.2;
 }
@@ -241,7 +241,7 @@
 .chip-status-text {
   font-size: 0.96rem !important;
   font-weight: 700 !important;
-  color: #0f172a !important;
+  color: #16a34a !important;
   background: transparent !important;
   border: none !important;
   padding: 0 !important;
@@ -679,43 +679,30 @@
           </a>
         </div>
 
-        <!-- Professional Emergency Response Status Chart (Image Reference Style) -->
+        <!-- Professional Emergency Response Status Chart (Full Green Circle Gauges) -->
         <div class="card border-0 shadow-sm rounded-3 mt-3 w-100 text-start" style="border: 1px solid #e2e8f0 !important; background: #ffffff;">
-          <div class="card-header bg-white border-bottom py-2 px-3 d-flex justify-content-between align-items-center">
-            <span class="fw-bold text-dark small text-uppercase" style="font-size: 0.74rem; letter-spacing: 0.04em;">
-              <i class="bi bi-pie-chart-fill me-1 text-primary"></i>System Readiness &amp; Response Chart
-            </span>
-            <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.68rem; border-radius: 4px;">
-              System Online
-            </span>
-          </div>
-          
           <div class="readiness-gauges-container">
-            <!-- 1. One-Tap Dial Gauge (Red Arc, Heart-Pulse Icon) -->
+            <!-- 1. One-Tap Dial Gauge (Full Green Circle, Heart-Pulse Icon) -->
             <div class="gauge-col" id="chipButton" onclick="triggerSamePageSOS('chip_button')" title="Click to test One-Tap SOS Dial">
               <div class="gauge-circle-wrap">
                 <svg viewBox="0 0 72 72">
-                  <circle cx="36" cy="36" r="30" stroke="#f1f5f9" stroke-width="4" fill="none" />
-                  <circle cx="36" cy="36" r="30" stroke="#dc2626" stroke-width="4" fill="none"
-                          stroke-dasharray="188.5" stroke-dashoffset="47" stroke-linecap="round"
-                          transform="rotate(-90 36 36)" />
+                  <circle cx="36" cy="36" r="30" stroke="#16a34a" stroke-width="3.5" fill="none" />
                 </svg>
                 <div class="gauge-center-icon">
                   <i class="bi bi-heart-pulse"></i>
                 </div>
               </div>
-              <div class="gauge-title">Active</div>
+              <div class="gauge-title">
+                <span class="chip-status-text text-success">Active</span>
+              </div>
               <div class="gauge-subtitle">One-Tap Dial</div>
             </div>
 
-            <!-- 2. Voice Recognition Gauge (Green Arc, Mic Icon) -->
+            <!-- 2. Voice Recognition Gauge (Full Green Circle, Mic Icon) -->
             <div class="gauge-col" id="chipVoice" onclick="requestMicrophonePermission(true)" title="Click to test Voice Trigger or enable microphone">
               <div class="gauge-circle-wrap">
                 <svg viewBox="0 0 72 72">
-                  <circle cx="36" cy="36" r="30" stroke="#f1f5f9" stroke-width="4" fill="none" />
-                  <circle cx="36" cy="36" r="30" stroke="#16a34a" stroke-width="4" fill="none"
-                          stroke-dasharray="188.5" stroke-dashoffset="66" stroke-linecap="round"
-                          transform="rotate(-90 36 36)" />
+                  <circle cx="36" cy="36" r="30" stroke="#16a34a" stroke-width="3.5" fill="none" />
                 </svg>
                 <div class="gauge-center-icon">
                   <i class="bi bi-mic" id="voiceIcon"></i>
@@ -727,40 +714,34 @@
               <div class="gauge-subtitle">Voice Trigger</div>
             </div>
 
-            <!-- 3. Motion Detection Gauge (Yellow Arc, Shake Icon) -->
+            <!-- 3. Motion Detection Gauge (Full Green Circle, Shake Icon) -->
             <div class="gauge-col" id="chipShake" onclick="triggerTapSimulation()" title="Click to simulate Shake Motion Trigger">
               <div class="gauge-circle-wrap">
                 <svg viewBox="0 0 72 72">
-                  <circle cx="36" cy="36" r="30" stroke="#f1f5f9" stroke-width="4" fill="none" />
-                  <circle cx="36" cy="36" r="30" stroke="#eab308" stroke-width="4" fill="none"
-                          stroke-dasharray="188.5" stroke-dashoffset="94" stroke-linecap="round"
-                          transform="rotate(-90 36 36)" />
+                  <circle cx="36" cy="36" r="30" stroke="#16a34a" stroke-width="3.5" fill="none" />
                 </svg>
                 <div class="gauge-center-icon">
                   <i class="bi bi-phone-vibrate"></i>
                 </div>
               </div>
               <div class="gauge-title">
-                <span class="chip-status-text" id="shakeStatusText">Armed</span>
+                <span class="chip-status-text text-success" id="shakeStatusText">Armed</span>
               </div>
               <div class="gauge-subtitle">Motion Sensor</div>
             </div>
 
-            <!-- 4. GPS Telemetry Gauge (Brown/Orange Arc, Geo Icon) -->
+            <!-- 4. GPS Telemetry Gauge (Full Green Circle, Geo Icon) -->
             <div class="gauge-col" id="chipLocation" onclick="syncUserLocation()" title="Click to refresh live GPS fix">
               <div class="gauge-circle-wrap">
                 <svg viewBox="0 0 72 72">
-                  <circle cx="36" cy="36" r="30" stroke="#f1f5f9" stroke-width="4" fill="none" />
-                  <circle cx="36" cy="36" r="30" stroke="#b45309" stroke-width="4" fill="none"
-                          stroke-dasharray="188.5" stroke-dashoffset="113" stroke-linecap="round"
-                          transform="rotate(-90 36 36)" />
+                  <circle cx="36" cy="36" r="30" stroke="#16a34a" stroke-width="3.5" fill="none" />
                 </svg>
                 <div class="gauge-center-icon">
                   <i class="bi bi-geo-alt"></i>
                 </div>
               </div>
               <div class="gauge-title">
-                <span class="chip-status-text" id="gpsGaugeStatus">Live Fix</span>
+                <span class="chip-status-text text-success" id="gpsGaugeStatus">Live Fix</span>
               </div>
               <div class="gauge-subtitle">GPS Telemetry</div>
             </div>
