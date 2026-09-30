@@ -909,10 +909,210 @@
     color: #ffffff;
   }
 
-  /* Map Marker Custom Elements */
+  /* Rotating 360-Degree Radar Sweep & People Contacts */
+  @keyframes radarRotate360 {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes radarSonarWave {
+    0% {
+      width: 0%;
+      height: 0%;
+      opacity: 0.85;
+      border-color: rgba(220, 38, 38, 0.75);
+    }
+    60% {
+      opacity: 0.4;
+      border-color: rgba(220, 38, 38, 0.4);
+    }
+    100% {
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      border-color: rgba(220, 38, 38, 0);
+    }
+  }
+
+  @keyframes personRadarPulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.75), 0 0 10px rgba(16, 185, 129, 0.5);
+    }
+    60% {
+      box-shadow: 0 0 0 14px rgba(16, 185, 129, 0), 0 0 20px rgba(16, 185, 129, 0.2);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+    }
+  }
+
+  @keyframes standbyRadarPulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(148, 163, 184, 0.75), 0 0 8px rgba(148, 163, 184, 0.4);
+    }
+    60% {
+      box-shadow: 0 0 0 12px rgba(148, 163, 184, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(148, 163, 184, 0);
+    }
+  }
+
+  @keyframes havenRadarPulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(92, 19, 32, 0.75), 0 0 8px rgba(92, 19, 32, 0.5);
+    }
+    60% {
+      box-shadow: 0 0 0 12px rgba(92, 19, 32, 0), 0 0 16px rgba(92, 19, 32, 0.2);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(92, 19, 32, 0);
+    }
+  }
+
+  @keyframes policeRadarPulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.8), 0 0 10px rgba(37, 99, 235, 0.5);
+    }
+    60% {
+      box-shadow: 0 0 0 14px rgba(37, 99, 235, 0), 0 0 20px rgba(37, 99, 235, 0.2);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+    }
+  }
+
+  /* Leaflet custom divIcon containers */
+  .leaflet-marker-icon.gmap-custom-div-icon {
+    overflow: visible !important;
+    background: transparent !important;
+    border: none !important;
+  }
+
+  .leaflet-marker-icon.radar-sweep-div-icon {
+    overflow: visible !important;
+    background: transparent !important;
+    border: none !important;
+    pointer-events: none !important;
+  }
+
+  /* Radar 3 KM Scanner Disc Layer */
+  .radar-scanner-disc {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 50%;
+    pointer-events: none;
+    overflow: visible;
+    user-select: none;
+    z-index: 150;
+  }
+
+  /* Conic Gradient Sweep Beam */
+  .radar-conic-sweep {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: conic-gradient(
+      from 0deg,
+      rgba(220, 38, 38, 0) 0deg,
+      rgba(220, 38, 38, 0) 270deg,
+      rgba(220, 38, 38, 0.03) 300deg,
+      rgba(220, 38, 38, 0.12) 335deg,
+      rgba(220, 38, 38, 0.38) 360deg
+    );
+    animation: radarRotate360 4.2s linear infinite;
+    transform-origin: center center;
+    pointer-events: none;
+  }
+
+  /* Sweep Leading Laser Needle */
+  .radar-sweep-needle {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 2.5px;
+    height: 50%;
+    background: linear-gradient(to top, rgba(220, 38, 38, 0.15), #dc2626);
+    box-shadow: 0 0 8px rgba(220, 38, 38, 0.9), 0 0 18px rgba(239, 68, 68, 0.6);
+    transform-origin: bottom center;
+    animation: radarRotate360 4.2s linear infinite;
+    pointer-events: none;
+  }
+
+  /* Sonar Ripple Waves */
+  .radar-sonar-wave {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    border: 1.5px solid rgba(220, 38, 38, 0.6);
+    animation: radarSonarWave 3.2s cubic-bezier(0.1, 0.7, 0.3, 1) infinite;
+    pointer-events: none;
+  }
+
+  .radar-sonar-wave.wave-2 {
+    animation-delay: 1.6s;
+  }
+
+  /* Radar Inner & Outer Rings */
+  .radar-ring-mid {
+    position: absolute;
+    top: 25%;
+    left: 25%;
+    width: 50%;
+    height: 50%;
+    border-radius: 50%;
+    border: 1.5px dashed rgba(16, 185, 129, 0.55);
+    pointer-events: none;
+  }
+
+  .radar-ring-outer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 2px dashed rgba(220, 38, 38, 0.7);
+    box-shadow: inset 0 0 24px rgba(220, 38, 38, 0.05);
+    pointer-events: none;
+  }
+
+  /* Radar Crosshairs */
+  .radar-axis-line.h-line {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: rgba(220, 38, 38, 0.16);
+    pointer-events: none;
+  }
+
+  .radar-axis-line.v-line {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 1px;
+    height: 100%;
+    background: rgba(220, 38, 38, 0.16);
+    pointer-events: none;
+  }
+
+  /* People Markers on Radar */
   .map-pin-badge {
-    width: 32px;
-    height: 32px;
+    position: relative;
+    width: 34px;
+    height: 34px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -920,14 +1120,23 @@
     color: #ffffff;
     font-weight: 800;
     font-size: 11px;
-    border: 2px solid #ffffff;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+    border: 2.5px solid #ffffff;
     cursor: pointer;
-    transition: transform 0.15s ease;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 500;
   }
 
   .map-pin-badge:hover {
-    transform: scale(1.15);
+    transform: scale(1.22);
+    z-index: 600;
+  }
+
+  .map-pin-badge.radar-contact-duty {
+    animation: personRadarPulse 2.4s infinite;
+  }
+
+  .map-pin-badge.radar-contact-standby {
+    animation: standbyRadarPulse 2.8s infinite;
   }
 
   .map-pin-green {
@@ -946,9 +1155,42 @@
     background: #64748b;
   }
 
+  /* Floating Name Label on Map Marker */
+  .map-pin-tag {
+    position: absolute;
+    bottom: calc(100% + 5px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(15, 23, 42, 0.9);
+    backdrop-filter: blur(4px);
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 4px;
+    white-space: nowrap;
+    pointer-events: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    border: 1px solid rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+
+  .map-pin-tag::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: rgba(15, 23, 42, 0.9);
+  }
+
   .map-pin-haven {
-    width: 28px;
-    height: 28px;
+    position: relative;
+    width: 30px;
+    height: 30px;
     border-radius: 6px;
     background: #5c1320;
     border: 2px solid #ffffff;
@@ -959,11 +1201,20 @@
     font-size: 13px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.3);
     cursor: pointer;
+    animation: havenRadarPulse 2.8s infinite;
+    z-index: 500;
+    transition: transform 0.2s ease;
+  }
+
+  .map-pin-haven:hover {
+    transform: scale(1.2);
+    z-index: 600;
   }
 
   .map-pin-police {
-    width: 28px;
-    height: 28px;
+    position: relative;
+    width: 30px;
+    height: 30px;
     border-radius: 6px;
     background: #2563eb;
     border: 2px solid #ffffff;
@@ -974,6 +1225,14 @@
     font-size: 13px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.3);
     cursor: pointer;
+    animation: policeRadarPulse 2.4s infinite;
+    z-index: 500;
+    transition: transform 0.2s ease;
+  }
+
+  .map-pin-police:hover {
+    transform: scale(1.2);
+    z-index: 600;
   }
 </style>
 {% endblock %}
@@ -1083,8 +1342,8 @@
             <span class="lr-hud-sub">on duty now</span>
           </div>
           <div class="lr-hud-item">
-            <span class="lr-hud-top"><i class="bi bi-broadcast"></i> 3 km</span>
-            <span class="lr-hud-sub">response radius</span>
+            <span class="lr-hud-top"><i class="bi bi-broadcast text-danger"></i> 3 km</span>
+            <span class="lr-hud-sub">rotating radar sweep</span>
           </div>
           <div class="lr-hud-item">
             <span class="lr-hud-top"><i class="bi bi-lightning-charge-fill text-danger"></i> &lt; 30 s</span>
@@ -1621,6 +1880,82 @@ let policeMarkerObject = null;
 let userBeaconMarker = null;
 let circle1500 = null;
 let circle3000 = null;
+let radarSweepMarker = null;
+
+// Calculate pixel radius for radar scanner disc matching specified meter radius
+function getRadarRadiusPx(lat, lng, radiusMeters = 3000) {
+  if (!mapInstance) return 180;
+  const raw = mapInstance.rawMap || mapInstance;
+  if (raw && typeof raw.latLngToLayerPoint === 'function') {
+    const centerPt = raw.latLngToLayerPoint([lat, lng]);
+    const latOffset = radiusMeters / 111320;
+    const edgePt = raw.latLngToLayerPoint([lat + latOffset, lng]);
+    const r = Math.round(Math.abs(edgePt.y - centerPt.y));
+    return Math.max(r, 40);
+  }
+  return 180;
+}
+
+// Update radar sweep disc dimensions dynamically on zoom or resize
+function updateRadarSweepSize() {
+  const disc = document.getElementById('residentRadarDisc');
+  if (!disc || !mapInstance) return;
+  const r = getRadarRadiusPx(baseLat, baseLng, 3000);
+  disc.style.width = (r * 2) + 'px';
+  disc.style.height = (r * 2) + 'px';
+  disc.style.marginLeft = (-r) + 'px';
+  disc.style.marginTop = (-r) + 'px';
+}
+
+// Create or re-anchor continuous 360 rotating radar sweep over 3 km zone
+function createRotatingRadarSweep(lat, lng, radiusMeters = 3000) {
+  const raw = mapInstance ? (mapInstance.rawMap || mapInstance) : null;
+  if (!raw) return;
+
+  if (radarSweepMarker) {
+    try {
+      if (typeof radarSweepMarker.remove === 'function') {
+        radarSweepMarker.remove();
+      } else if (raw.removeLayer) {
+        raw.removeLayer(radarSweepMarker);
+      }
+    } catch(e){}
+    radarSweepMarker = null;
+  }
+
+  const r = getRadarRadiusPx(lat, lng, radiusMeters);
+
+  if (window.L && typeof L.marker === 'function' && typeof L.divIcon === 'function') {
+    const sweepIcon = L.divIcon({
+      className: 'radar-sweep-div-icon',
+      html: `
+        <div id="residentRadarDisc" class="radar-scanner-disc" style="width:${r * 2}px; height:${r * 2}px; margin-left:-${r}px; margin-top:-${r}px;">
+          <div class="radar-conic-sweep"></div>
+          <div class="radar-sweep-needle"></div>
+          <div class="radar-sonar-wave"></div>
+          <div class="radar-sonar-wave wave-2"></div>
+          <div class="radar-ring-mid"></div>
+          <div class="radar-ring-outer"></div>
+          <div class="radar-axis-line h-line"></div>
+          <div class="radar-axis-line v-line"></div>
+        </div>
+      `,
+      iconSize: [0, 0],
+      iconAnchor: [0, 0]
+    });
+
+    radarSweepMarker = L.marker([lat, lng], {
+      icon: sweepIcon,
+      interactive: false,
+      keyboard: false,
+      zIndexOffset: -500
+    });
+
+    if (typeof raw.addLayer === 'function') {
+      radarSweepMarker.addTo(raw);
+    }
+  }
+}
 
 // Initialize Radar Map
 function initRadarMap() {
@@ -1638,6 +1973,17 @@ function initRadarMap() {
       mapId: 'DEMO_MAP_ID',
       cityName: 'Sector 62'
     });
+
+    // Hook zoom & pan listeners so rotating radar beam scales accurately
+    const raw = mapInstance ? (mapInstance.rawMap || mapInstance) : null;
+    if (raw && typeof raw.on === 'function') {
+      raw.on('zoom', updateRadarSweepSize);
+      raw.on('zoomend', updateRadarSweepSize);
+      raw.on('viewreset', updateRadarSweepSize);
+      raw.on('resize', updateRadarSweepSize);
+    } else if (raw && typeof raw.addListener === 'function') {
+      raw.addListener('zoom_changed', updateRadarSweepSize);
+    }
 
     plotAllLayersOnMap();
   }
@@ -1677,14 +2023,28 @@ function plotAllLayersOnMap() {
     dashArray: '6, 6'
   });
 
-  // 3. Plot Guardians Markers (PS, NK, RM, AD)
+  // 3. Launch Continuously Rotating 360-Degree Radar Beam (3 km Zone)
+  createRotatingRadarSweep(baseLat, baseLng, 3000);
+
+  // 4. Plot Guardians Markers (PS, NK, RM, AD) - "Show the People" with Radar Pulses & Floating Tags
+  guardianMarkerObjects = {};
   PRIMARY_GUARDIANS.forEach(g => {
     const lat = baseLat + g.latOffset;
     const lng = baseLng + g.lngOffset;
     const pinClass = g.avatar === 'PS' ? 'map-pin-green' : (g.avatar === 'NK' ? 'map-pin-bright-green' : (g.avatar === 'RM' ? 'map-pin-teal' : 'map-pin-grey'));
+    const pulseClass = g.is_available ? 'radar-contact-duty' : 'radar-contact-standby';
+
+    // Calculate radar rotation sweep angle so pulses fire when needle crosses contact (4.2s cycle)
+    const angleDeg = (Math.atan2(g.lngOffset, g.latOffset) * 180 / Math.PI + 360) % 360;
+    const delaySec = ((angleDeg / 360) * 4.2).toFixed(2);
 
     const html = `
-      <div class="map-pin-badge ${pinClass}" title="${g.name}">
+      <div class="map-pin-badge ${pinClass} ${pulseClass}" style="animation-delay: ${delaySec}s;" title="${g.name} (${g.distance_text})">
+        <span class="map-pin-tag">
+          <i class="bi bi-shield-fill-check text-warning"></i>
+          <span>${g.name.split(' ')[0]}</span>
+          <span style="opacity:0.8;font-weight:600;">&middot; ${g.distance_text}</span>
+        </span>
         ${g.avatar}
       </div>
     `;
@@ -1705,19 +2065,28 @@ function plotAllLayersOnMap() {
       lng: lng,
       html: html,
       title: g.name,
+      zIndex: 600,
       popupContent: popup
     });
 
     guardianMarkerObjects[g.id] = { marker: m, lat: lat, lng: lng };
   });
 
-  // 4. Plot Safe Havens Markers (Maroon Squares)
+  // 5. Plot Safe Havens Markers (Maroon Squares) with Radar Contact Glow
   havenMarkerObjects = [];
   SAFE_HAVENS.forEach((h, idx) => {
     const lat = baseLat + h.latOffset;
     const lng = baseLng + h.lngOffset;
+    const angleDeg = (Math.atan2(h.lngOffset, h.latOffset) * 180 / Math.PI + 360) % 360;
+    const delaySec = ((angleDeg / 360) * 4.2).toFixed(2);
+
     const html = `
-      <div class="map-pin-haven" title="${h.title}">
+      <div class="map-pin-haven" style="animation-delay: ${delaySec}s;" title="${h.title} (${h.distance_text})">
+        <span class="map-pin-tag">
+          <i class="bi ${h.icon} text-warning"></i>
+          <span>${h.title.split(' ')[0]}</span>
+          <span style="opacity:0.8;font-weight:600;">&middot; ${h.distance_text}</span>
+        </span>
         <i class="bi ${h.icon}"></i>
       </div>
     `;
@@ -1734,16 +2103,24 @@ function plotAllLayersOnMap() {
       lng: lng,
       html: html,
       title: h.title,
+      zIndex: 550,
       popupContent: popup
     });
     havenMarkerObjects.push({ marker: m, lat: lat, lng: lng });
   });
 
-  // 5. Plot Police Post Marker (Blue Square with Shield)
+  // 6. Plot Police Post Marker (Blue Square with Shield)
   const polLat = baseLat + POLICE_POST.latOffset;
   const polLng = baseLng + POLICE_POST.lngOffset;
+  const polAngleDeg = (Math.atan2(POLICE_POST.lngOffset, POLICE_POST.latOffset) * 180 / Math.PI + 360) % 360;
+  const polDelaySec = ((polAngleDeg / 360) * 4.2).toFixed(2);
+
   const polHtml = `
-    <div class="map-pin-police" title="${POLICE_POST.title}">
+    <div class="map-pin-police" style="animation-delay: ${polDelaySec}s;" title="${POLICE_POST.title}">
+      <span class="map-pin-tag">
+        <i class="bi bi-shield-fill-check text-primary"></i>
+        <span>112 Rapid Beat</span>
+      </span>
       <i class="bi bi-shield-fill-check"></i>
     </div>
   `;
@@ -1759,6 +2136,7 @@ function plotAllLayersOnMap() {
     lng: polLng,
     html: polHtml,
     title: POLICE_POST.title,
+    zIndex: 550,
     popupContent: polPopup
   });
 }
