@@ -295,7 +295,6 @@
             isGoogleMapsLoading = true;
 
             const DENIED_KEYS = [
-                'AIzaSyBcRwJBYIf9ZBhLepkxMRfrLC2VtV9rpQg',
                 'your_real_google_maps_key',
                 'your-google-maps-key',
                 'YOUR_GOOGLE_MAPS_API_KEY',
