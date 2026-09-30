@@ -233,15 +233,12 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # External Service Credentials
 RAW_GOOGLE_MAPS_KEY = os.getenv('GOOGLE_MAPS_API_KEY', '').strip()
 DENIED_MAP_KEYS = (
-    'AIzaSyBcRwJBYIf9ZBhLepkxMRfrLC2VtV9rpQg',
     'your_real_google_maps_key',
     'your-google-maps-key',
     'YOUR_GOOGLE_MAPS_API_KEY',
     'None',
 )
 if RAW_GOOGLE_MAPS_KEY in DENIED_MAP_KEYS:
-    # Key has no billing enabled on Google Cloud and returns REQUEST_DENIED
-    # Disabling it allows zero-downtime HD Leaflet CartoDB engine to render immediately
     GOOGLE_MAPS_API_KEY = ''
 else:
     GOOGLE_MAPS_API_KEY = RAW_GOOGLE_MAPS_KEY
