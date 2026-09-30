@@ -508,17 +508,17 @@
                     el.appendChild(cityBadge);
                 }
 
-                // Clean, high-performance street map tiles (Matches reference design)
-                const tileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                // Clean, high-performance street map tiles (100% free, crystal-clear, no watermarks)
+                const tileLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
                     maxZoom: 19,
-                    subdomains: 'abcd',
-                    attribution: '&copy; OpenStreetMap &copy; CARTO'
+                    attribution: '&copy; Esri &mdash; StreetMap'
                 });
                 
                 tileLayer.on('tileerror', function() {
-                    const fallback = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+                    const fallback = L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
                         maxZoom: 19,
-                        attribution: 'Tiles &copy; Esri'
+                        subdomains: 'abc',
+                        attribution: '&copy; OpenStreetMap contributors'
                     });
                     fallback.addTo(lMap);
                 });
