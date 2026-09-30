@@ -2630,5 +2630,13 @@ html, body {
   border-top-color: rgba(15, 23, 42, 0.92);
 }
 
-
-
+/* Suppress Google Maps unbilled / authorization error watermarks */
+gmp-internal-request-error-text,
+.gm-err-container,
+.gm-err-message,
+.gm-err-autocomplete {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}

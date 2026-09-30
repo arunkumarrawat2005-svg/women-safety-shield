@@ -196,13 +196,38 @@
         window.google.maps.Map = function () {};
     }
 
+    // Intercept and suppress Google Maps unbilled warning alerts so users never get blocked
+    const _origAlert = window.alert;
+    window.alert = function (msg) {
+        if (typeof msg === 'string' && (
+            msg.includes("Google Maps") ||
+            msg.includes("own this website") ||
+            msg.includes("developer.google.com") ||
+            msg.includes("Billing")
+        )) {
+            console.warn('[GoogleMapsShield] Suppressed Google Maps unbilled warning alert:', msg);
+            window.googleMapsAuthFailed = true;
+            try { sessionStorage.setItem('gmp_auth_failed', '1'); } catch(e){}
+            if (typeof window.gm_authFailure === 'function') {
+                window.gm_authFailure();
+            }
+            return;
+        }
+        return _origAlert.apply(this, arguments);
+    };
+
     // Global Google Maps Platform Auth Failure Interceptor
     window.gm_authFailure = function() {
         console.warn('[GoogleMapsShield] Google Maps API authentication rejected by Google (gm_authFailure). Automatically triggering Zero-Downtime Leaflet fallback.');
         window.googleMapsAuthFailed = true;
         try { sessionStorage.setItem('gmp_auth_failed', '1'); } catch(e){}
-        if (typeof GoogleMapsShield !== 'undefined' && GoogleMapsShield.failoverAllMapsToLeaflet) {
-            GoogleMapsShield.failoverAllMapsToLeaflet();
+        if (typeof GoogleMapsShield !== 'undefined') {
+            if (GoogleMapsShield._fireCallbacks) {
+                GoogleMapsShield._fireCallbacks();
+            }
+            if (GoogleMapsShield.failoverAllMapsToLeaflet) {
+                GoogleMapsShield.failoverAllMapsToLeaflet();
+            }
         }
     };
 
@@ -289,6 +314,7 @@
                 }
             };
 
+            GoogleMapsShield._fireCallbacks = fireCallbacks;
             window.__initGoogleMapsShield = fireCallbacks;
 
             if (isGoogleMapsLoading) return;
@@ -337,6 +363,15 @@
                     fireCallbacks();
                 };
                 document.head.appendChild(script);
+
+                // Fail-safe: if Google Maps authentication fails or script takes > 1.2s without invoking callback,
+                // automatically fire callbacks so maps render with zero downtime!
+                setTimeout(function() {
+                    if (!isGoogleMapsLoaded) {
+                        console.warn('[GoogleMapsShield] Google Maps callback timeout; triggering zero-downtime map render.');
+                        fireCallbacks();
+                    }
+                }, 1200);
             } else {
                 // No key or demo mode: instantly fire callbacks with universal fallback engine
                 isGoogleMapsLoading = false;
@@ -407,8 +442,13 @@
                     }
 
                     const errObserver = new MutationObserver(function() {
-                        if (el.querySelector('.gm-err-container, .gm-err-message') || (el.innerText && el.innerText.includes('Sorry! Something went wrong'))) {
-                            triggerFailover('Google error overlay');
+                        const hasErr = el.querySelector('gmp-internal-request-error-text, .gm-err-container, .gm-err-message') ||
+                                       (el.innerText && (
+                                           el.innerText.includes('Sorry! Something went wrong') ||
+                                           el.innerText.includes('Oops! Something went wrong')
+                                       ));
+                        if (hasErr) {
+                            triggerFailover('Google error element detected');
                         }
                     });
                     errObserver.observe(el, { childList: true, subtree: true });
@@ -416,11 +456,15 @@
                     // Fast check for tile load: if Google denied billing/key, no tiles ever load
                     setTimeout(function() {
                         const hasTiles = el.querySelector('.gm-style img, .gm-style canvas');
-                        const hasErr = el.querySelector('.gm-err-container, .gm-err-message') || (el.innerText && el.innerText.includes('Sorry! Something went wrong'));
+                        const hasErr = el.querySelector('gmp-internal-request-error-text, .gm-err-container, .gm-err-message') ||
+                                       (el.innerText && (
+                                           el.innerText.includes('Sorry! Something went wrong') ||
+                                           el.innerText.includes('Oops! Something went wrong')
+                                       ));
                         if (hasErr || !hasTiles) {
                             triggerFailover(hasErr ? 'Google auth rejected' : 'No Google tiles loaded (Unbilled/denied key)');
                         }
-                    }, 650);
+                    }, 400);
 
                     if (el && !el.querySelector('.map-city-header')) {
                         const cityBadge = document.createElement('div');
