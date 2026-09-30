@@ -1615,28 +1615,46 @@ function initRouteMap() {
             routeUserMarker.setPosition(currentLat, currentLng);
         }
 
+        let routeRadarSweep = null;
         if (!radiusCircle) {
             radiusCircle = GoogleMapsShield.createRadiusCircle(routeMap, currentLat, currentLng, 3000, {
-                strokeColor: '#B3243A',
-                strokeOpacity: 0.8,
+                strokeColor: '#dc2626',
+                strokeOpacity: 0.7,
                 strokeWeight: 1.5,
-                fillColor: '#B3243A',
-                fillOpacity: 0.1
+                fillColor: '#ef4444',
+                fillOpacity: 0.04,
+                dashArray: '6, 6'
             });
+            if (GoogleMapsShield.createRadarSweep) {
+                routeRadarSweep = GoogleMapsShield.createRadarSweep(routeMap, currentLat, currentLng, 3000);
+            }
         } else {
             radiusCircle.setCenter({ lat: currentLat, lng: currentLng });
+            if (routeRadarSweep && routeRadarSweep.setCenter) routeRadarSweep.setCenter(currentLat, currentLng);
         }
 
         switchRoute('A');
 
         if (!routeCitizenMarker) {
+            const citizenHTML = `
+                <div class="map-marker-badge map-marker-resident radar-contact-duty" title="Verified Resident Protector (450 m)">
+                    <span class="map-pin-tag">
+                        <i class="bi bi-person-fill text-warning"></i>
+                        <span>Priya S.</span>
+                        <span style="opacity:0.8;font-weight:600;">&middot; 450m</span>
+                    </span>
+                    <div class="map-marker-halo halo-red"></div>
+                    <div class="map-marker-core core-red">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                </div>
+            `;
             routeCitizenMarker = GoogleMapsShield.createCustomMarker(routeMap, {
                 lat: currentLat + 0.005,
                 lng: currentLng + 0.006,
                 title: 'Verified Resident Protector',
-                color: '#D9A441',
-                scale: 8,
-                popupContent: '<b>Verified Resident Protector</b><br>450m away &bull; ETA 3 mins'
+                html: citizenHTML,
+                popupContent: '<b>Verified Resident Protector</b><br>Priya S. &bull; 450m away &bull; ETA 3 mins'
             });
         }
 
@@ -1655,6 +1673,7 @@ function initRouteMap() {
                     routeMap.setCenter({ lat: currentLat, lng: currentLng });
                     if (routeUserMarker) routeUserMarker.setPosition(currentLat, currentLng);
                     if (radiusCircle) radiusCircle.setCenter({ lat: currentLat, lng: currentLng });
+                    if (routeRadarSweep && routeRadarSweep.setCenter) routeRadarSweep.setCenter(currentLat, currentLng);
                 }
             });
         }

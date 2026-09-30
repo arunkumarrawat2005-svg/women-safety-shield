@@ -968,9 +968,109 @@
         },
 
         /**
+         * Create or attach continuous 360 rotating radar sweep over specified radius
+         */
+        createRadarSweep: function (map, lat, lng, radiusMeters = 3000, options = {}) {
+            const rawMap = map && map.rawMap ? map.rawMap : map;
+            if (!rawMap) return null;
+
+            lat = parseFloat(lat);
+            lng = parseFloat(lng);
+
+            function getRadiusPx() {
+                if (rawMap && typeof rawMap.latLngToLayerPoint === 'function') {
+                    const centerPt = rawMap.latLngToLayerPoint([lat, lng]);
+                    const latOffset = radiusMeters / 111320;
+                    const edgePt = rawMap.latLngToLayerPoint([lat + latOffset, lng]);
+                    return Math.max(Math.round(Math.abs(edgePt.y - centerPt.y)), 40);
+                }
+                return 180;
+            }
+
+            const sweepId = 'radar_disc_' + Math.random().toString(36).substr(2, 9);
+            const r = getRadiusPx();
+
+            let sweepMarker = null;
+
+            if (window.L && typeof L.marker === 'function' && typeof L.divIcon === 'function') {
+                const sweepIcon = L.divIcon({
+                    className: 'radar-sweep-div-icon',
+                    html: `
+                        <div id="${sweepId}" class="radar-scanner-disc" style="width:${r * 2}px; height:${r * 2}px; margin-left:-${r}px; margin-top:-${r}px;">
+                            <div class="radar-conic-sweep"></div>
+                            <div class="radar-sweep-needle"></div>
+                            <div class="radar-sonar-wave"></div>
+                            <div class="radar-sonar-wave wave-2"></div>
+                            <div class="radar-ring-mid"></div>
+                            <div class="radar-ring-outer"></div>
+                            <div class="radar-axis-line h-line"></div>
+                            <div class="radar-axis-line v-line"></div>
+                        </div>
+                    `,
+                    iconSize: [0, 0],
+                    iconAnchor: [0, 0]
+                });
+
+                sweepMarker = L.marker([lat, lng], {
+                    icon: sweepIcon,
+                    interactive: false,
+                    keyboard: false,
+                    zIndexOffset: -500
+                });
+
+                if (typeof rawMap.addLayer === 'function') {
+                    sweepMarker.addTo(rawMap);
+                }
+
+                function updateSize() {
+                    const disc = document.getElementById(sweepId);
+                    if (!disc) return;
+                    const newR = getRadiusPx();
+                    disc.style.width = (newR * 2) + 'px';
+                    disc.style.height = (newR * 2) + 'px';
+                    disc.style.marginLeft = (-newR) + 'px';
+                    disc.style.marginTop = (-newR) + 'px';
+                }
+
+                if (typeof rawMap.on === 'function') {
+                    rawMap.on('zoom', updateSize);
+                    rawMap.on('zoomend', updateSize);
+                    rawMap.on('viewreset', updateSize);
+                    rawMap.on('resize', updateSize);
+                }
+            }
+
+            return {
+                marker: sweepMarker,
+                setCenter: function(nLat, nLng) {
+                    lat = parseFloat(nLat);
+                    lng = parseFloat(nLng);
+                    if (sweepMarker && sweepMarker.setLatLng) {
+                        sweepMarker.setLatLng([lat, lng]);
+                    }
+                    const disc = document.getElementById(sweepId);
+                    if (disc) {
+                        const newR = getRadiusPx();
+                        disc.style.width = (newR * 2) + 'px';
+                        disc.style.height = (newR * 2) + 'px';
+                        disc.style.marginLeft = (-newR) + 'px';
+                        disc.style.marginTop = (-newR) + 'px';
+                    }
+                },
+                remove: function() {
+                    if (sweepMarker) {
+                        if (typeof sweepMarker.remove === 'function') sweepMarker.remove();
+                        else if (rawMap.removeLayer) rawMap.removeLayer(sweepMarker);
+                        sweepMarker = null;
+                    }
+                }
+            };
+        },
+
+        /**
          * Create Verified Nearby Helper Marker (Matches Red Person & Blue Shield Pins)
          */
-        createHelperMarker: function (map, helper, isDemo = false) {
+        createHelperMarker: function (map, helper, isDemo = false, centerLat = null, centerLng = null) {
             const lat = helper.lat;
             const lng = helper.lng;
 
@@ -981,9 +1081,25 @@
             const badgeClass = isPolice ? 'map-marker-police' : 'map-marker-resident';
             const haloClass = isPolice ? 'halo-blue' : 'halo-red';
             const coreClass = isPolice ? 'core-blue' : 'core-red';
+            const pulseClass = isPolice ? 'radar-contact-police' : 'radar-contact-duty';
+
+            // Calculate rotation delay so contact pulses when radar sweeps over it (4.2s cycle)
+            let delaySec = 0;
+            if (centerLat !== null && centerLng !== null) {
+                const angleDeg = (Math.atan2(lng - centerLng, lat - centerLat) * 180 / Math.PI + 360) % 360;
+                delaySec = ((angleDeg / 360) * 4.2).toFixed(2);
+            }
+
+            const shortName = helper.title ? helper.title.split(' ')[0] : 'Guardian';
+            const distText = helper.distance_text || (helper.distance_km ? `${helper.distance_km} km` : 'Near');
 
             const helperHTML = `
-                <div class="map-marker-badge ${badgeClass}" title="${helper.title}">
+                <div class="map-marker-badge ${badgeClass} ${pulseClass}" style="animation-delay: ${delaySec}s;" title="${helper.title} (${distText})">
+                    <span class="map-pin-tag">
+                        <i class="bi ${iconClass} ${isPolice ? 'text-primary' : 'text-warning'}"></i>
+                        <span>${shortName}</span>
+                        <span style="opacity:0.8;font-weight:600;">&middot; ${distText}</span>
+                    </span>
                     <div class="map-marker-halo ${haloClass}"></div>
                     <div class="map-marker-core ${coreClass}">
                         <i class="bi ${iconClass}"></i>
@@ -1021,6 +1137,7 @@
                 lng: lng,
                 html: helperHTML,
                 title: helper.title,
+                zIndex: 600,
                 popupContent: popupContent
             });
         },
@@ -1028,8 +1145,8 @@
         /**
          * Attach full SOS emergency layer to a Map:
          * - Victim SOS Beacon Marker
-         * - 3 km Radius Circle
-         * - Dynamic nearby helper dots
+         * - 3 km Continuous 360-Degree Rotating Radar Sweep Zone
+         * - Dynamic nearby helper dots with synchronized radar pulses
          * - Live distance calculation and HUD callbacks
          */
         attachNearbyUsersLayer: function (map, victimLat, victimLng, options = {}) {
@@ -1043,7 +1160,17 @@
             const victimObj = self.createSOSMarker(map, currentLat, currentLng, options.victimLabel || "YOU (DISTRESS LOCATION)");
 
             // 2. Add 3 km Emergency Assistance Zone Circle
-            const circle = self.createRadiusCircle(map, currentLat, currentLng, radiusMeters);
+            const circle = self.createRadiusCircle(map, currentLat, currentLng, radiusMeters, {
+                strokeColor: '#dc2626',
+                strokeOpacity: 0.7,
+                strokeWeight: 1.5,
+                fillColor: '#ef4444',
+                fillOpacity: 0.04,
+                dashArray: '6, 6'
+            });
+
+            // 2b. Add Continuously Rotating 360-Degree Radar Beam Sweep
+            const radarSweep = self.createRadarSweep(map, currentLat, currentLng, radiusMeters);
 
             // 3. Helper Markers Array
             let helperMarkers = [];
@@ -1073,7 +1200,7 @@
                 activeHelpersData = helpers;
 
                 helpers.forEach(h => {
-                    const hObj = self.createHelperMarker(map, h, h.is_demo);
+                    const hObj = self.createHelperMarker(map, h, h.is_demo, currentLat, currentLng);
                     if (hObj) helperMarkers.push(hObj);
                 });
 
@@ -1214,6 +1341,9 @@
                     if (circle && circle.setCenter) {
                         circle.setCenter({ lat: currentLat, lng: currentLng });
                     }
+                    if (radarSweep && radarSweep.setCenter) {
+                        radarSweep.setCenter(currentLat, currentLng);
+                    }
                     fetchLiveOrFallback();
                 },
                 jitterPositions: function () {
@@ -1231,6 +1361,7 @@
                     else if (circle && circle.setMap) circle.setMap(null);
                     if (victimObj && victimObj.remove) victimObj.remove();
                     else if (victimObj && victimObj.setMap) victimObj.setMap(null);
+                    if (radarSweep && radarSweep.remove) radarSweep.remove();
                 }
             };
         }

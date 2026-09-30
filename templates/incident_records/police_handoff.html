@@ -742,12 +742,16 @@ function initHandoffMap() {
 
     // 2. Protective Citizen Coverage Radius Circle (3 KM)
     GoogleMapsShield.createRadiusCircle(map, victimLat, victimLng, 3000, {
-        strokeColor: '#B3243A',
-        strokeOpacity: 0.8,
+        strokeColor: '#dc2626',
+        strokeOpacity: 0.7,
         strokeWeight: 1.5,
-        fillColor: '#B3243A',
-        fillOpacity: 0.05
+        fillColor: '#ef4444',
+        fillOpacity: 0.04,
+        dashArray: '6, 6'
     });
+    if (GoogleMapsShield.createRadarSweep) {
+        GoogleMapsShield.createRadarSweep(map, victimLat, victimLng, 3000);
+    }
 
     // 3. Breadcrumbs Route Trail (if any)
     if (breadcrumbs && breadcrumbs.length > 0) {

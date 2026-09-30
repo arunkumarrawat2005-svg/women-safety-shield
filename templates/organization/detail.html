@@ -300,12 +300,16 @@
 
     // 1.5 km response radius circle
     GoogleMapsShield.createRadiusCircle(map, lat, lng, 1500, {
-      strokeColor: '#B3243A',
-      strokeOpacity: 0.8,
+      strokeColor: '#dc2626',
+      strokeOpacity: 0.7,
       strokeWeight: 1.5,
-      fillColor: '#B3243A',
-      fillOpacity: 0.1
+      fillColor: '#ef4444',
+      fillOpacity: 0.04,
+      dashArray: '6, 6'
     });
+    if (GoogleMapsShield.createRadarSweep) {
+      GoogleMapsShield.createRadarSweep(map, lat, lng, 1500);
+    }
   }
 
   document.addEventListener('DOMContentLoaded', function() {
