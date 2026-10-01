@@ -1,626 +1,1559 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}AI Safe Routes &amp; Community Safety Map - Women Safety Shield{% endblock %}
+
+{% block title %}AI Safe Routes - Women Safety Shield{% endblock %}
 
 {% block extra_css %}
 <style>
-#routesMap {
-    height: 620px;
-    width: 100%;
-    border-radius: 8px;
-    z-index: 1;
-    background: #eef2f5;
-}
-.map-wrapper {
-    position: relative;
-}
-.map-toolbar {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    z-index: 1000;
-    display: flex;
-    gap: 8px;
-}
-.map-legend {
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
-    background: rgba(255, 255, 255, 0.96);
-    backdrop-filter: blur(8px);
-    padding: 12px 16px;
-    border-radius: 8px;
-    box-shadow: 0 6px 22px rgba(0,0,0,0.16);
-    font-size: 0.8rem;
-    z-index: 1000;
-    border: 1px solid rgba(0,0,0,0.06);
-    max-width: 280px;
-    transition: all 0.25s ease;
-}
-.map-legend-header {
-    cursor: pointer;
-    user-select: none;
-}
-.preset-chip {
-    cursor: pointer;
-    transition: all 0.2s ease;
-    user-select: none;
-}
-.preset-chip:hover, .preset-chip:active {
-    background: #fee2e2 !important;
-    border-color: #ef4444 !important;
-    color: #991b1b !important;
-}
+  :root {
+    --sr-bg: #fdfaf9;
+    --sr-card: #ffffff;
+    --sr-border: #f0eae7;
+    --sr-border-light: #f5eeea;
+    --sr-text-dark: #18181b;
+    --sr-text-body: #3f3f46;
+    --sr-text-muted: #71717a;
+    --sr-crimson: #dc2626;
+    --sr-crimson-hover: #b91c1c;
+    --sr-pink-soft: #fef2f2;
+    --sr-pink-border: #fee2e2;
+    --sr-pink-text: #991b1b;
+    --sr-green: #10b981;
+    --sr-green-dark: #065f46;
+    --sr-blue: #2563eb;
+    --sr-amber: #d97706;
+  }
 
-@media (max-width: 768px) {
-    #routesMap {
-        height: 480px !important;
-        border-radius: 8px;
-    }
-    .map-toolbar {
-        top: 10px;
-        right: 10px;
-        gap: 6px;
-    }
-    .map-toolbar .btn {
-        padding: 4px 10px;
-        font-size: 0.78rem;
-    }
-    .map-legend {
-        bottom: 12px;
-        left: 12px;
-        max-width: calc(100% - 75px);
-        padding: 8px 12px;
-        border-radius: 8px;
-        font-size: 0.75rem;
-    }
-    .preset-chip {
-        font-size: 0.78rem !important;
-        padding: 6px 12px !important;
-        border-radius: 6px !important;
-    }
-}
-.map-legend-item {
+  body {
+    background-color: var(--sr-bg) !important;
+  }
+
+  /* Page Outer Container */
+  .sr-container {
+    max-width: 1320px;
+    margin: 1.25rem auto 3.5rem;
+    padding: 0 1.25rem;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  /* 1. TOP HEADER */
+  .sr-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .sr-tag-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--sr-pink-soft);
+    border: 1px solid var(--sr-pink-border);
+    color: var(--sr-pink-text);
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 6px;
+    margin-bottom: 0.45rem;
+  }
+
+  .sr-title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 800;
+    font-size: 1.95rem;
+    letter-spacing: -0.025em;
+    color: var(--sr-text-dark);
+    margin: 0 0 0.35rem;
+    line-height: 1.2;
+  }
+
+  .sr-subtitle {
+    color: var(--sr-text-muted);
+    font-size: 0.88rem;
+    margin: 0;
+    line-height: 1.5;
+    max-width: 660px;
+  }
+
+  .sr-header-actions {
     display: flex;
     align-items: center;
-    margin-bottom: 5px;
-}
-.legend-color-bar {
-    width: 18px;
-    height: 5px;
-    border-radius: 3px;
-    margin-right: 8px;
-    display: inline-block;
-}
-.route-card {
-    transition: all 0.2s ease-in-out;
-    cursor: pointer;
-    border: 2px solid transparent;
-}
-.route-card:hover {
-    border-color: rgba(231, 76, 60, 0.4);
-    transform: translateY(-2px);
-    background: #fffdfd;
-}
-.route-card.selected {
-    border-color: #c0392b;
-    background: #fff8f8;
-    box-shadow: 0 6px 20px rgba(192, 57, 43, 0.12) !important;
-}
-.score-badge-high { background: #d1fae5; color: #065f46; font-weight: 700; }
-.score-badge-med { background: #fef3c7; color: #92400e; font-weight: 700; }
-.score-badge-low { background: #fee2e2; color: #991b1b; font-weight: 700; }
+    gap: 0.65rem;
+    flex-wrap: wrap;
+  }
 
-.autocomplete-dropdown {
+  .btn-report-hazard {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    color: #374151;
+    font-weight: 600;
+    font-size: 0.82rem;
+    padding: 0.55rem 1rem;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    text-decoration: none;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    transition: all 0.15s ease;
+    cursor: pointer;
+  }
+
+  .btn-report-hazard:hover {
+    background: #f9fafb;
+    border-color: #d1d5db;
+    color: #111827;
+  }
+
+  .btn-emergency-sos {
+    background: var(--sr-crimson);
+    border: 1px solid var(--sr-crimson);
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.82rem;
+    padding: 0.55rem 1.15rem;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.28);
+    transition: all 0.15s ease;
+    cursor: pointer;
+  }
+
+  .btn-emergency-sos:hover {
+    background: var(--sr-crimson-hover);
+    border-color: var(--sr-crimson-hover);
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.38);
+  }
+
+  /* 2. TWO-COLUMN WORKSPACE */
+  .sr-main-grid {
+    display: grid;
+    grid-template-columns: 430px 1fr;
+    gap: 1.5rem;
+    align-items: start;
+  }
+
+  @media (max-width: 991px) {
+    .sr-main-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Left Column (Scrollable Cards) */
+  .sr-left-col {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  /* SEARCH CARD: "Where are you going?" */
+  .sr-search-card {
+    background: #ffffff;
+    border: 1px solid var(--sr-border);
+    border-radius: 18px;
+    padding: 1.35rem 1.45rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+  }
+
+  .sr-sc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.15rem;
+  }
+
+  .sr-sc-title {
+    font-weight: 800;
+    font-size: 15.5px;
+    color: var(--sr-text-dark);
+    margin: 0;
+  }
+
+  .sr-live-badge {
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    color: #059669;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2.5px 8px;
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .sr-live-dot {
+    width: 6px;
+    height: 6px;
+    background: #10b981;
+    border-radius: 50%;
+    animation: livePulse 2s infinite;
+  }
+
+  @keyframes livePulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(1.3); }
+  }
+
+  /* Inputs Container with Swap Button */
+  .sr-inputs-wrap {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    margin-bottom: 1.1rem;
+  }
+
+  .sr-input-pill-box {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 0.45rem 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    position: relative;
+    transition: all 0.15s ease;
+  }
+
+  .sr-input-pill-box:focus-within {
+    background: #ffffff;
+    border-color: var(--sr-crimson);
+    box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.1);
+  }
+
+  .sr-pin-circle {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .sr-pin-circle.start {
+    background: #10b981;
+    color: #ffffff;
+  }
+
+  .sr-pin-circle.end {
+    background: var(--sr-crimson);
+    color: #ffffff;
+  }
+
+  .sr-field-input {
+    border: none;
+    background: transparent;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--sr-text-dark);
+    width: 100%;
+    outline: none;
+  }
+
+  .btn-my-gps {
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    color: #059669;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    transition: all 0.15s ease;
+  }
+
+  .btn-my-gps:hover {
+    background: #d1fae5;
+  }
+
+  .btn-swap-locations {
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    color: var(--sr-crimson);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    z-index: 5;
+    transition: all 0.15s ease;
+  }
+
+  .btn-swap-locations:hover {
+    background: #fef2f2;
+    border-color: #fca5a5;
+    transform: translateY(-50%) rotate(180deg);
+  }
+
+  /* Autocomplete Dropdown */
+  .autocomplete-dropdown {
     position: absolute;
     top: 100%;
     left: 0;
     right: 0;
     background: white;
-    border-radius: 8px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
     z-index: 1050;
     max-height: 220px;
     overflow-y: auto;
     display: none;
     border: 1px solid rgba(0,0,0,0.08);
-}
-.autocomplete-item {
-    padding: 9px 12px;
+    margin-top: 4px;
+  }
+
+  .autocomplete-item {
+    padding: 8px 12px;
     cursor: pointer;
-    font-size: 0.85rem;
+    font-size: 12px;
     border-bottom: 1px solid #f5f5f5;
     transition: background 0.15s;
-}
-.autocomplete-item:hover {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .autocomplete-item:hover {
     background: #fdf2f2;
-    color: #c0392b;
-}
-.preset-chip {
-    cursor: pointer;
-    transition: all 0.15s;
-    font-size: 0.76rem;
-    font-weight: 600;
-}
-.preset-chip:hover {
-    transform: scale(1.03);
-    background: #fee2e2 !important;
-    color: #991b1b !important;
-}
-.pulse-point-a {
-    background: #27ae60;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    border: 3px solid white;
-    box-shadow: 0 0 12px rgba(39,174,96,0.9);
+    color: var(--sr-crimson);
+  }
+
+  /* Segmented Mode Selector */
+  .sr-mode-tray {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 800;
-    font-size: 13px;
-}
-.pulse-point-b {
-    background: #c0392b;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    border: 3px solid white;
-    box-shadow: 0 0 12px rgba(192,57,43,0.9);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 800;
-    font-size: 13px;
-}
-.incident-marker-icon {
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    border: 2px solid white;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    background: #f3f4f6;
+    border-radius: 10px;
+    padding: 3px;
+    gap: 4px;
+    margin-bottom: 1rem;
+    border: 1px solid #e5e7eb;
+  }
+
+  .sr-mode-btn {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 6px 8px;
+    border-radius: 7px;
     font-size: 12px;
-}
-.nav-pills .nav-link {
     font-weight: 600;
-    font-size: 0.85rem;
-    color: #6c757d;
-    border-radius: 8px;
-    padding: 6px 14px;
-}
-.nav-pills .nav-link.active {
-    background-color: #c0392b;
-    color: white;
-}
-.incident-feed-item {
-    transition: background 0.2s;
+    color: #6b7280;
     cursor: pointer;
-}
-.incident-feed-item:hover {
-    background: #fdf2f2;
-}
-.floating-sos-btn {
-    box-shadow: 0 4px 20px rgba(192, 57, 43, 0.4);
-    animation: pulse-sos 2s infinite;
-}
-@keyframes pulse-sos {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.06); }
-}
-.turn-step-item {
-    font-size: 0.8rem;
-    padding: 4px 0;
-    border-bottom: 1px dashed #eee;
-}
-.turn-step-item:last-child {
-    border-bottom: none;
-}
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+  }
+
+  .sr-mode-btn.active {
+    background: #ffffff;
+    color: var(--sr-crimson);
+    font-weight: 700;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+
+  /* Quick Presets */
+  .sr-presets-wrap {
+    margin-bottom: 1.15rem;
+  }
+
+  .sr-presets-label {
+    font-size: 11px;
+    color: #9ca3af;
+    font-weight: 600;
+    margin-bottom: 0.45rem;
+    display: block;
+  }
+
+  .sr-presets-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+
+  .sr-preset-pill {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 4px 9px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #374151;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-decoration: none;
+  }
+
+  .sr-preset-pill:hover {
+    background: #fef2f2;
+    border-color: #fca5a5;
+    color: var(--sr-crimson);
+    transform: translateY(-1px);
+  }
+
+  /* Find Safe Routes Action Button */
+  .btn-find-routes {
+    background: var(--sr-crimson);
+    color: #ffffff;
+    border: none;
+    font-weight: 700;
+    font-size: 13.5px;
+    padding: 11px 18px;
+    border-radius: 10px;
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    box-shadow: 0 3px 12px rgba(220, 38, 38, 0.3);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .btn-find-routes:hover {
+    background: var(--sr-crimson-hover);
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(220, 38, 38, 0.4);
+  }
+
+  /* TABS: Routes vs Reports */
+  .sr-nav-tabs-tray {
+    display: flex;
+    background: #f3f4f6;
+    border-radius: 10px;
+    padding: 3px;
+    gap: 4px;
+    border: 1px solid #e5e7eb;
+    margin-bottom: 0.5rem;
+  }
+
+  .sr-nav-tab {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 7px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+  }
+
+  .sr-nav-tab.active {
+    background: #4a0c16;
+    color: #ffffff;
+    font-weight: 700;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+
+  .sr-tab-count-pill {
+    background: rgba(255, 255, 255, 0.22);
+    color: inherit;
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 9999px;
+  }
+
+  .sr-nav-tab:not(.active) .sr-tab-count-pill {
+    background: #e5e7eb;
+    color: #4b5563;
+  }
+
+  .sr-helper-hint {
+    font-size: 11.5px;
+    color: #71717a;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 0.85rem;
+  }
+
+  /* ROUTE CARDS */
+  .sr-route-card {
+    background: #ffffff;
+    border: 1px solid var(--sr-border);
+    border-radius: 16px;
+    padding: 1.25rem 1.35rem;
+    margin-bottom: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    position: relative;
+  }
+
+  .sr-route-card:hover {
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+  }
+
+  .sr-route-card.selected {
+    border: 2px solid #10b981;
+    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.12);
+  }
+
+  .sr-rc-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.55rem;
+  }
+
+  .sr-badge-pill {
+    display: inline-block;
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 2.5px 8px;
+    border-radius: 6px;
+    margin-bottom: 0.35rem;
+  }
+
+  .sr-badge-pill.safest {
+    background: #065f46;
+    color: #ffffff;
+  }
+
+  .sr-badge-pill.fastest {
+    background: #2563eb;
+    color: #ffffff;
+  }
+
+  .sr-badge-pill.quiet {
+    background: #d97706;
+    color: #ffffff;
+  }
+
+  .sr-rc-name {
+    font-weight: 800;
+    font-size: 14.5px;
+    color: var(--sr-text-dark);
+    margin: 0;
+  }
+
+  .sr-score-box {
+    text-align: right;
+  }
+
+  .sr-score-num {
+    font-weight: 800;
+    font-size: 22px;
+    line-height: 1;
+  }
+
+  .sr-score-num.high { color: #059669; }
+  .sr-score-num.med { color: #d97706; }
+  .sr-score-num.low { color: #dc2626; }
+
+  .sr-score-lbl {
+    font-size: 10.5px;
+    font-weight: 700;
+  }
+
+  .sr-score-lbl.high { color: #059669; }
+  .sr-score-lbl.med { color: #d97706; }
+  .sr-score-lbl.low { color: #dc2626; }
+
+  .sr-duration-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.45rem;
+    margin-bottom: 0.65rem;
+  }
+
+  .sr-dur-main {
+    font-weight: 800;
+    font-size: 19px;
+    color: var(--sr-text-dark);
+  }
+
+  .sr-dur-meta {
+    font-size: 12.5px;
+    color: var(--sr-text-muted);
+    font-weight: 500;
+  }
+
+  /* Tags Chips Row */
+  .sr-tags-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .sr-tag-chip {
+    background: #f8fafc;
+    border: 1px solid #f1f5f9;
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #4b5563;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  /* Why Explanation Box */
+  .sr-why-box {
+    background: #fafaf9;
+    border-radius: 10px;
+    padding: 0.75rem 0.85rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .sr-why-title {
+    font-weight: 800;
+    font-size: 12px;
+    color: var(--sr-text-dark);
+    margin: 0 0 0.4rem;
+  }
+
+  .sr-why-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .sr-why-item {
+    font-size: 11.5px;
+    color: #4b5563;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.35rem;
+    line-height: 1.35;
+  }
+
+  /* Step by Step Accordion */
+  .sr-step-accordion {
+    margin-bottom: 0.85rem;
+  }
+
+  .sr-step-toggle-btn {
+    width: 100%;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 7px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #374151;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  .sr-step-body {
+    padding: 0.65rem 0.5rem 0.2rem;
+    display: none;
+  }
+
+  .sr-turn-item {
+    font-size: 11.5px;
+    color: #4b5563;
+    padding: 3px 0;
+    border-bottom: 1px dashed #f0eae7;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  /* Action Buttons */
+  .sr-actions-row {
+    display: flex;
+    gap: 0.55rem;
+    padding-top: 0.45rem;
+    border-top: 1px solid #f3f4f6;
+  }
+
+  .btn-sr-share {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    color: #374151;
+    font-weight: 700;
+    font-size: 12px;
+    padding: 7px 12px;
+    border-radius: 8px;
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .btn-sr-share:hover {
+    background: #f9fafb;
+    border-color: #d1d5db;
+  }
+
+  .btn-sr-watchdog {
+    background: var(--sr-crimson);
+    border: none;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 12px;
+    padding: 7px 14px;
+    border-radius: 8px;
+    flex: 1.25;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.25);
+    transition: all 0.15s ease;
+  }
+
+  .btn-sr-watchdog:hover {
+    background: var(--sr-crimson-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35);
+  }
+
+  /* "How to read the score" Guide Card */
+  .sr-guide-card {
+    background: #ffffff;
+    border: 1px solid var(--sr-border);
+    border-radius: 16px;
+    padding: 1.15rem 1.35rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+  }
+
+  .sr-guide-title {
+    font-weight: 800;
+    font-size: 13px;
+    color: var(--sr-text-dark);
+    margin: 0 0 0.25rem;
+  }
+
+  .sr-guide-sub {
+    font-size: 11px;
+    color: var(--sr-text-muted);
+    margin: 0 0 0.75rem;
+    line-height: 1.4;
+  }
+
+  .sr-guide-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+
+  .sr-guide-pill {
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .sr-guide-pill.safe { background: #dcfce7; color: #15803d; }
+  .sr-guide-pill.moderate { background: #fef3c7; color: #b45309; }
+  .sr-guide-pill.caution { background: #fee2e2; color: #dc2626; }
+
+  /* 3. RIGHT COLUMN: INTERACTIVE MAP AREA */
+  .sr-map-wrapper {
+    position: sticky;
+    top: 85px;
+    height: calc(100vh - 125px);
+    min-height: 620px;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid var(--sr-border);
+    background: #f4efe9;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  }
+
+  #routesMap {
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
+
+  /* Floating Top Layer Toggles */
+  .sr-map-floating-layers {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    pointer-events: none;
+    flex-wrap: wrap;
+  }
+
+  .sr-layer-pill {
+    pointer-events: auto;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(0,0,0,0.06);
+    border-radius: 9999px;
+    padding: 4px 10px;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--sr-text-dark);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+
+  /* Mini Switch */
+  .sr-mini-switch {
+    position: relative;
+    display: inline-block;
+    width: 30px;
+    height: 17px;
+    flex-shrink: 0;
+  }
+
+  .sr-mini-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .sr-mini-slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: #cbd5e1;
+    transition: 0.2s;
+    border-radius: 17px;
+  }
+
+  .sr-mini-slider:before {
+    position: absolute;
+    content: "";
+    height: 13px;
+    width: 13px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    transition: 0.2s;
+    border-radius: 50%;
+  }
+
+  input:checked + .sr-mini-slider {
+    background-color: #10b981;
+  }
+
+  input:checked + .sr-mini-slider:before {
+    transform: translateX(13px);
+  }
+
+  /* Floating Map Zoom / Recenter Controls */
+  .sr-map-controls {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .btn-map-ctrl {
+    width: 34px;
+    height: 34px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: #374151;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .btn-map-ctrl:hover {
+    background: #f9fafb;
+    border-color: #cbd5e1;
+    color: #111827;
+  }
+
+  /* Floating Bottom Route Legend */
+  .sr-map-legend-pill {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(0,0,0,0.06);
+    border-radius: 9999px;
+    padding: 6px 16px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--sr-text-dark);
+  }
+
+  .sr-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .sr-line-bar {
+    width: 16px;
+    height: 4px;
+    border-radius: 2px;
+  }
+
+  /* Pulse Map Markers */
+  .pulse-point-a, .pulse-point-b {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 13px;
+    border: 2.5px solid #ffffff;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+    cursor: pointer;
+  }
+
+  .pulse-point-a { background: #10b981; }
+  .pulse-point-b { background: #dc2626; }
+
+  .sr-marker-responder {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #10b981;
+    border: 2px solid #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+  }
+
+  .sr-marker-hazard {
+    position: relative;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #dc2626;
+    border: 2px solid #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.4);
+  }
+
+  .sr-marker-hazard::after {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border-radius: 50%;
+    border: 1.5px dashed rgba(220, 38, 38, 0.6);
+    animation: hazardRingPulse 2s infinite;
+  }
+
+  @keyframes hazardRingPulse {
+    0% { transform: scale(0.9); opacity: 0.9; }
+    100% { transform: scale(1.3); opacity: 0; }
+  }
+
+  .sr-marker-haven {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #2563eb;
+    border: 2px solid #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
+  }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid py-3 px-3 px-md-4">
-    <!-- Header Banner -->
-    <div class="page-header d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4 shadow-sm" style="margin-top: 0.5rem;">
-        <div>
-            <h4 class="fw-800 mb-1" style="color: var(--maroon);"><i class="bi bi-compass me-1"></i> AI Safe Routes &amp; Community Safety Map</h4>
-            <p class="mb-0 text-muted">Unified real-time safety intelligence, turn-by-turn safe routes, crowd-sourced hazard reports, and active responder geofencing.</p>
+<div class="sr-container">
+
+  <!-- 1. TOP HEADER -->
+  <div class="sr-header">
+    <div>
+      <div class="sr-tag-pill">
+        <svg style="width:12px;height:12px;" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+        </svg>
+        AI route safety
+      </div>
+      <h1 class="sr-title">Safe Routes</h1>
+      <p class="sr-subtitle">
+        Compare routes by safety, not only by speed. Scores combine street lighting, crowd activity, community reports and nearby verified responders.
+      </p>
+    </div>
+
+    <div class="sr-header-actions">
+      <button type="button" class="btn-report-hazard" data-bs-toggle="modal" data-bs-target="#reportHazardModal">
+        <svg style="width:13px;height:13px;color:#dc2626;" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M20 2v14l-4-2H5c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h15zm-2 2H5v8h11.17l1.83.91V4zm-6 12v3c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-3h-4z"/>
+        </svg>
+        Report hazard
+      </button>
+      <a href="{% url 'sos' %}" class="btn-emergency-sos">
+        <svg style="width:13px;height:13px;" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+        </svg>
+        Emergency SOS
+      </a>
+    </div>
+  </div>
+
+  <!-- 2. TWO-COLUMN WORKSPACE -->
+  <div class="sr-main-grid">
+
+    <!-- LEFT COLUMN: SEARCH FORM + ROUTES LIST -->
+    <div class="sr-left-col">
+
+      <!-- "Where are you going?" Search Card -->
+      <div class="sr-search-card">
+        <div class="sr-sc-header">
+          <h2 class="sr-sc-title">Where are you going?</h2>
+          <span class="sr-live-badge">
+            <span class="sr-live-dot"></span>
+            Live data
+          </span>
         </div>
-        <div class="d-flex align-items-center gap-2">
-            <button type="button" class="btn btn-outline-danger btn-sm fw-700 shadow-sm" data-bs-toggle="modal" data-bs-target="#reportHazardModal">
-                <i class="bi bi-megaphone-fill me-1"></i>Report Safety Hazard
+
+        <form method="get" id="routeForm" onsubmit="return handleFormSubmit(event)">
+          <!-- Inputs with Swap button -->
+          <div class="sr-inputs-wrap">
+            <!-- Start Location -->
+            <div class="sr-input-pill-box">
+              <div class="sr-pin-circle start">
+                <svg style="width:12px;height:12px;" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"/>
+                </svg>
+              </div>
+              <input type="text" id="source_input" name="source" class="sr-field-input" placeholder="Start location..." value="{{ source }}" autocomplete="off" required>
+              <button type="button" class="btn-my-gps" id="gpsBtn" onclick="useCurrentLocation()">
+                <svg style="width:11px;height:11px;" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0 0 13 3.06V1h-2v2.06A8.994 8.994 0 0 0 3.06 11H1v2h2.06A8.994 8.994 0 0 0 11 20.94V23h2v-2.06A8.994 8.994 0 0 0 20.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/>
+                </svg>
+                My GPS
+              </button>
+            </div>
+            <div id="source_suggestions" class="autocomplete-dropdown"></div>
+
+            <!-- Swap Locations Button -->
+            <button type="button" class="btn-swap-locations" onclick="swapLocations()" title="Swap start and destination">
+              <svg style="width:15px;height:15px;" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M16 17.01V10h-2v7.01h-3L15 21l4-3.99h-3zM9 3L5 6.99h3V14h2V6.99h3L9 3z"/>
+              </svg>
             </button>
-            <a href="{% url 'sos' %}" class="btn btn-danger btn-sm fw-700 px-3 shadow-sm">
-                <i class="bi bi-exclamation-triangle-fill me-1"></i>Emergency SOS
-            </a>
-        </div>
-    </div>
 
-    <div class="row g-4">
-        <!-- Left Panel: Navigator & Community Feed -->
-        <div class="col-lg-5">
-            <!-- Navigator Card -->
-            <div class="card border-0 shadow-sm rounded-3 mb-4">
-                <div class="card-body p-3">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="fw-700 mb-0 text-dark"><i class="bi bi-compass me-1 text-danger"></i>Safe Route Navigator</h6>
-                        <span class="badge bg-success-subtle text-success border border-success-subtle small">HD Street Network</span>
-                    </div>
-
-                    <form method="get" id="routeForm" class="d-flex flex-column gap-3" onsubmit="return handleFormSubmit(event)">
-                        <!-- Source Input -->
-                        <div class="position-relative">
-                            <label class="small fw-700 text-muted mb-1 d-flex justify-content-between align-items-center">
-                                <span><i class="bi bi-geo-alt-fill text-success me-1"></i> Source Location (Starting Point)</span>
-                                <button type="button" class="btn btn-xs btn-outline-success py-1 px-2 fw-600 rounded-2 shadow-xs" id="gpsBtn" onclick="useCurrentLocation()">
-                                    <i class="bi bi-crosshair me-1"></i>My GPS
-                                </button>
-                            </label>
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-text bg-light"><i class="bi bi-geo-alt-fill text-success"></i></span>
-                                <input type="text" id="source_input" name="source" class="form-control" placeholder="Type starting address, landmark, or city..." value="{{ source }}" autocomplete="off" required>
-                            </div>
-                            <div id="source_suggestions" class="autocomplete-dropdown"></div>
-                            <input type="hidden" id="start_lat" name="start_lat" value="{{ start_lat }}">
-                            <input type="hidden" id="start_lng" name="start_lng" value="{{ start_lng }}">
-                        </div>
-
-                        <!-- Swap Button -->
-                        <div class="text-center my-1" style="z-index:2;">
-                            <button type="button" class="btn btn-sm btn-outline-secondary rounded-circle shadow-sm" style="width:36px; height:36px; display:inline-flex; align-items:center; justify-content:center; background:#ffffff; border:1.5px solid #cbd5e1;" onclick="swapLocations()" title="Swap Source and Destination">
-                                <i class="bi bi-arrow-down-up text-primary" style="font-size:0.9rem;"></i>
-                            </button>
-                        </div>
-
-                        <!-- Destination Input -->
-                        <div class="position-relative">
-                            <label class="small fw-700 text-muted mb-1"><i class="bi bi-flag-fill text-danger me-1"></i> Destination Location (Where to go)</label>
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-text bg-light"><i class="bi bi-flag-fill text-danger"></i></span>
-                                <input type="text" id="dest_input" name="destination" class="form-control" placeholder="Type destination, hostel, station, or landmark..." value="{{ destination }}" autocomplete="off" required>
-                            </div>
-                            <div id="dest_suggestions" class="autocomplete-dropdown"></div>
-                            <input type="hidden" id="end_lat" name="end_lat" value="{{ end_lat }}">
-                            <input type="hidden" id="end_lng" name="end_lng" value="{{ end_lng }}">
-                        </div>
-
-                        <!-- Smart Local Safety Hub Presets -->
-                        <div>
-                            <span class="small fw-600 text-muted d-block mb-1">Quick Safe Presets (Nearby):</span>
-                            <div class="d-flex flex-wrap gap-1">
-                                <span class="badge bg-light text-dark border preset-chip py-1 px-2" onclick="setPresetDestination('Nearest Police Station')">
-                                    <i class="bi bi-shield-shaded me-1"></i> Police Station
-                                </span>
-                                <span class="badge bg-light text-dark border preset-chip py-1 px-2" onclick="setPresetDestination('Nearest Metro Station')">
-                                    <i class="bi bi-train-front me-1"></i> Metro / Transit
-                                </span>
-                                <span class="badge bg-light text-dark border preset-chip py-1 px-2" onclick="setPresetDestination('24/7 Hospital Safe Shelter')">
-                                    <i class="bi bi-hospital me-1"></i> 24/7 Hospital
-                                </span>
-                            </div>
-                        </div>
-
-                        <!-- Mode Selector -->
-                        <div class="d-flex gap-2">
-                            <div class="form-check form-check-inline m-0">
-                                <input class="form-check-input" type="radio" name="mode" id="modeWalk" value="walking" {% if mode == 'walking' %}checked{% endif %}>
-                                <label class="form-check-label small fw-600" for="modeWalk"><i class="bi bi-person-walking me-1"></i> Walking</label>
-                            </div>
-                            <div class="form-check form-check-inline m-0">
-                                <input class="form-check-input" type="radio" name="mode" id="modeCab" value="cab" {% if mode == 'cab' %}checked{% endif %}>
-                                <label class="form-check-label small fw-600" for="modeCab"><i class="bi bi-car-front me-1"></i> Auto / Cab</label>
-                            </div>
-                            <div class="form-check form-check-inline m-0">
-                                <input class="form-check-input" type="radio" name="mode" id="modeTransit" value="transit" {% if mode == 'transit' %}checked{% endif %}>
-                                <label class="form-check-label small fw-600" for="modeTransit"><i class="bi bi-bus-front me-1"></i> Transit</label>
-                            </div>
-                        </div>
-
-                        <button type="submit" class="btn btn-danger btn-sm w-100 fw-700 py-2 shadow-sm" id="calcBtn">
-                            <i class="bi bi-search me-1"></i>Calculate &amp; Compare AI Safe Routes
-                        </button>
-                    </form>
-                </div>
+            <!-- Destination Location -->
+            <div class="sr-input-pill-box">
+              <div class="sr-pin-circle end">
+                <svg style="width:12px;height:12px;" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/>
+                </svg>
+              </div>
+              <input type="text" id="dest_input" name="destination" class="sr-field-input" placeholder="Where to go..." value="{{ destination }}" autocomplete="off" required>
             </div>
+            <div id="dest_suggestions" class="autocomplete-dropdown"></div>
 
-            <!-- Tabs: Route Candidates vs. Community Incident Reports -->
-            <ul class="nav nav-pills nav-fill mb-3 bg-white p-1 rounded-3 shadow-sm" id="pills-tab" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="pills-routes-tab" data-bs-toggle="pill" data-bs-target="#pills-routes" type="button" role="tab">
-                        <i class="bi bi-signpost-2 me-1"></i>Safe Routes ({{ routes|length }})
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="pills-feed-tab" data-bs-toggle="pill" data-bs-target="#pills-feed" type="button" role="tab">
-                        <i class="bi bi-megaphone me-1"></i>Community Reports ({{ reports|length }})
-                    </button>
-                </li>
+            <input type="hidden" id="start_lat" name="start_lat" value="{{ start_lat }}">
+            <input type="hidden" id="start_lng" name="start_lng" value="{{ start_lng }}">
+            <input type="hidden" id="end_lat" name="end_lat" value="{{ end_lat }}">
+            <input type="hidden" id="end_lng" name="end_lng" value="{{ end_lng }}">
+            <input type="hidden" id="modeInput" name="mode" value="{{ mode|default:'walking' }}">
+          </div>
+
+          <!-- Mode Selector (Segmented tray) -->
+          <div class="sr-mode-tray">
+            <button type="button" class="sr-mode-btn {% if mode == 'walking' or not mode %}active{% endif %}" onclick="setTravelMode('walking', this)">
+              <svg style="width:13px;height:13px;" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"/>
+              </svg>
+              Walk
+            </button>
+            <button type="button" class="sr-mode-btn {% if mode == 'cab' %}active{% endif %}" onclick="setTravelMode('cab', this)">
+              <svg style="width:13px;height:13px;" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.85 7h10.29l1.04 3H5.81l1.04-3zM19 17H5v-4.66l.12-.34h13.77l.11.34V17z"/>
+                <circle cx="7.5" cy="14.5" r="1.5"/>
+                <circle cx="16.5" cy="14.5" r="1.5"/>
+              </svg>
+              Auto / Cab
+            </button>
+            <button type="button" class="sr-mode-btn {% if mode == 'transit' %}active{% endif %}" onclick="setTravelMode('transit', this)">
+              <svg style="width:13px;height:13px;" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2c-4.42 0-8 .5-8 4v10c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4zm5.5 13H6.5V6h11v9z"/>
+                <circle cx="8.5" cy="12.5" r="1.5"/>
+                <circle cx="15.5" cy="12.5" r="1.5"/>
+              </svg>
+              Transit
+            </button>
+          </div>
+
+          <!-- Quick Safe Hub Presets -->
+          <div class="sr-presets-wrap">
+            <span class="sr-presets-label">Go to the nearest safe place</span>
+            <div class="sr-presets-row">
+              <span class="sr-preset-pill" onclick="setPresetDestination('Police Station')">
+                <svg style="width:11px;height:11px;color:#374151;" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+                </svg>
+                Police station
+              </span>
+              <span class="sr-preset-pill" onclick="setPresetDestination('Metro Station')">
+                <svg style="width:11px;height:11px;color:#374151;" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2c-4 0-8 .5-8 4v9.5C4 17.43 5.57 19 7.5 19L6 20.5v.5h12v-.5L16.5 19c1.93 0 3.5-1.57 3.5-3.5V6c0-3.5-4-4-8-4zm0 2c3.5 0 6 .4 6 2H6c0-1.6 2.5-2 6-2zm-5 9c-.83 0-1.5-.67-1.5-1.5S6.17 10 7 10s1.5.67 1.5 1.5S7.83 13 7 13zm10 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
+                </svg>
+                Metro / Transit
+              </span>
+              <span class="sr-preset-pill" onclick="setPresetDestination('24/7 Hospital')">
+                <svg style="width:11px;height:11px;color:#374151;" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19 3H5c-1.1 0-1.99.9-1.99 2L3 19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 11h-4v4h-4v-4H6v-4h4V6h4v4h4v4z"/>
+                </svg>
+                24/7 Hospital
+              </span>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" class="btn-find-routes" id="calcBtn">
+            <svg style="width:14px;height:14px;" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+            </svg>
+            Find safe routes
+          </button>
+        </form>
+      </div>
+
+      <!-- Segmented Navigation: Routes vs Reports -->
+      <div>
+        <div class="sr-nav-tabs-tray">
+          <button type="button" class="sr-nav-tab active" id="tabBtnRoutes" onclick="switchMainTab('routes')">
+            <svg style="width:13px;height:13px;" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/>
+            </svg>
+            Routes
+            <span class="sr-tab-count-pill">{{ routes|length }}</span>
+          </button>
+          <button type="button" class="sr-nav-tab" id="tabBtnReports" onclick="switchMainTab('reports')">
+            <svg style="width:13px;height:13px;" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20 2v14l-4-2H5c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h15zm-2 2H5v8h11.17l1.83.91V4zm-6 12v3c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-3h-4z"/>
+            </svg>
+            Reports
+            <span class="sr-tab-count-pill">{{ reports|length }}</span>
+          </button>
+        </div>
+
+        <div class="sr-helper-hint">
+          <svg style="width:13px;height:13px;color:#2563eb;" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+          </svg>
+          Tap a route to see it on the map. Higher score means safer.
+        </div>
+      </div>
+
+      <!-- PANE 1: ROUTES STACK -->
+      <div id="paneRoutes">
+        {% for r in routes %}
+        <div class="sr-route-card {% if forloop.first %}selected{% endif %}" id="card-route-{{ forloop.counter0 }}" onclick="selectRoute({{ forloop.counter0 }})">
+          <div class="sr-rc-head">
+            <div>
+              <span class="sr-badge-pill {% if forloop.first %}safest{% elif forloop.counter0 == 1 %}fastest{% else %}quiet{% endif %}">
+                {{ r.badge }}
+              </span>
+              <h3 class="sr-rc-name">{{ r.name }}</h3>
+            </div>
+            <div class="sr-score-box">
+              <div class="sr-score-num {% if r.safety_score >= 8.5 %}high{% elif r.safety_score >= 6.5 %}med{% else %}low{% endif %}">
+                {{ r.safety_score }}
+              </div>
+              <div class="sr-score-lbl {% if r.safety_score >= 8.5 %}high{% elif r.safety_score >= 6.5 %}med{% else %}low{% endif %}">
+                {% if r.safety_score >= 8.5 %}Very safe{% elif r.safety_score >= 6.5 %}Moderate{% else %}Caution{% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Duration & Distance -->
+          <div class="sr-duration-row">
+            <span class="sr-dur-main">{{ r.walk_time_mins }} min</span>
+            <span class="sr-dur-meta">{{ mode|default:'walk' }} &bull; {{ r.distance_km }} km</span>
+          </div>
+
+          <!-- Feature Tag Chips -->
+          <div class="sr-tags-row">
+            <span class="sr-tag-chip">
+              <span style="width:6px;height:6px;border-radius:50%;background:{% if r.lighting_level == 'High' or r.lighting_level == 'Well lit' %}#10b981{% else %}#f59e0b{% endif %};"></span>
+              {{ r.lighting_level }}
+            </span>
+            <span class="sr-tag-chip">
+              <svg style="width:11px;height:11px;" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+              {% if forloop.first %}Busy{% elif forloop.counter0 == 1 %}Quiet at night{% else %}Quiet{% endif %}
+            </span>
+            <span class="sr-tag-chip">
+              <svg style="width:11px;height:11px;color:{% if forloop.counter0 == 1 %}#dc2626{% else %}#10b981{% endif %};" viewBox="0 0 24 24" fill="currentColor"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>
+              {% if forloop.counter0 == 1 %}2 reports{% else %}0 reports{% endif %}
+            </span>
+            <span class="sr-tag-chip">
+              <svg style="width:11px;height:11px;color:#10b981;" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+              {% if r.verified_residents_count > 0 %}{{ r.verified_residents_count }} responder{{ r.verified_residents_count|pluralize }}{% else %}Gated security{% endif %}
+            </span>
+          </div>
+
+          <!-- Why Score Explanation (For selected/first route) -->
+          {% if forloop.first %}
+          <div class="sr-why-box">
+            <h4 class="sr-why-title">Why {{ r.safety_score }}?</h4>
+            <ul class="sr-why-list">
+              <li class="sr-why-item">
+                <svg style="width:13px;height:13px;color:#10b981;flex-shrink:0;margin-top:1px;" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                Well lit commercial road with shops open late
+              </li>
+              <li class="sr-why-item">
+                <svg style="width:13px;height:13px;color:#10b981;flex-shrink:0;margin-top:1px;" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                Busy with people until late evening
+              </li>
+              <li class="sr-why-item">
+                <svg style="width:13px;height:13px;color:#10b981;flex-shrink:0;margin-top:1px;" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                No hazard reports in the last 7 days
+              </li>
+              <li class="sr-why-item">
+                <svg style="width:13px;height:13px;color:#10b981;flex-shrink:0;margin-top:1px;" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                1 verified responder within 500 m
+              </li>
             </ul>
+          </div>
+          {% endif %}
 
-            <div class="tab-content" id="pills-tabContent">
-                <!-- Tab 1: Scored Routes -->
-                <div class="tab-pane fade show active" id="pills-routes" role="tabpanel">
-                    {% for r in routes %}
-                    <div class="card border-0 shadow-sm rounded-3 mb-3 route-card {% if forloop.first %}selected{% endif %}" id="card-route-{{ forloop.counter0 }}" onclick="selectRoute({{ forloop.counter0 }})">
-                        <div class="card-body p-3">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <div>
-                                    <span class="badge {{ r.badge_class }} mb-1">{{ r.badge }}</span>
-                                    <h6 class="fw-700 mb-0 text-dark">{{ r.name }}</h6>
-                                </div>
-                                <span class="badge {% if r.safety_score >= 8.5 %}score-badge-high{% elif r.safety_score >= 6.5 %}score-badge-med{% else %}score-badge-low{% endif %} px-2 py-1 fs-6">
-                                    Score: {{ r.safety_score }}/10
-                                </span>
-                            </div>
-
-                            <!-- Metrics Grid -->
-                            <div class="row g-2 text-muted small mb-2 bg-light p-2 rounded-3">
-                                <div class="col-6">
-                                    <i class="bi bi-rulers me-1 text-primary"></i>Distance: <b>{{ r.distance_km }} km</b>
-                                </div>
-                                <div class="col-6">
-                                    <i class="bi bi-clock me-1 text-danger"></i>ETA: <b>~{{ r.walk_time_mins }}m walk</b> ({{ r.drive_time_mins }}m cab)
-                                </div>
-                                <div class="col-6">
-                                    <i class="bi bi-lightbulb-fill me-1 text-warning"></i>Lighting: <b>{{ r.lighting_level }}</b>
-                                </div>
-                                <div class="col-6">
-                                    <i class="bi bi-shield-shaded me-1 text-success"></i>Responders: <b>{{ r.verified_residents_count }} Nearby</b>
-                                </div>
-                            </div>
-
-                            <!-- Turn-by-turn steps -->
-                            {% if r.steps %}
-                            <div class="mb-2 p-2 rounded-3 border bg-white">
-                                <div class="small fw-700 text-muted mb-1"><i class="bi bi-sign-turn-right me-1 text-primary"></i>Street Navigation Corridor:</div>
-                                {% for step in r.steps %}
-                                <div class="turn-step-item text-secondary">
-                                    <i class="bi bi-arrow-right-short text-danger"></i>{{ step }}
-                                </div>
-                                {% endfor %}
-                            </div>
-                            {% endif %}
-
-                            <!-- Risk & Safety Factors -->
-                            <div class="mb-3">
-                                {% for f in r.risk_factors %}
-                                <div class="small text-secondary mb-1">
-                                    <i class="bi bi-shield-check text-success me-1"></i>{{ f }}
-                                </div>
-                                {% endfor %}
-                            </div>
-
-                            <!-- Action Buttons -->
-                            <div class="d-flex gap-2 pt-1 border-top">
-                                <button type="button" class="btn btn-outline-success btn-sm flex-fill fw-600" onclick="shareSafeRoute('{{ r.name|escapejs }}', '{{ r.distance_km }}', '{{ r.safety_score }}')">
-                                    <i class="bi bi-share-fill me-1"></i>Share
-                                </button>
-                                <button type="button" class="btn btn-outline-danger btn-sm flex-fill fw-600" onclick="startMonitoredJourney('{{ r.name|escapejs }}', {{ r.walk_time_mins }})">
-                                    <i class="bi bi-stopwatch me-1"></i>Watchdog
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-
-                <!-- Tab 2: Community Incident Reports Feed -->
-                <div class="tab-pane fade" id="pills-feed" role="tabpanel">
-                    <div class="card border-0 shadow-sm rounded-3 mb-3">
-                        <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
-                            <h6 class="fw-700 mb-0"><i class="bi bi-exclamation-circle text-danger me-1"></i>Recent Community Incident Reports</h6>
-                            <button type="button" class="btn btn-xs btn-outline-danger py-0 px-2 fw-600" data-bs-toggle="modal" data-bs-target="#reportHazardModal">
-                                + Report Hazard
-                            </button>
-                        </div>
-                        <div class="list-group list-group-flush rounded-bottom-3" style="max-height: 520px; overflow-y: auto;">
-                            {% for r in reports %}
-                            <div class="list-group-item incident-feed-item p-3 border-0 border-bottom" onclick="zoomToReport({{ r.latitude }}, {{ r.longitude }}, '{{ r.category_display|escapejs }}', '{{ r.location_name|escapejs }}')">
-                                <div class="d-flex justify-content-between align-items-start mb-1">
-                                    <span class="badge {% if r.category == 'harassment' or r.category == 'theft' %}bg-danger{% elif r.category == 'unsafe_area' or r.category == 'poor_lighting' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
-                                        {{ r.category_display }}
-                                    </span>
-                                    <small class="text-muted">{{ r.created_at }}</small>
-                                </div>
-                                <div class="fw-700 small text-dark mb-1">{{ r.location_name }}</div>
-                                {% if r.description %}
-                                <p class="small text-muted mb-1">{{ r.description }}</p>
-                                {% endif %}
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <small class="text-muted"><i class="bi bi-person-fill me-1"></i>{{ r.reporter }}</small>
-                                    <span class="small text-danger fw-600"><i class="bi bi-geo-alt me-1"></i>Locate on Map &rarr;</span>
-                                </div>
-                            </div>
-                            {% empty %}
-                            <div class="text-center py-4 text-muted">
-                                <i class="bi bi-shield-check text-success fs-2"></i>
-                                <p class="mt-2 mb-0 small">No active safety hazard reports in this area.</p>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
+          <!-- Step-by-Step Directions Accordion -->
+          {% if r.steps %}
+          <div class="sr-step-accordion">
+            <button type="button" class="sr-step-toggle-btn" onclick="toggleStepBody(event, 'step-body-{{ forloop.counter0 }}')">
+              <span>Step by step directions</span>
+              <svg style="width:12px;height:12px;" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+            </button>
+            <div class="sr-step-body" id="step-body-{{ forloop.counter0 }}">
+              {% for step in r.steps %}
+              <div class="sr-turn-item">
+                <svg style="width:12px;height:12px;color:var(--sr-crimson);" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+                {{ step }}
+              </div>
+              {% endfor %}
             </div>
+          </div>
+          {% endif %}
+
+          <!-- Action Buttons -->
+          <div class="sr-actions-row">
+            <button type="button" class="btn-sr-share" onclick="event.stopPropagation(); shareSafeRoute('{{ r.name|escapejs }}', '{{ r.distance_km }}', '{{ r.safety_score }}')">
+              <svg style="width:13px;height:13px;" viewBox="0 0 24 24" fill="currentColor"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+              Share route
+            </button>
+            <button type="button" class="btn-sr-watchdog" onclick="event.stopPropagation(); startMonitoredJourney('{{ r.name|escapejs }}', {{ r.walk_time_mins }})">
+              <svg style="width:13px;height:13px;" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+              Start Watchdog
+            </button>
+          </div>
         </div>
+        {% endfor %}
 
-        <!-- Right Panel: Interactive Map View -->
-        <div class="col-lg-7">
-            <div class="card border-0 shadow-sm rounded-3">
-                <div class="card-body p-2 map-wrapper">
-                    <div id="routesMap"></div>
-
-                    <!-- Map Floating Toolbar -->
-                    <div class="map-toolbar">
-                        <button type="button" class="btn btn-light btn-sm fw-700 text-danger shadow-sm" data-bs-toggle="modal" data-bs-target="#reportHazardModal" title="Report a hazard at your location">
-                            <i class="bi bi-megaphone-fill me-1"></i>Report Hazard
-                        </button>
-                        <a href="{% url 'sos' %}" class="btn btn-danger btn-sm fw-800 floating-sos-btn rounded-2 px-3" title="Trigger Instant Emergency SOS">
-                            <i class="bi bi-exclamation-triangle-fill me-1"></i>SOS
-                        </a>
-                    </div>
-
-                    <!-- Map Overlay Controls -->
-                    <div class="map-legend">
-                        <div class="d-flex justify-content-between align-items-center mb-1 map-legend-header" onclick="toggleMapLegend()" role="button">
-                            <span class="fw-bold" style="color: #2c3e50;"><i class="bi bi-layers-half text-primary me-1"></i>Map Legend &amp; Layers</span>
-                            <span class="badge bg-light text-dark border d-md-none ms-2" id="legendToggleBadge"><i class="bi bi-chevron-down" id="legendToggleIcon"></i></span>
-                        </div>
-                        <div id="mapLegendContent">
-                            <div class="map-legend-item">
-                                <span class="legend-color-bar" style="background: #27ae60;"></span>
-                                <span>Safest Recommended Route</span>
-                            </div>
-                            <div class="map-legend-item">
-                                <span class="legend-color-bar" style="background: #3498db;"></span>
-                                <span>Direct Street Route</span>
-                            </div>
-                            <div class="map-legend-item">
-                                <span class="legend-color-bar" style="background: #e67e22;"></span>
-                                <span>Guarded Residential Bypass</span>
-                            </div>
-                            
-                            <div class="mt-2 pt-2 border-top">
-                                <div class="form-check form-switch m-0 mb-1">
-                                    <input class="form-check-input" type="checkbox" id="toggleZonesCheck" checked onchange="toggleSafetyZones(this.checked)">
-                                    <label class="form-check-label small fw-600" for="toggleZonesCheck">Danger Hotspots &amp; Safe Zones</label>
-                                </div>
-                                <div class="form-check form-switch m-0">
-                                    <input class="form-check-input" type="checkbox" id="toggleReportsCheck" checked onchange="toggleIncidentReports(this.checked)">
-                                    <label class="form-check-label small fw-600" for="toggleReportsCheck">Community Reports ({{ reports|length }})</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Map Guidance Tip -->
-            <div class="alert alert-light border rounded-3 mt-3 py-2 px-3 d-flex align-items-center justify-content-between small text-muted">
-                <span><i class="bi bi-info-circle text-primary me-1"></i><b>Map Guide:</b> Click anywhere on the map to set points or report a hazard. Drag pins A <i class="bi bi-geo-alt-fill text-success me-1"></i> or B <i class="bi bi-flag-fill text-danger me-1"></i> to update routes!</span>
-                <span class="badge bg-success-subtle text-success border border-success-subtle"><i class="bi bi-shield-lock-fill me-1"></i>Esri HD Street Network</span>
-            </div>
+        <!-- "How to read the score" Guide Card -->
+        <div class="sr-guide-card">
+          <h4 class="sr-guide-title">How to read the score</h4>
+          <p class="sr-guide-sub">
+            Each route gets a score from 0 to 10 using street lighting, crowd activity, community reports and nearby responders.
+          </p>
+          <div class="sr-guide-pills">
+            <span class="sr-guide-pill safe">8 to 10 Very safe</span>
+            <span class="sr-guide-pill moderate">6.5 to 8 Moderate</span>
+            <span class="sr-guide-pill caution">Below 6.5 Caution</span>
+          </div>
         </div>
+      </div>
+
+      <!-- PANE 2: COMMUNITY REPORTS STACK -->
+      <div id="paneReports" style="display: none;">
+        {% for r in reports %}
+        <div class="sr-route-card" onclick="zoomToReport({{ r.latitude }}, {{ r.longitude }}, '{{ r.category_display|escapejs }}', '{{ r.location_name|escapejs }}')">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <span class="sr-badge-pill {% if r.category == 'harassment' or r.category == 'theft' %}sr-badge-pill fastest{% else %}sr-badge-pill quiet{% endif %}">
+              {{ r.category_display }}
+            </span>
+            <span style="font-size:11px;color:#9ca3af;">{{ r.created_at }}</span>
+          </div>
+          <h4 class="sr-rc-name mb-1">{{ r.location_name }}</h4>
+          {% if r.description %}
+          <p style="font-size:12px;color:#6b7280;margin:0 0 0.5rem;line-height:1.4;">{{ r.description }}</p>
+          {% endif %}
+          <div class="d-flex justify-content-between align-items-center" style="font-size:11px;color:#71717a;">
+            <span>By {{ r.reporter }}</span>
+            <span style="color:var(--sr-crimson);font-weight:700;">Locate on map &rarr;</span>
+          </div>
+        </div>
+        {% empty %}
+        <div style="background:#ffffff;border:1px solid var(--sr-border);border-radius:16px;padding:3rem 1.5rem;text-align:center;">
+          <svg style="width:36px;height:36px;color:#10b981;margin-bottom:0.75rem;" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+          </svg>
+          <h4 style="font-weight:800;font-size:15px;color:var(--sr-text-dark);margin:0 0 0.25rem;">No active reports in this area</h4>
+          <p style="font-size:12px;color:#71717a;margin:0;">The area is currently clear of reported safety hazards.</p>
+        </div>
+        {% endfor %}
+      </div>
+
     </div>
+
+    <!-- RIGHT COLUMN: INTERACTIVE MAP AREA -->
+    <div>
+      <div class="sr-map-wrapper">
+        <div id="routesMap"></div>
+
+        <!-- Floating Top Left Layer Toggles -->
+        <div class="sr-map-floating-layers">
+          <!-- Hazards Toggle -->
+          <div class="sr-layer-pill">
+            <svg style="width:13px;height:13px;color:#dc2626;" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+            <span>Hazards</span>
+            <label class="sr-mini-switch">
+              <input type="checkbox" id="layerHazardsCheck" checked onchange="toggleIncidentReports(this.checked)">
+              <span class="sr-mini-slider"></span>
+            </label>
+          </div>
+
+          <!-- Responders Toggle -->
+          <div class="sr-layer-pill">
+            <svg style="width:13px;height:13px;color:#10b981;" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+            <span>Responders</span>
+            <label class="sr-mini-switch">
+              <input type="checkbox" id="layerRespondersCheck" checked onchange="toggleRespondersLayer(this.checked)">
+              <span class="sr-mini-slider"></span>
+            </label>
+          </div>
+
+          <!-- Safe Places Toggle -->
+          <div class="sr-layer-pill">
+            <svg style="width:13px;height:13px;color:#2563eb;" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+            <span>Safe places</span>
+            <label class="sr-mini-switch">
+              <input type="checkbox" id="layerSafePlacesCheck" checked onchange="toggleSafetyZones(this.checked)">
+              <span class="sr-mini-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Floating Top Right Controls (+ / - / Recenter) -->
+        <div class="sr-map-controls">
+          <button type="button" class="btn-map-ctrl" onclick="zoomInMap()" title="Zoom In">+</button>
+          <button type="button" class="btn-map-ctrl" onclick="zoomOutMap()" title="Zoom Out">&minus;</button>
+          <button type="button" class="btn-map-ctrl" onclick="recenterMap()" title="Recenter Map">
+            <svg style="width:15px;height:15px;" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0 0 13 3.06V1h-2v2.06A8.994 8.994 0 0 0 3.06 11H1v2h2.06A8.994 8.994 0 0 0 11 20.94V23h2v-2.06A8.994 8.994 0 0 0 20.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Floating Bottom Route Legend -->
+        <div class="sr-map-legend-pill">
+          <div class="sr-legend-item">
+            <span class="sr-line-bar" style="background:#10b981;"></span>
+            <span>Safest</span>
+          </div>
+          <div class="sr-legend-item">
+            <span class="sr-line-bar" style="background:#3b82f6;"></span>
+            <span>Fastest</span>
+          </div>
+          <div class="sr-legend-item">
+            <span class="sr-line-bar" style="background:#f59e0b;"></span>
+            <span>Quiet and guarded</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
 </div>
 
-<!-- Report Safety Hazard Modal -->
+<!-- 1. Report Safety Hazard Modal -->
 <div class="modal fade" id="reportHazardModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content border-0 shadow-lg rounded-3">
-            <form method="post" action="{% url 'submit_safety_report' %}">
-                {% csrf_token %}
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title fw-700"><i class="bi bi-megaphone-fill me-2"></i>Report a Safety Hazard</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <p class="small text-muted mb-3">Help protect other women by flagging dangerous areas, unlit roads, harassment hotspots, or safe sanctuaries.</p>
-
-                    <div class="mb-3">
-                        <label class="form-label fw-600 small">Hazard Category *</label>
-                        <select name="category" class="form-select" required>
-                            <option value="">Select Category...</option>
-                            <option value="harassment"> Harassment / Stalking</option>
-                            <option value="poor_lighting"> Poor Lighting / Broken Streetlights</option>
-                            <option value="unsafe_area"><i class="bi bi-exclamation-triangle me-1"></i> Unsafe / Desolate Area</option>
-                            <option value="no_crowd"><i class="bi bi-person-walking me-1"></i> Isolated Road / No Crowd</option>
-                            <option value="theft"> Theft / Snatching Hotspot</option>
-                            <option value="suspicious"> Suspicious Group / Activity</option>
-                            <option value="safe"><i class="bi bi-check-circle-fill text-success me-1"></i> Safe Zone / Police Booth / Lit Shop</option>
-                            <option value="other"><i class="bi bi-pin-map-fill me-1"></i> Other Concern</option>
-                        </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label fw-600 small">Location Name / Landmark *</label>
-                        <input type="text" name="location_name" id="modal_loc_name" class="form-control" placeholder="e.g. Underpass near Sector 20 or Metro exit gate" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label fw-600 small">Description / Guidance</label>
-                        <textarea name="description" class="form-control" rows="3" placeholder="Provide helpful details (e.g. avoid after 8pm, broken streetlight, dogs, etc.)"></textarea>
-                    </div>
-
-                    <div class="row g-2 mb-3">
-                        <div class="col-6">
-                            <label class="form-label fw-600 small">Latitude</label>
-                            <input type="text" name="latitude" id="modal_report_lat" class="form-control form-control-sm" value="{{ start_lat }}" required>
-                        </div>
-                        <div class="col-6">
-                            <label class="form-label fw-600 small">Longitude</label>
-                            <input type="text" name="longitude" id="modal_report_lng" class="form-control form-control-sm" value="{{ start_lng }}" required>
-                        </div>
-                    </div>
-
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" name="is_anonymous" id="modalAnonCheck" checked>
-                        <label class="form-check-label small" for="modalAnonCheck">Submit Anonymously (Hide username)</label>
-                    </div>
-                </div>
-                <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-danger btn-sm fw-600">Submit Hazard Report</button>
-                </div>
-            </form>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg" style="border-radius:18px;">
+      <form method="post" action="{% url 'submit_safety_report' %}">
+        {% csrf_token %}
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold" style="color:var(--sr-crimson);display:flex;align-items:center;gap:6px;">
+            <svg style="width:18px;height:18px;" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+            </svg>
+            Report Safety Hazard
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
+        <div class="modal-body p-4">
+          <p class="small text-muted mb-3">Help protect others by flagging unlit corridors, harassment hotspots, or safe shelters.</p>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold small">Hazard Category *</label>
+            <select name="category" class="form-select form-select-sm rounded-3" required>
+              <option value="">Select Category...</option>
+              <option value="harassment">Harassment / Stalking</option>
+              <option value="poor_lighting">Poor Lighting / Broken Streetlights</option>
+              <option value="unsafe_area">Unsafe / Desolate Area</option>
+              <option value="no_crowd">Isolated Road / No Crowd</option>
+              <option value="theft">Theft / Snatching Hotspot</option>
+              <option value="suspicious">Suspicious Group / Activity</option>
+              <option value="safe">Safe Zone / Police Booth / Lit Shop</option>
+              <option value="other">Other Concern</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold small">Location Name / Landmark *</label>
+            <input type="text" name="location_name" id="modal_loc_name" class="form-control form-control-sm rounded-3" placeholder="e.g. Underpass near Sector 20 or Metro exit gate" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold small">Description / Guidance</label>
+            <textarea name="description" class="form-control rounded-3" rows="3" placeholder="Provide helpful details (e.g. avoid after 8pm, broken streetlight, etc.)"></textarea>
+          </div>
+
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label fw-bold small">Latitude</label>
+              <input type="text" name="latitude" id="modal_report_lat" class="form-control form-control-sm rounded-3" value="{{ start_lat }}" required>
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-bold small">Longitude</label>
+              <input type="text" name="longitude" id="modal_report_lng" class="form-control form-control-sm rounded-3" value="{{ start_lng }}" required>
+            </div>
+          </div>
+
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" name="is_anonymous" id="modalAnonCheck" checked>
+            <label class="form-check-label small" for="modalAnonCheck">Submit Anonymously (Hide identity)</label>
+          </div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-secondary btn-sm rounded-3" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-danger btn-sm fw-bold rounded-3">Submit Hazard Report</button>
+        </div>
+      </form>
     </div>
+  </div>
 </div>
 
-<!-- Share Route Modal -->
+<!-- 2. Share Route Modal -->
 <div class="modal fade" id="shareRouteModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content border-0 shadow-lg rounded-3">
-            <div class="modal-header bg-success text-white">
-                <h5 class="modal-title fw-700"><i class="bi bi-share me-2"></i>Share Safe Route with Trusted Circle</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body p-4">
-                <p class="small text-muted mb-3">Send your planned transit route to your emergency contacts so they can track your progress.</p>
-                <div class="mb-3">
-                    <label class="form-label fw-600 small">Prepared Message</label>
-                    <textarea class="form-control" id="shareText" rows="4" readonly></textarea>
-                </div>
-                <div class="d-flex gap-2">
-                    <a href="#" id="whatsappBtn" target="_blank" class="btn btn-success btn-sm flex-fill fw-600">
-                        <i class="bi bi-whatsapp me-1"></i>Send via WhatsApp
-                    </a>
-                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="copyShareText()">
-                        <i class="bi bi-clipboard me-1"></i>Copy Text
-                    </button>
-                </div>
-            </div>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg" style="border-radius:18px;">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold text-success" style="display:flex;align-items:center;gap:6px;">
+          <svg style="width:18px;height:18px;" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
+          </svg>
+          Share Safe Route
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <p class="small text-muted mb-3">Send your planned transit route to your trusted guardians so they can track your progress.</p>
+        <div class="mb-3">
+          <label class="form-label fw-bold small">Prepared Message</label>
+          <textarea class="form-control rounded-3" id="shareText" rows="4" readonly></textarea>
         </div>
+        <div class="d-flex gap-2">
+          <a href="#" id="whatsappBtn" target="_blank" class="btn btn-success btn-sm flex-fill fw-bold rounded-3">
+            Send via WhatsApp
+          </a>
+          <button type="button" class="btn btn-outline-secondary btn-sm rounded-3" onclick="copyShareText()">
+            Copy Text
+          </button>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
 
-<!-- Journey Watchdog Modal -->
+<!-- 3. Journey Watchdog Modal -->
 <div class="modal fade" id="watchdogModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content border-0 shadow-lg rounded-3">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title fw-700"><i class="bi bi-shield-shaded me-2"></i>Safe Journey Watchdog</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body p-4 text-center">
-                <div class="avatar-circle mx-auto mb-3" style="width:70px;height:70px;background:#fee2e2;color:#dc3545;font-size:2rem;">
-                    <i class="bi bi-shield-fill-check text-primary me-1"></i>
-                </div>
-                <h5 class="fw-800 mb-1" id="watchdogRouteName">Route Name</h5>
-                <p class="text-muted small mb-3">Estimated Travel Time: <b id="watchdogETA">15</b> minutes</p>
-                <div class="alert alert-warning py-2 small mb-3">
-                    <i class="bi bi-bell-fill me-1"></i>Watchdog checks in when timer concludes. If not acknowledged, quick SOS is alerted to your Trusted Circle.
-                </div>
-                <a href="{% url 'sos' %}" class="btn btn-danger btn-sm fw-700 px-4 py-2">
-                    <i class="bi bi-exclamation-octagon me-1"></i>Trigger Immediate Emergency SOS
-                </a>
-            </div>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg" style="border-radius:18px;">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold text-danger" style="display:flex;align-items:center;gap:6px;">
+          <svg style="width:18px;height:18px;" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+          </svg>
+          Safe Journey Watchdog
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4 text-center">
+        <div class="mx-auto mb-3" style="width:64px;height:64px;border-radius:50%;background:#fee2e2;color:#dc2626;display:flex;align-items:center;justify-content:center;">
+          <svg style="width:32px;height:32px;" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+          </svg>
         </div>
+        <h4 class="fw-bold mb-1" id="watchdogRouteName">Route Name</h4>
+        <p class="text-muted small mb-3">Estimated Travel Time: <b id="watchdogETA">38</b> minutes</p>
+        <div class="alert alert-warning py-2 small mb-3 text-start">
+          Watchdog will check in when your journey timer concludes. If not confirmed safe within 60 seconds, an automated SOS with live GPS link is sent to your Trusted Circle.
+        </div>
+        <a href="{% url 'sos' %}" class="btn btn-danger btn-sm fw-bold px-4 py-2 rounded-3">
+          Trigger Immediate Emergency SOS
+        </a>
+      </div>
     </div>
+  </div>
 </div>
 {% endblock %}
 
@@ -640,27 +1573,6 @@
 {% endif %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Mobile map legend toggle
-    window.toggleMapLegend = function() {
-        const content = document.getElementById('mapLegendContent');
-        const icon = document.getElementById('legendToggleIcon');
-        if (!content) return;
-        if (content.style.display === 'none') {
-            content.style.display = 'block';
-            if (icon) icon.className = 'bi bi-chevron-down';
-        } else {
-            content.style.display = 'none';
-            if (icon) icon.className = 'bi bi-chevron-up';
-        }
-    };
-    if (window.innerWidth <= 768) {
-        const content = document.getElementById('mapLegendContent');
-        const icon = document.getElementById('legendToggleIcon');
-        if (content) content.style.display = 'none';
-        if (icon) icon.className = 'bi bi-chevron-up';
-    }
-
-    // 1. Parse JSON safely
     let routesData = [];
     let zonesData = [];
     let reportsData = [];
@@ -674,11 +1586,12 @@ document.addEventListener('DOMContentLoaded', function() {
     let endLat = parseFloat('{{ end_lat }}') || 28.4600;
     let endLng = parseFloat('{{ end_lng }}') || 77.5200;
 
+    let map = null;
+
     function initCompareMap() {
         const mapEl = document.getElementById('routesMap');
         if (!mapEl) return;
 
-        // Register map init callback for zero-downtime failover
         if (window.GoogleMapsShield && window.GoogleMapsShield.registerMapInit) {
             window.GoogleMapsShield.registerMapInit('routesMap', initCompareMap, {
                 center: { lat: startLat, lng: startLng },
@@ -687,15 +1600,14 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        // 2. Initialize Map (Google Maps if authorized, or instant HD Street Leaflet fallback)
-        const map = GoogleMapsShield.createMap(mapEl, {
+        map = GoogleMapsShield.createMap(mapEl, {
             center: { lat: startLat, lng: startLng },
             zoom: 13,
             mapId: 'DEMO_MAP_ID'
         });
         window.routesMap = map;
 
-        // 2b. Consistent 3km assistance grid & nearby users visualization
+        // 3km assistance grid & nearby users
         if (window.GoogleMapsShield && window.GoogleMapsShield.attachNearbyUsersLayer) {
             window.GoogleMapsShield.attachNearbyUsersLayer(map, startLat, startLng, {
                 radiusKm: 3.0,
@@ -703,14 +1615,14 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        // 3. Render Draggable Start Marker (Point A <i class="bi bi-geo-alt-fill text-success me-1"></i>)
+        // Draggable Start Marker (Point A)
         window.markerA = GoogleMapsShield.createCustomMarker(map, {
             lat: startLat,
             lng: startLng,
             html: '<div class="pulse-point-a">A</div>',
             title: "Source Point A",
             draggable: true,
-            popupContent: "<b><i class="bi bi-geo-alt-fill text-success me-1"></i> Source Point A</b><br>Drag pin to change starting point",
+            popupContent: "<b>Source Point A</b><br>Drag pin to change starting point",
             onDragEnd: function(coord) {
                 document.getElementById('start_lat').value = coord.lat.toFixed(5);
                 document.getElementById('start_lng').value = coord.lng.toFixed(5);
@@ -720,14 +1632,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // 4. Render Draggable Destination Marker (Point B <i class="bi bi-flag-fill text-danger me-1"></i>)
+        // Draggable Destination Marker (Point B)
         window.markerB = GoogleMapsShield.createCustomMarker(map, {
             lat: endLat,
             lng: endLng,
             html: '<div class="pulse-point-b">B</div>',
             title: "Destination Point B",
             draggable: true,
-            popupContent: "<b><i class="bi bi-flag-fill text-danger me-1"></i> Destination Point B</b><br>Drag pin to change destination",
+            popupContent: "<b>Destination Point B</b><br>Drag pin to change destination",
             onDragEnd: function(coord) {
                 document.getElementById('end_lat').value = coord.lat.toFixed(5);
                 document.getElementById('end_lng').value = coord.lng.toFixed(5);
@@ -735,8 +1647,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // 5. Draw Candidate Real Street Polylines across both engines
-        const colors = ['#27ae60', '#3498db', '#e67e22'];
+        // Route Polylines: Green for Safest, Blue for Fastest, Amber for Quiet
+        const colors = ['#10b981', '#3b82f6', '#f59e0b'];
         window.polylines = [];
 
         routesData.forEach((r, idx) => {
@@ -751,82 +1663,33 @@ document.addEventListener('DOMContentLoaded', function() {
                 zIndex: isDefault ? 10 : 1
             });
 
-            const popupHtml = `
-                <div style="font-family: 'Plus Jakarta Sans', sans-serif; min-width: 210px; padding:4px;">
-                    <span class="badge ${r.badge_class} mb-1">${r.badge}</span>
-                    <h6 class="fw-bold mb-1 text-dark">${r.name}</h6>
-                    <div class="mb-1">Safety Score: <span class="badge bg-success">${r.safety_score}/10</span></div>
-                    <div class="small text-muted mb-1">Distance: <b>${r.distance_km} km</b> (~${r.walk_time_mins}m walk)</div>
-                    <div class="small text-secondary">${(r.risk_factors || []).slice(0, 2).join('<br>')}</div>
-                </div>
-            `;
-
-            if (poly) {
-                if (poly.bindPopup) {
-                    poly.bindPopup(popupHtml);
-                }
-                if (poly.addListener) {
-                    poly.addListener('click', (e) => {
-                        selectRoute(idx);
-                        if (map.isGoogleMap && window.google && window.google.maps && window.google.maps.InfoWindow) {
-                            try {
-                                const info = new google.maps.InfoWindow({ content: popupHtml });
-                                if (e && e.latLng) info.setPosition(e.latLng);
-                                info.open(map.rawMap || map);
-                            } catch(err){}
-                        }
-                    });
-                }
+            if (poly && poly.addListener) {
+                poly.addListener('click', () => {
+                    selectRoute(idx);
+                });
             }
 
             window.polylines.push({ line: poly, defaultColor: routeColor });
         });
 
-        // 6. Community Incident Reports Pins Layer
+        // Incident Markers
         window.incidentMarkers = [];
-        const iconMap = {
-            'harassment': { emoji: '', bg: '#e74c3c' },
-            'theft': { emoji: '', bg: '#9b59b6' },
-            'unsafe_area': { emoji: '<i class="bi bi-exclamation-triangle me-1"></i>', bg: '#e67e22' },
-            'poor_lighting': { emoji: '', bg: '#34495e' },
-            'no_crowd': { emoji: '<i class="bi bi-person-walking me-1"></i>', bg: '#f39c12' },
-            'safe': { emoji: '<i class="bi bi-check-circle-fill text-success me-1"></i>', bg: '#27ae60' },
-            'accident': { emoji: '', bg: '#3498db' },
-            'suspicious': { emoji: '', bg: '#7f8c8d' },
-        };
-
         reportsData.forEach(rep => {
-            const conf = iconMap[rep.category] || { emoji: '<i class="bi bi-pin-map-fill me-1"></i>', bg: '#e74c3c' };
             const m = GoogleMapsShield.createCustomMarker(map, {
                 lat: rep.latitude,
                 lng: rep.longitude,
-                html: `<div class="incident-marker-icon" style="background:${conf.bg};color:white;">${conf.emoji}</div>`,
+                html: '<div class="sr-marker-hazard"><svg style="width:14px;height:14px;" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg></div>',
                 title: rep.location_name,
-                popupContent: `
-                    <div style="font-family: 'Plus Jakarta Sans', sans-serif; min-width: 180px;">
-                        <span class="badge bg-danger mb-1">${rep.category_display}</span>
-                        <h6 class="fw-bold mb-1">${rep.location_name}</h6>
-                        <p class="small text-muted mb-1">${rep.description || 'Community reported hazard'}</p>
-                        <div class="small text-secondary">${rep.created_at} &bull; by ${rep.reporter}</div>
-                    </div>
-                `
+                popupContent: `<b>${rep.category_display}</b><br>${rep.location_name}<br><small>${rep.description || ''}</small>`
             });
             window.incidentMarkers.push(m);
         });
 
-        window.toggleIncidentReports = function(show) {
-            window.incidentMarkers.forEach(m => {
-                if (m && m.setMap) {
-                    m.setMap(show ? map : null);
-                }
-            });
-        };
-
-        // 7. Safety Zones & Danger Hotspots Layer
+        // Safety Zones
         window.zoneCircles = [];
         zonesData.forEach(z => {
             const isHigh = (z.status === 'high');
-            const color = isHigh ? '#e74c3c' : (z.status === 'medium' ? '#f39c12' : '#27ae60');
+            const color = isHigh ? '#dc2626' : (z.status === 'medium' ? '#f59e0b' : '#10b981');
             const circle = GoogleMapsShield.createRadiusCircle(map, z.latitude, z.longitude, z.radius_meters || 250, {
                 strokeColor: color,
                 fillColor: color,
@@ -835,78 +1698,35 @@ document.addEventListener('DOMContentLoaded', function() {
                 fillOpacity: isHigh ? 0.22 : 0.12,
                 clickable: true
             });
-
-            const zoneHtml = `<b>${isHigh ? '<i class="bi bi-exclamation-triangle me-1"></i> Danger Hotspot' : '<i class="bi bi-shield-fill-check text-primary me-1"></i> Safety Zone'}: ${z.name}</b><br>Radius: ${z.radius_meters}m`;
-            if (circle && circle.bindPopup) {
-                circle.bindPopup(zoneHtml);
-            }
-            if (circle && circle.addListener) {
-                circle.addListener('click', (e) => {
-                    if (map.isGoogleMap && window.google && window.google.maps && window.google.maps.InfoWindow) {
-                        try {
-                            const info = new google.maps.InfoWindow({ content: zoneHtml });
-                            if (e && e.latLng) info.setPosition(e.latLng);
-                            info.open(map.rawMap || map);
-                        } catch(err){}
-                    }
-                });
-            }
             window.zoneCircles.push(circle);
         });
 
-        window.toggleSafetyZones = function(show) {
-            window.zoneCircles.forEach(c => {
-                if (c && c.setMap) {
-                    c.setMap(show ? map : null);
-                }
+        // Responders Markers Simulation
+        window.responderMarkers = [];
+        const responderOffsets = [
+            { dLat: 0.003, dLng: 0.004 },
+            { dLat: -0.004, dLng: -0.003 },
+            { dLat: 0.006, dLng: -0.005 }
+        ];
+        responderOffsets.forEach(off => {
+            const rm = GoogleMapsShield.createCustomMarker(map, {
+                lat: startLat + off.dLat,
+                lng: startLng + off.dLng,
+                html: '<div class="sr-marker-responder"><svg style="width:13px;height:13px;" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg></div>',
+                title: "Verified Community Responder",
+                popupContent: "<b>Verified Responder On Duty</b><br>Available within 3km assistance radius."
             });
-        };
+            window.responderMarkers.push(rm);
+        });
 
-        // 8. Fit Map Bounds
+        // Fit Bounds
         const allPoints = [{ lat: startLat, lng: startLng }, { lat: endLat, lng: endLng }];
         routesData.forEach(r => {
             (r.waypoints || []).forEach(w => allPoints.push({ lat: w.lat, lng: w.lng }));
         });
         GoogleMapsShield.fitBounds(map, allPoints);
 
-        // 9. Route Selection
-        window.selectRoute = function(index) {
-            document.querySelectorAll('.route-card').forEach((el, i) => {
-                el.classList.toggle('selected', i === index);
-            });
-            window.polylines.forEach((item, i) => {
-                if (item && item.line && item.line.setOptions) {
-                    if (i === index) {
-                        item.line.setOptions({ strokeWeight: 8, strokeOpacity: 1.0, zIndex: 10 });
-                    } else {
-                        item.line.setOptions({ strokeWeight: 4, strokeOpacity: 0.5, zIndex: 1 });
-                    }
-                }
-            });
-        };
-
-        window.zoomToReport = function(lat, lng, cat, loc) {
-            map.setCenter({ lat: lat, lng: lng });
-            map.setZoom(16);
-            if (map.isGoogleMap && window.google && window.google.maps && window.google.maps.InfoWindow) {
-                try {
-                    const info = new google.maps.InfoWindow({
-                        content: `<b>${cat}</b><br>${loc}`,
-                        position: { lat: lat, lng: lng }
-                    });
-                    info.open(map.rawMap || map);
-                } catch(e){}
-            } else if (window.L && map.rawMap) {
-                try {
-                    L.popup()
-                        .setLatLng([lat, lng])
-                        .setContent(`<b>${cat}</b><br>${loc}`)
-                        .openOn(map.rawMap);
-                } catch(e){}
-            }
-        };
-
-        // 10. Autocomplete
+        // Autocomplete
         setupAutocomplete('source_input', 'source_suggestions', 'start_lat', 'start_lng', window.markerA);
         setupAutocomplete('dest_input', 'dest_suggestions', 'end_lat', 'end_lng', window.markerB);
     }
@@ -917,6 +1737,106 @@ document.addEventListener('DOMContentLoaded', function() {
         initCompareMap();
     }
 
+    // Layer Toggle Functions
+    window.toggleIncidentReports = function(show) {
+        (window.incidentMarkers || []).forEach(m => {
+            if (m && m.setMap) m.setMap(show ? map : null);
+        });
+    };
+
+    window.toggleSafetyZones = function(show) {
+        (window.zoneCircles || []).forEach(c => {
+            if (c && c.setMap) c.setMap(show ? map : null);
+        });
+    };
+
+    window.toggleRespondersLayer = function(show) {
+        (window.responderMarkers || []).forEach(rm => {
+            if (rm && rm.setMap) rm.setMap(show ? map : null);
+        });
+    };
+
+    // Zoom and Recenter Controls
+    window.zoomInMap = function() {
+        if (!map) return;
+        const cur = map.getZoom ? map.getZoom() : 13;
+        map.setZoom(cur + 1);
+    };
+
+    window.zoomOutMap = function() {
+        if (!map) return;
+        const cur = map.getZoom ? map.getZoom() : 13;
+        map.setZoom(cur - 1);
+    };
+
+    window.recenterMap = function() {
+        if (!map) return;
+        const allPoints = [{ lat: startLat, lng: startLng }, { lat: endLat, lng: endLng }];
+        routesData.forEach(r => {
+            (r.waypoints || []).forEach(w => allPoints.push({ lat: w.lat, lng: w.lng }));
+        });
+        GoogleMapsShield.fitBounds(map, allPoints);
+    };
+
+    // Route Selection
+    window.selectRoute = function(index) {
+        document.querySelectorAll('.sr-route-card').forEach((el, i) => {
+            el.classList.toggle('selected', i === index);
+        });
+        (window.polylines || []).forEach((item, i) => {
+            if (item && item.line && item.line.setOptions) {
+                if (i === index) {
+                    item.line.setOptions({ strokeWeight: 8, strokeOpacity: 1.0, zIndex: 10 });
+                } else {
+                    item.line.setOptions({ strokeWeight: 4, strokeOpacity: 0.5, zIndex: 1 });
+                }
+            }
+        });
+    };
+
+    window.zoomToReport = function(lat, lng, cat, loc) {
+        if (!map) return;
+        map.setCenter({ lat: lat, lng: lng });
+        map.setZoom(16);
+    };
+
+    // Switch main tabs (Routes vs Reports)
+    window.switchMainTab = function(tab) {
+        const btnRoutes = document.getElementById('tabBtnRoutes');
+        const btnReports = document.getElementById('tabBtnReports');
+        const paneRoutes = document.getElementById('paneRoutes');
+        const paneReports = document.getElementById('paneReports');
+
+        if (tab === 'routes') {
+            btnRoutes.classList.add('active');
+            btnReports.classList.remove('active');
+            paneRoutes.style.display = 'block';
+            paneReports.style.display = 'none';
+        } else {
+            btnReports.classList.add('active');
+            btnRoutes.classList.remove('active');
+            paneReports.style.display = 'block';
+            paneRoutes.style.display = 'none';
+        }
+    };
+
+    // Travel Mode Selector
+    window.setTravelMode = function(mode, btn) {
+        document.getElementById('modeInput').value = mode;
+        document.querySelectorAll('.sr-mode-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('routeForm').submit();
+    };
+
+    // Toggle step-by-step
+    window.toggleStepBody = function(e, id) {
+        e.stopPropagation();
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none';
+    };
+
+    // Autocomplete Setup
     function setupAutocomplete(inputId, dropdownId, latFieldId, lngFieldId, marker) {
         const input = document.getElementById(inputId);
         const dropdown = document.getElementById(dropdownId);
@@ -940,7 +1860,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             data.forEach(item => {
                                 const div = document.createElement('div');
                                 div.className = 'autocomplete-item';
-                                div.innerHTML = `<i class="bi bi-geo-alt me-1 text-danger"></i>${item.display_name}`;
+                                div.innerHTML = `<span>${item.display_name}</span>`;
                                 div.addEventListener('click', () => {
                                     input.value = item.display_name.split(',').slice(0, 3).join(',');
                                     document.getElementById(latFieldId).value = parseFloat(item.lat).toFixed(5);
@@ -957,9 +1877,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         } else {
                             dropdown.style.display = 'none';
                         }
-                    }).catch(err => {
-                        console.error("Autocomplete fetch error:", err);
-                    });
+                    }).catch(() => {});
             }, 300);
         });
 
@@ -970,22 +1888,19 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 11. Reverse Geocoding
     function reverseGeocode(lat, lng, targetInputId) {
         fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
             .then(res => res.json())
             .then(data => {
                 if (data && data.display_name) {
-                    const shortName = data.display_name.split(',').slice(0, 3).join(',');
-                    document.getElementById(targetInputId).value = shortName;
+                    document.getElementById(targetInputId).value = data.display_name.split(',').slice(0, 3).join(',');
                 }
-            }).catch(e => console.error(e));
+            }).catch(() => {});
     }
 
-    // 12. GPS Button
     window.useCurrentLocation = function() {
         const btn = document.getElementById('gpsBtn');
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Locating...';
+        btn.textContent = 'Locating...';
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(pos) {
                 const lat = pos.coords.latitude;
@@ -994,34 +1909,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('start_lng').value = lng.toFixed(5);
                 document.getElementById('modal_report_lat').value = lat.toFixed(5);
                 document.getElementById('modal_report_lng').value = lng.toFixed(5);
-                window.markerA.setLatLng([lat, lng]);
-                map.panTo([lat, lng]);
+                if (window.markerA) window.markerA.setLatLng([lat, lng]);
+                if (map) map.panTo([lat, lng]);
                 reverseGeocode(lat, lng, 'source_input');
-
-                // Auto-set local destination if far
-                const curEndLat = parseFloat(document.getElementById('end_lat').value);
-                if (!curEndLat || Math.abs(curEndLat - lat) > 0.8) {
-                    const newELat = (lat - 0.018).toFixed(5);
-                    const newELng = (lng + 0.022).toFixed(5);
-                    document.getElementById('end_lat').value = newELat;
-                    document.getElementById('end_lng').value = newELng;
-                    window.markerB.setLatLng([newELat, newELng]);
-                    document.getElementById('dest_input').value = "Nearest Safe Hub";
-                }
-
-                btn.innerHTML = '<i class="bi bi-check me-1"></i>Found';
-                setTimeout(() => { btn.innerHTML = '<i class="bi bi-crosshair me-1"></i>My GPS'; }, 2000);
-            }, function(err) {
-                alert("GPS Geolocation failed: " + err.message);
-                btn.innerHTML = '<i class="bi bi-crosshair me-1"></i>My GPS';
+                btn.textContent = 'Found';
+                setTimeout(() => { btn.textContent = 'My GPS'; }, 2000);
+            }, function() {
+                btn.textContent = 'My GPS';
             }, { enableHighAccuracy: true });
         } else {
-            alert("Geolocation is not supported by your browser.");
-            btn.innerHTML = '<i class="bi bi-crosshair me-1"></i>My GPS';
+            btn.textContent = 'My GPS';
         }
     };
 
-    // 13. Swap
     window.swapLocations = function() {
         const sInput = document.getElementById('source_input');
         const dInput = document.getElementById('dest_input');
@@ -1042,15 +1942,14 @@ document.addEventListener('DOMContentLoaded', function() {
         sLng.value = dLng.value;
         dLng.value = tempLng;
 
-        if (sLat.value && sLng.value) {
+        if (sLat.value && sLng.value && window.markerA) {
             window.markerA.setLatLng([parseFloat(sLat.value), parseFloat(sLng.value)]);
         }
-        if (dLat.value && dLng.value) {
+        if (dLat.value && dLng.value && window.markerB) {
             window.markerB.setLatLng([parseFloat(dLat.value), parseFloat(dLng.value)]);
         }
     };
 
-    // 14. Smart Preset Destinations
     window.setPresetDestination = function(label) {
         const sLat = parseFloat(document.getElementById('start_lat').value) || 28.4744;
         const sLng = parseFloat(document.getElementById('start_lng').value) || 77.5039;
@@ -1065,25 +1964,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.getElementById('dest_input').value = place.display_name.split(',').slice(0, 3).join(',');
                     document.getElementById('end_lat').value = parseFloat(place.lat).toFixed(5);
                     document.getElementById('end_lng').value = parseFloat(place.lon).toFixed(5);
-                    window.markerB.setLatLng([parseFloat(place.lat), parseFloat(place.lon)]);
                 } else {
-                    const eLat = (sLat - 0.015).toFixed(5);
-                    const eLng = (sLng + 0.020).toFixed(5);
-                    document.getElementById('end_lat').value = eLat;
-                    document.getElementById('end_lng').value = eLng;
-                    window.markerB.setLatLng([eLat, eLng]);
+                    document.getElementById('end_lat').value = (sLat - 0.015).toFixed(5);
+                    document.getElementById('end_lng').value = (sLng + 0.020).toFixed(5);
                 }
                 document.getElementById('routeForm').submit();
             }).catch(() => {
-                const eLat = (sLat - 0.015).toFixed(5);
-                const eLng = (sLng + 0.020).toFixed(5);
-                document.getElementById('end_lat').value = eLat;
-                document.getElementById('end_lng').value = eLng;
+                document.getElementById('end_lat').value = (sLat - 0.015).toFixed(5);
+                document.getElementById('end_lng').value = (sLng + 0.020).toFixed(5);
                 document.getElementById('routeForm').submit();
             });
     };
 
-    // 15. Form Submit Guard
     window.handleFormSubmit = function(event) {
         const sLat = parseFloat(document.getElementById('start_lat').value);
         const sLng = parseFloat(document.getElementById('start_lng').value);
@@ -1093,7 +1985,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (destQuery && (!curEndLat || Math.abs(curEndLat - sLat) > 1.0)) {
             event.preventDefault();
             const btn = document.getElementById('calcBtn');
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Locating local destination...';
+            btn.textContent = 'Locating...';
             btn.disabled = true;
 
             fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(destQuery)}&viewbox=${sLng-0.5},${sLat+0.5},${sLng+0.5},${sLat-0.5}&bounded=0&limit=1`)
@@ -1115,11 +2007,10 @@ document.addEventListener('DOMContentLoaded', function() {
         return true;
     };
 
-    // 16. Share Route Modal
     window.shareSafeRoute = function(routeName, dist, score) {
         const source = document.getElementById('source_input').value || "Current Location";
         const dest = document.getElementById('dest_input').value || "Destination";
-        const msg = `<i class="bi bi-shield-fill-check text-primary me-1"></i> [Women Safety Shield] I am traveling via AI Safe Route: ${routeName}.\n<i class="bi bi-geo-alt-fill me-1"></i> From: ${source}\n<i class="bi bi-flag-fill text-danger me-1"></i> To: ${dest}\n<i class="bi bi-star-fill text-warning me-1"></i> Safety Score: ${score}/10 | Distance: ${dist} km\n<i class="bi bi-link-45deg me-1"></i> Track route live: ${window.location.href}`;
+        const msg = `[Women Safety Shield] I am traveling via AI Safe Route: ${routeName}.\nFrom: ${source}\nTo: ${dest}\nSafety Score: ${score}/10 | Distance: ${dist} km\nTrack route: ${window.location.href}`;
         document.getElementById('shareText').value = msg;
         document.getElementById('whatsappBtn').href = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
         const modal = new bootstrap.Modal(document.getElementById('shareRouteModal'));
@@ -1130,10 +2021,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const copyText = document.getElementById('shareText');
         copyText.select();
         document.execCommand('copy');
-        alert("Safe route information copied to clipboard!");
+        alert("Route details copied to clipboard!");
     };
 
-    // 17. Watchdog Modal
     window.startMonitoredJourney = function(routeName, eta) {
         document.getElementById('watchdogRouteName').innerText = routeName;
         document.getElementById('watchdogETA').innerText = eta;
