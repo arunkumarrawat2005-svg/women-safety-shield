@@ -580,7 +580,9 @@
     margin: 0;
   }
 
-  /* Radar Sweep Components */
+  /* ========================================================
+     RADAR SWEEP COMPONENTS (EXACT LOCAL RESIDENT RADAR)
+     ======================================================== */
   .radar-sweep-div-icon {
     background: transparent !important;
     border: none !important;
@@ -588,79 +590,236 @@
 
   .radar-scanner-disc {
     position: absolute;
+    top: 0;
+    left: 0;
     border-radius: 50%;
     pointer-events: none;
-    overflow: hidden;
-    transform-origin: center center;
-    box-sizing: border-box;
+    overflow: visible;
+    user-select: none;
+    z-index: 150;
   }
 
+  /* Conic Gradient Sweep Beam */
   .radar-conic-sweep {
     position: absolute;
-    inset: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     border-radius: 50%;
     background: conic-gradient(
       from 0deg,
-      rgba(220, 38, 38, 0.30) 0deg,
-      rgba(220, 38, 38, 0.15) 38deg,
-      rgba(220, 38, 38, 0.03) 75deg,
-      rgba(220, 38, 38, 0.0) 90deg,
-      rgba(220, 38, 38, 0.0) 360deg
+      rgba(220, 38, 38, 0) 0deg,
+      rgba(220, 38, 38, 0) 270deg,
+      rgba(220, 38, 38, 0.03) 300deg,
+      rgba(220, 38, 38, 0.12) 335deg,
+      rgba(220, 38, 38, 0.38) 360deg
     );
-    animation: radarSweepRotate 4s linear infinite;
+    animation: radarRotate360 4.2s linear infinite;
     transform-origin: center center;
+    pointer-events: none;
   }
 
+  /* Sweep Leading Laser Needle */
   .radar-sweep-needle {
     position: absolute;
+    top: 0;
     left: 50%;
-    top: 50%;
-    width: 50%;
-    height: 1.5px;
-    background: linear-gradient(90deg, rgba(220, 38, 38, 0.95) 0%, rgba(239, 68, 68, 0.6) 70%, rgba(255, 255, 255, 0.9) 100%);
-    box-shadow: 0 0 6px rgba(220, 38, 38, 0.8);
-    transform-origin: 0% 50%;
-    animation: radarSweepRotate 4s linear infinite;
+    width: 2.5px;
+    height: 50%;
+    background: linear-gradient(to top, rgba(220, 38, 38, 0.15), #dc2626);
+    box-shadow: 0 0 8px rgba(220, 38, 38, 0.9), 0 0 18px rgba(239, 68, 68, 0.6);
+    transform-origin: bottom center;
+    animation: radarRotate360 4.2s linear infinite;
+    pointer-events: none;
   }
 
-  @keyframes radarSweepRotate {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-
+  /* Sonar Ripple Waves */
   .radar-sonar-wave {
     position: absolute;
-    left: 50%;
     top: 50%;
-    width: 24px;
-    height: 24px;
-    margin-left: -12px;
-    margin-top: -12px;
+    left: 50%;
+    transform: translate(-50%, -50%);
     border-radius: 50%;
-    border: 1.5px solid rgba(220, 38, 38, 0.55);
+    border: 1.5px solid rgba(220, 38, 38, 0.6);
+    animation: radarSonarWave 3.2s cubic-bezier(0.1, 0.7, 0.3, 1) infinite;
     pointer-events: none;
-    animation: radarSonarPulse 3s cubic-bezier(0.1, 0.2, 0.3, 1) infinite;
   }
 
   .radar-sonar-wave.wave-2 {
-    animation-delay: 1.5s;
+    animation-delay: 1.6s;
   }
 
-  @keyframes radarSonarPulse {
-    0% { transform: scale(0.1); opacity: 0.9; }
-    70% { opacity: 0.3; }
-    100% { transform: scale(8.5); opacity: 0; }
+  /* Radar Inner & Outer Rings */
+  .radar-ring-mid {
+    position: absolute;
+    top: 25%;
+    left: 25%;
+    width: 50%;
+    height: 50%;
+    border-radius: 50%;
+    border: 1.5px dashed rgba(220, 38, 38, 0.5);
+    pointer-events: none;
+  }
+
+  .radar-ring-outer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 2px dashed rgba(220, 38, 38, 0.7);
+    box-shadow: inset 0 0 24px rgba(220, 38, 38, 0.05);
+    pointer-events: none;
+  }
+
+  /* Radar Crosshairs */
+  .radar-axis-line.h-line {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: rgba(220, 38, 38, 0.16);
+    pointer-events: none;
+  }
+
+  .radar-axis-line.v-line {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 1px;
+    height: 100%;
+    background: rgba(220, 38, 38, 0.16);
+    pointer-events: none;
+  }
+
+  @keyframes radarRotate360 {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes radarSonarWave {
+    0% {
+      width: 0%;
+      height: 0%;
+      opacity: 0.85;
+      border-color: rgba(220, 38, 38, 0.8);
+    }
+    50% {
+      opacity: 0.45;
+    }
+    100% {
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      border-color: rgba(220, 38, 38, 0.1);
+    }
+  }
+
+  @keyframes personRadarPulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.8), 0 0 10px rgba(220, 38, 38, 0.5);
+    }
+    60% {
+      box-shadow: 0 0 0 14px rgba(220, 38, 38, 0), 0 0 20px rgba(220, 38, 38, 0.2);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+    }
+  }
+
+  @keyframes havenRadarPulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(153, 27, 27, 0.85), 0 0 8px rgba(153, 27, 27, 0.6);
+    }
+    60% {
+      box-shadow: 0 0 0 14px rgba(153, 27, 27, 0), 0 0 16px rgba(153, 27, 27, 0.2);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(153, 27, 27, 0);
+    }
+  }
+
+  /* Radar Contact Markers */
+  .map-pin-badge {
+    position: relative;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 13px;
+    border: 2.5px solid #ffffff;
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 500;
+  }
+
+  .map-pin-badge:hover {
+    transform: scale(1.22);
+    z-index: 600;
+  }
+
+  .map-pin-badge.radar-contact-duty {
+    animation: personRadarPulse 2.4s infinite;
+  }
+
+  .map-pin-badge.radar-contact-haven {
+    animation: havenRadarPulse 2.8s infinite;
+  }
+
+  .map-pin-campus { background: #dc2626; }
+  .map-pin-hospital { background: #991b1b; }
+  .map-pin-corporate { background: #2563eb; }
+  .map-pin-ngo { background: #d97706; }
+  .map-pin-transit { background: #334155; }
+
+  /* Floating Name Label on Map Marker */
+  .map-pin-tag {
+    position: absolute;
+    bottom: calc(100% + 5px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(15, 23, 42, 0.92);
+    backdrop-filter: blur(4px);
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 4px;
+    white-space: nowrap;
+    pointer-events: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    border: 1px solid rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+
+  .map-pin-tag::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: rgba(15, 23, 42, 0.92);
   }
 
   /* User Beacon Dot */
   .radar-user-beacon {
     position: relative;
-    width: 18px;
-    height: 18px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
     background: #2563eb;
     border: 2.5px solid #ffffff;
-    box-shadow: 0 0 8px rgba(37, 99, 235, 0.5);
+    box-shadow: 0 0 10px rgba(37, 99, 235, 0.7);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -668,9 +827,9 @@
 
   .radar-user-pulse {
     position: absolute;
-    inset: -5px;
+    inset: -6px;
     border-radius: 50%;
-    border: 1.5px solid rgba(37, 99, 235, 0.5);
+    border: 2px solid rgba(37, 99, 235, 0.6);
     animation: userPulseAnim 2s infinite ease-out;
   }
 
@@ -1181,6 +1340,10 @@
             <div class="radar-sweep-needle"></div>
             <div class="radar-sonar-wave"></div>
             <div class="radar-sonar-wave wave-2"></div>
+            <div class="radar-ring-mid"></div>
+            <div class="radar-ring-outer"></div>
+            <div class="radar-axis-line h-line"></div>
+            <div class="radar-axis-line v-line"></div>
           </div>
         `,
         iconSize: [0, 0],
@@ -1228,99 +1391,84 @@
     label3000Marker = L.marker([lat + offset3000, lng], { icon: icon3000, interactive: false, zIndexOffset: 800 }).addTo(raw);
   }
 
-  function initOrgRadarMap() {
-    const mapEl = document.getElementById('orgRadarMap');
-    if (!mapEl) return;
-
-    if (orgPinsData.length > 0) {
-      userLat = orgPinsData[0].lat;
-      userLng = orgPinsData[0].lng;
+  // Sample Institutional Radar Units when DB has 0 orgs
+  const NEARBY_INSTITUTIONAL_CONTACTS = [
+    {
+      id: "org_sample_1",
+      name: "Campus Security Desk",
+      full_name: "University Safety Perimeter Desk",
+      type: "Campus",
+      type_raw: "college",
+      icon: "bi-mortarboard-fill",
+      pinClass: "map-pin-campus",
+      address: "North Campus Main Gate",
+      distance_text: "0.8 km",
+      hotline: "1800-11-4040",
+      has_safe_haven: true,
+      latOffset: 0.0075,
+      lngOffset: 0.0082
+    },
+    {
+      id: "org_sample_2",
+      name: "Emergency Safe Haven",
+      full_name: "Apex 24/7 Trauma Safe Haven",
+      type: "Hospital",
+      type_raw: "hospital",
+      icon: "bi-hospital-fill",
+      pinClass: "map-pin-hospital",
+      address: "Ansari Road Safe Zone",
+      distance_text: "1.4 km",
+      hotline: "011-26588500",
+      has_safe_haven: true,
+      latOffset: -0.0085,
+      lngOffset: -0.0060
+    },
+    {
+      id: "org_sample_3",
+      name: "CyberCity Control Room",
+      full_name: "Corporate Perimeter Operations Center",
+      type: "Corporate",
+      type_raw: "company",
+      icon: "bi-building-check",
+      pinClass: "map-pin-corporate",
+      address: "DLF Tech Park Wing B",
+      distance_text: "1.9 km",
+      hotline: "0124-4500000",
+      has_safe_haven: false,
+      latOffset: -0.0060,
+      lngOffset: 0.0090
+    },
+    {
+      id: "org_sample_4",
+      name: "Shakti Women Shelter",
+      full_name: "Crisis Intervention & Safe Shelter",
+      type: "NGO",
+      type_raw: "ngo",
+      icon: "bi-heart-pulse-fill",
+      pinClass: "map-pin-ngo",
+      address: "Sector 15 Safe Haven",
+      distance_text: "2.3 km",
+      hotline: "1091",
+      has_safe_haven: true,
+      latOffset: 0.0060,
+      lngOffset: -0.0105
+    },
+    {
+      id: "org_sample_5",
+      name: "Transit Helpdesk",
+      full_name: "Metro Women Assistance Booth",
+      type: "Transit",
+      type_raw: "government",
+      icon: "bi-shield-shaded",
+      pinClass: "map-pin-transit",
+      address: "Central Metro Gate 2",
+      distance_text: "1.1 km",
+      hotline: "155370",
+      has_safe_haven: true,
+      latOffset: 0.0105,
+      lngOffset: -0.0025
     }
-
-    if (window.GoogleMapsShield) {
-      GoogleMapsShield.registerMapInit('orgRadarMap', initOrgRadarMap);
-    }
-
-    mapObj = GoogleMapsShield.createMap(mapEl, {
-      center: { lat: userLat, lng: userLng },
-      zoom: 13,
-      mapId: 'DEMO_MAP_ID'
-    });
-
-    const raw = mapObj.rawMap || mapObj;
-
-    // Inner 1.5 km dashed circle
-    circle1500 = GoogleMapsShield.createRadiusCircle(mapObj, {
-      lat: userLat,
-      lng: userLng,
-      radius: 1500,
-      strokeColor: '#94a3b8',
-      strokeOpacity: 0.6,
-      strokeWeight: 1.5,
-      fillColor: 'transparent',
-      fillOpacity: 0,
-      dashArray: '5, 5'
-    });
-
-    // Outer 3.0 km crimson dashed circle
-    circle3000 = GoogleMapsShield.createRadiusCircle(mapObj, {
-      lat: userLat,
-      lng: userLng,
-      radius: 3000,
-      strokeColor: '#dc2626',
-      strokeOpacity: 0.75,
-      strokeWeight: 1.5,
-      fillColor: 'rgba(220, 38, 38, 0.02)',
-      fillOpacity: 0.02,
-      dashArray: '5, 5'
-    });
-
-    // Continuous 360 degree Rotating Radar Sweep
-    createRotatingRadarSweep(userLat, userLng, 3000);
-    updateDistanceCircleLabels(userLat, userLng);
-
-    if (raw && typeof raw.on === 'function') {
-      raw.on('zoom', updateRadarSweepSize);
-      raw.on('zoomend', updateRadarSweepSize);
-      raw.on('resize', updateRadarSweepSize);
-    }
-
-    // Center Blue Beacon Pin
-    renderUserBeacon(userLat, userLng);
-
-    // Plot Org Markers
-    plotOrgMarkers(orgPinsData);
-
-    locateUserSilent();
-  }
-
-  function renderUserBeacon(lat, lng) {
-    const raw = mapObj ? (mapObj.rawMap || mapObj) : null;
-    if (userBeacon) {
-      try {
-        if (typeof userBeacon.remove === 'function') userBeacon.remove();
-        else if (raw && raw.removeLayer) raw.removeLayer(userBeacon);
-      } catch(e) {}
-    }
-
-    if (window.L && typeof L.divIcon === 'function') {
-      const beaconIcon = L.divIcon({
-        className: 'radar-sweep-div-icon',
-        html: `
-          <div class="radar-user-beacon">
-            <div class="radar-user-pulse"></div>
-          </div>
-        `,
-        iconSize: [18, 18],
-        iconAnchor: [9, 9]
-      });
-
-      userBeacon = L.marker([lat, lng], {
-        icon: beaconIcon,
-        zIndexOffset: 1000
-      }).addTo(raw);
-    }
-  }
+  ];
 
   function plotOrgMarkers(pins) {
     Object.values(orgMarkers).forEach(m => {
@@ -1331,28 +1479,63 @@
     });
     orgMarkers = {};
 
-    pins.forEach(p => {
-      const color = CATEGORY_COLORS[p.type_raw] || '#dc2626';
+    const displayPins = (pins && pins.length > 0) ? pins : NEARBY_INSTITUTIONAL_CONTACTS;
+
+    displayPins.forEach(p => {
+      const latOffset = p.latOffset !== undefined ? p.latOffset : ((p.lat || userLat) - userLat);
+      const lngOffset = p.lngOffset !== undefined ? p.lngOffset : ((p.lng || userLng) - userLng);
+      const pinLat = p.lat !== undefined ? p.lat : (userLat + latOffset);
+      const pinLng = p.lng !== undefined ? p.lng : (userLng + lngOffset);
+
+      // Radar rotation sync: 4.2s cycle
+      const angleDeg = (Math.atan2(lngOffset, latOffset) * 180 / Math.PI + 360) % 360;
+      const delaySec = ((angleDeg / 360) * 4.2).toFixed(2);
+
+      const pinClass = p.pinClass || (
+        p.type_raw === 'college' ? 'map-pin-campus' :
+        p.type_raw === 'hospital' ? 'map-pin-hospital' :
+        p.type_raw === 'company' ? 'map-pin-corporate' :
+        p.type_raw === 'ngo' ? 'map-pin-ngo' : 'map-pin-transit'
+      );
+      const pulseClass = (p.has_safe_haven || p.type_raw === 'hospital') ? 'radar-contact-haven' : 'radar-contact-duty';
+      const iconClass = p.icon || (
+        p.type_raw === 'college' ? 'bi-mortarboard-fill' :
+        p.type_raw === 'hospital' ? 'bi-hospital-fill' :
+        p.type_raw === 'company' ? 'bi-building-check' :
+        p.type_raw === 'ngo' ? 'bi-heart-pulse-fill' : 'bi-shield-shaded'
+      );
+
+      const html = `
+        <div class="map-pin-badge ${pinClass} ${pulseClass}" style="animation-delay: ${delaySec}s;" title="${p.name}">
+          <span class="map-pin-tag">
+            <i class="bi ${iconClass}"></i>
+            <span>${p.name.split(' ')[0]}</span>
+            ${p.distance_text ? `<span style="opacity:0.8;font-weight:600;">&middot; ${p.distance_text}</span>` : ''}
+          </span>
+          <i class="bi ${iconClass}"></i>
+        </div>
+      `;
+
       const popupHtml = `
         <div style="font-family:'Inter',sans-serif;min-width:210px;padding:3px;">
-          <div style="font-weight:700;color:#111827;font-size:1rem;margin-bottom:2px;">${p.name}</div>
-          <div style="font-size:0.75rem;color:#6b7280;margin-bottom:6px;"><i class="bi bi-geo-alt text-danger"></i> ${p.address}</div>
-          <div style="font-size:0.78rem;font-weight:700;color:#dc2626;margin-bottom:8px;">
+          <div style="font-weight:700;color:#111827;font-size:0.95rem;margin-bottom:2px;">${p.full_name || p.name}</div>
+          <div style="font-size:0.75rem;color:#6b7280;margin-bottom:5px;"><i class="bi bi-geo-alt text-danger"></i> ${p.address}</div>
+          <div style="font-size:0.78rem;font-weight:700;color:#dc2626;margin-bottom:7px;">
             <i class="bi bi-telephone-fill"></i> 24/7 Desk: <a href="tel:${p.hotline}" style="color:#dc2626;text-decoration:none;">${p.hotline}</a>
           </div>
           <div style="display:flex;gap:6px;">
-            <a href="${p.detail_url}" class="btn btn-sm btn-outline-dark" style="font-size:0.72rem;padding:2px 8px;border-radius:6px;text-decoration:none;">Profile</a>
-            <a href="https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}" target="_blank" class="btn btn-sm btn-danger" style="font-size:0.72rem;padding:2px 8px;border-radius:6px;color:#fff;text-decoration:none;">Directions</a>
+            ${p.detail_url ? `<a href="${p.detail_url}" class="btn btn-sm btn-outline-dark" style="font-size:0.72rem;padding:2px 8px;border-radius:6px;text-decoration:none;">Profile</a>` : ''}
+            <a href="https://www.google.com/maps/dir/?api=1&destination=${pinLat},${pinLng}" target="_blank" class="btn btn-sm btn-danger" style="font-size:0.72rem;padding:2px 8px;border-radius:6px;color:#fff;text-decoration:none;">Directions</a>
           </div>
         </div>
       `;
 
       const marker = GoogleMapsShield.createCustomMarker(mapObj, {
-        lat: p.lat,
-        lng: p.lng,
-        color: color,
-        scale: 9,
+        lat: pinLat,
+        lng: pinLng,
+        html: html,
         title: p.name,
+        zIndex: 600,
         popupContent: popupHtml
       });
 
@@ -1363,9 +1546,12 @@
   function focusOrgMarker(orgId) {
     const marker = orgMarkers[orgId];
     if (marker && mapObj) {
-      const pin = orgPinsData.find(p => p.id === orgId);
+      let pin = orgPinsData.find(p => p.id === orgId);
+      if (!pin) pin = NEARBY_INSTITUTIONAL_CONTACTS.find(p => p.id === orgId);
       if (pin) {
-        mapObj.setCenter({ lat: pin.lat, lng: pin.lng });
+        const pinLat = pin.lat !== undefined ? pin.lat : (userLat + pin.latOffset);
+        const pinLng = pin.lng !== undefined ? pin.lng : (userLng + pin.lngOffset);
+        mapObj.setCenter({ lat: pinLat, lng: pinLng });
         mapObj.setZoom(15);
         if (typeof marker.openPopup === 'function') marker.openPopup();
       }
@@ -1389,6 +1575,7 @@
           createRotatingRadarSweep(userLat, userLng, 3000);
           updateRadarSweepSize();
           updateDistanceCircleLabels(userLat, userLng);
+          plotOrgMarkers(orgPinsData);
         },
         err => {
           console.warn('Geolocation access declined or unavailable:', err.message);
@@ -1411,6 +1598,7 @@
           createRotatingRadarSweep(userLat, userLng, 3000);
           updateRadarSweepSize();
           updateDistanceCircleLabels(userLat, userLng);
+          plotOrgMarkers(orgPinsData);
         },
         () => {},
         { enableHighAccuracy: false, timeout: 4000 }
@@ -1467,9 +1655,27 @@
     }
 
     const hudPartners = document.getElementById('hudPartnersCount');
-    if (hudPartners) hudPartners.textContent = visibleCount;
+    if (hudPartners) {
+      hudPartners.textContent = visibleCount > 0 ? visibleCount : (orgPinsData.length > 0 ? orgPinsData.length : 5);
+    }
 
-    plotOrgMarkers(matchingPins);
+    if (orgPinsData.length === 0) {
+      const sampleMatching = NEARBY_INSTITUTIONAL_CONTACTS.filter(s => {
+        let matchCat = (activeCategory === 'all');
+        if (activeCategory === 'college' && s.type_raw === 'college') matchCat = true;
+        if (activeCategory === 'hospital' && s.type_raw === 'hospital') matchCat = true;
+        if (activeCategory === 'company' && s.type_raw === 'company') matchCat = true;
+        if (activeCategory === 'ngo' && s.type_raw === 'ngo') matchCat = true;
+        if (activeCategory === 'government' && s.type_raw === 'government') matchCat = true;
+
+        const matchQ = !q || s.name.toLowerCase().includes(q) || s.full_name.toLowerCase().includes(q);
+        const matchCity = !city || s.address.toLowerCase().includes(city);
+        return matchCat && matchQ && matchCity;
+      });
+      plotOrgMarkers(sampleMatching);
+    } else {
+      plotOrgMarkers(matchingPins);
+    }
   }
 
   document.addEventListener('DOMContentLoaded', function() {
