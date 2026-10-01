@@ -341,9 +341,54 @@
     align-items: start;
   }
 
+  /* Left Scrollable Column */
+  .tc-left-col {
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 12px;
+    padding-bottom: 2rem;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+  }
+
+  .tc-left-col::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .tc-left-col::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .tc-left-col::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 9999px;
+  }
+
+  .tc-left-col::-webkit-scrollbar-thumb:hover {
+    background: #cbd5e1;
+  }
+
+  /* Right Sticky Column */
+  .tc-right-col {
+    position: sticky;
+    top: 85px;
+    align-self: start;
+  }
+
   @media (max-width: 991px) {
     .tc-main-grid {
       grid-template-columns: 1fr;
+    }
+    .tc-left-col {
+      max-height: none;
+      overflow-y: visible;
+      padding-right: 0;
+      padding-bottom: 0;
+    }
+    .tc-right-col {
+      position: static;
+      top: auto;
     }
   }
 
@@ -1069,7 +1114,7 @@
   <div class="tc-main-grid">
 
     <!-- LEFT COLUMN: GUARDIANS LIST + EXPLAINER + HELPLINES -->
-    <div>
+    <div class="tc-left-col">
 
       <!-- Guardians Section -->
       <div>
@@ -1234,7 +1279,7 @@
     </div>
 
     <!-- RIGHT COLUMN: ADD TO YOUR CIRCLE -->
-    <div>
+    <div class="tc-right-col">
       <div class="tc-add-card">
         <div class="tc-add-head">
           <div class="tc-add-head-icon">
