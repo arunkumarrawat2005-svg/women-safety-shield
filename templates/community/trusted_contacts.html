@@ -343,30 +343,34 @@
 
   /* Left Scrollable Column */
   .tc-left-col {
-    max-height: calc(100vh - 120px);
+    max-height: 520px;
     overflow-y: auto;
     overflow-x: hidden;
     padding-right: 12px;
-    padding-bottom: 2rem;
+    padding-bottom: 1.5rem;
     scrollbar-width: thin;
-    scrollbar-color: #cbd5e1 transparent;
+    scrollbar-color: #cbd5e1 #f8fafc;
+    overscroll-behavior-y: contain;
+    scroll-behavior: smooth;
   }
 
   .tc-left-col::-webkit-scrollbar {
     width: 6px;
+    display: block;
   }
 
   .tc-left-col::-webkit-scrollbar-track {
-    background: transparent;
+    background: #f8fafc;
+    border-radius: 9999px;
   }
 
   .tc-left-col::-webkit-scrollbar-thumb {
-    background: #e2e8f0;
+    background: #cbd5e1;
     border-radius: 9999px;
   }
 
   .tc-left-col::-webkit-scrollbar-thumb:hover {
-    background: #cbd5e1;
+    background: #9ca3af;
   }
 
   /* Right Sticky Column */
@@ -712,8 +716,6 @@
     border-radius: 18px;
     padding: 1.35rem 1.45rem;
     box-shadow: 0 2px 12px rgba(0,0,0,0.02);
-    position: sticky;
-    top: 90px;
   }
 
   .tc-add-head {
