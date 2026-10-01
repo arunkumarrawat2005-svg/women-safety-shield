@@ -141,17 +141,50 @@
     align-items: start;
   }
 
-  @media (max-width: 991px) {
-    .sr-main-grid {
-      grid-template-columns: 1fr;
-    }
-  }
-
   /* Left Column (Scrollable Cards) */
   .sr-left-col {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    max-height: calc(100vh - 125px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 12px;
+    padding-bottom: 2rem;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+    overscroll-behavior-y: contain;
+    scroll-behavior: smooth;
+  }
+
+  .sr-left-col::-webkit-scrollbar {
+    width: 6px;
+    display: block;
+  }
+
+  .sr-left-col::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .sr-left-col::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 9999px;
+  }
+
+  .sr-left-col::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+  }
+
+  @media (max-width: 991px) {
+    .sr-main-grid {
+      grid-template-columns: 1fr;
+    }
+    .sr-left-col {
+      max-height: none;
+      overflow-y: visible;
+      padding-right: 0;
+      padding-bottom: 0;
+    }
   }
 
   /* SEARCH CARD: "Where are you going?" */
