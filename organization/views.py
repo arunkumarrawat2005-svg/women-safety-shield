@@ -17,12 +17,31 @@ def org_list(request):
     Shows colleges, companies, hospitals, NGOs, and safe haven campuses.
     Accessible to all users before and after login.
     """
-    category = request.GET.get('category', 'all')
+    category = request.GET.get('category', 'all').lower()
     query = request.GET.get('q', '').strip()
     city = request.GET.get('city', '').strip()
 
+    # Map category synonyms
+    category_map = {
+        'campuses': 'college',
+        'campus': 'college',
+        'colleges': 'college',
+        'college': 'college',
+        'hospitals': 'hospital',
+        'hospital': 'hospital',
+        'corporate': 'company',
+        'company': 'company',
+        'companies': 'company',
+        'ngos': 'ngo',
+        'ngo': 'ngo',
+        'shelters': 'ngo',
+        'transit': 'government',
+        'government': 'government',
+    }
+    db_category = category_map.get(category, category if category != 'all' else None)
+
     organizations = OrganizationService.get_verified_organizations(
-        category=category if category != 'all' else None,
+        category=db_category if db_category != 'all' else None,
         query=query if query else None,
         city=city if city else None
     )
@@ -53,6 +72,14 @@ def org_list(request):
     safe_havens_count = Organization.objects.filter(is_verified=True, has_safe_haven=True).count()
     colleges_count = Organization.objects.filter(is_verified=True, org_type='college').count()
     hospitals_count = Organization.objects.filter(is_verified=True, org_type='hospital').count()
+    corporate_count = Organization.objects.filter(is_verified=True, org_type='company').count()
+    ngos_count = Organization.objects.filter(is_verified=True, org_type='ngo').count()
+    transit_count = Organization.objects.filter(is_verified=True, org_type__in=['government', 'transit', 'other']).count()
+
+    responders_count = OrgVolunteer.objects.filter(approved_by_org=True, is_available=True).count()
+    if responders_count == 0 and total_orgs_count > 0:
+        # Sum of security guards count if no individual volunteers signed in yet
+        responders_count = sum(org.security_guards_count for org in organizations)
 
     user_org = None
     if request.user.is_authenticated and hasattr(request.user, 'organization'):
@@ -68,6 +95,10 @@ def org_list(request):
         'safe_havens_count': safe_havens_count,
         'colleges_count': colleges_count,
         'hospitals_count': hospitals_count,
+        'corporate_count': corporate_count,
+        'ngos_count': ngos_count,
+        'transit_count': transit_count,
+        'responders_count': responders_count,
         'user_org': user_org,
     }
     return render(request, 'organization/list.html', context)

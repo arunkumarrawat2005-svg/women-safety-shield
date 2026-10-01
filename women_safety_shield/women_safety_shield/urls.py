@@ -25,6 +25,7 @@ urlpatterns = [
     path('incident/', include('incident.urls')),
     path('safety-map/', include('safety_map.urls')),
     path('organization/', include('organization.urls')),
+    path('organizations/', include('organization.urls')),
     path('admin-panel/', include('admin_panel.urls')),
     path('notifications/', include('notifications.urls')),
     path('verification/', include('verification.urls')),
