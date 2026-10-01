@@ -1,279 +1,307 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Verified Organization Network & Safe Havens - Women Safety Shield{% endblock %}
+{% block title %}Verified Organization Network &amp; Safe Havens - Women Safety Shield{% endblock %}
 
 {% block extra_css %}
 <style>
   :root {
-    --org-maroon-dark: #4a0e17;
-    --org-maroon: #7A1F2B;
-    --org-crimson: #B3243A;
-    --org-red-badge: #dc2626;
-    --org-hospital-badge: #7f1d1d;
-    --org-corp-badge: #2563eb;
-    --org-ngo-badge: #d97706;
-    --org-transit-badge: #475569;
-    --org-border: #e2e8f0;
-    --org-slate-text: #64748b;
-    --org-dark-text: #0f172a;
-    --org-light-bg: #f8fafc;
+    --org-bg-canvas: #fbfbfa;
+    --org-card-bg: #ffffff;
+    --org-border-subtle: #edf0f3;
+    --org-text-main: #111827;
+    --org-text-muted: #6b7280;
+    --org-maroon: #5c1320;
+    --org-maroon-dark: #450c16;
+    --org-crimson: #dc2626;
+    --org-crimson-hover: #b91c1c;
+    --org-gold: #f59e0b;
+    --org-gold-hover: #d97706;
   }
 
-  .org-page-wrap {
-    max-width: 1320px;
-    margin: 0 auto;
-    padding: 1.5rem 1rem 3.5rem;
+  body {
+    background-color: var(--org-bg-canvas) !important;
+  }
+
+  /* Outer Container Card */
+  .org-dashboard-outer {
+    max-width: 1280px;
+    margin: 1.5rem auto 3rem;
+    padding: 2rem 2.25rem;
+    background: #ffffff;
+    border: 1px solid var(--org-border-subtle);
+    border-radius: 24px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.02);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 
-  /* 1. TOP HEADER */
+  @media (max-width: 768px) {
+    .org-dashboard-outer {
+      padding: 1.25rem 1rem;
+      border-radius: 16px;
+      margin: 0.75rem auto 2rem;
+    }
+  }
+
+  /* 1. TOP HEADER SECTION */
   .org-top-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     flex-wrap: wrap;
     gap: 1.25rem;
-    margin-bottom: 1.75rem;
+    margin-bottom: 1.5rem;
   }
 
-  .org-inst-pill {
+  .org-tag-pill {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
     background: #fdf2f2;
-    border: 1px solid #fecaca;
+    border: 1px solid #fee2e2;
     color: #991b1b;
-    font-size: 0.78rem;
+    font-size: 11px;
     font-weight: 700;
-    padding: 0.28rem 0.75rem;
-    border-radius: 9999px;
-    margin-bottom: 0.45rem;
+    padding: 3px 8px;
+    border-radius: 6px;
+    margin-bottom: 0.4rem;
   }
 
-  .org-header-title {
+  .org-title {
     font-family: 'Plus Jakarta Sans', sans-serif;
     font-weight: 800;
-    font-size: 1.85rem;
-    letter-spacing: -0.025em;
-    color: var(--org-dark-text);
+    font-size: 1.75rem;
+    letter-spacing: -0.02em;
+    color: var(--org-text-main);
     margin: 0 0 0.25rem;
     line-height: 1.25;
   }
 
-  .org-header-subtitle {
-    color: var(--org-slate-text);
-    font-size: 0.92rem;
+  .org-subtitle {
+    color: var(--org-text-muted);
+    font-size: 0.88rem;
     margin: 0;
-    max-width: 650px;
-    line-height: 1.5;
+    line-height: 1.45;
   }
 
-  .org-header-actions {
+  .org-header-btn-group {
     display: flex;
     align-items: center;
     gap: 0.65rem;
     flex-wrap: wrap;
   }
 
-  .btn-org-explore {
+  .btn-explore-white {
     background: #ffffff;
-    border: 1px solid var(--org-border);
-    color: #334155;
+    border: 1px solid #e5e7eb;
+    color: #374151;
     font-weight: 600;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     padding: 0.55rem 1rem;
     border-radius: 8px;
     display: inline-flex;
     align-items: center;
     gap: 0.45rem;
     text-decoration: none;
-    transition: all 0.2s ease;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    transition: all 0.15s ease;
   }
 
-  .btn-org-explore:hover {
-    background: #f8fafc;
-    border-color: #cbd5e1;
-    color: #0f172a;
+  .btn-explore-white:hover {
+    background: #f9fafb;
+    border-color: #d1d5db;
+    color: #111827;
   }
 
-  .btn-org-register {
-    background: #b91c1c;
-    border: 1px solid #b91c1c;
+  .btn-register-red {
+    background: var(--org-crimson);
+    border: 1px solid var(--org-crimson);
     color: #ffffff;
     font-weight: 700;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     padding: 0.55rem 1.15rem;
     border-radius: 8px;
     display: inline-flex;
     align-items: center;
     gap: 0.45rem;
     text-decoration: none;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 6px rgba(185, 28, 28, 0.25);
+    box-shadow: 0 2px 6px rgba(220, 38, 38, 0.25);
+    transition: all 0.15s ease;
   }
 
-  .btn-org-register:hover {
-    background: #991b1b;
-    border-color: #991b1b;
+  .btn-register-red:hover {
+    background: var(--org-crimson-hover);
+    border-color: var(--org-crimson-hover);
     color: #ffffff;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(185, 28, 28, 0.35);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35);
   }
 
-  /* 2. MAIN TWO-COLUMN LAYOUT */
-  .org-main-grid {
+  /* 2. MAIN WORKSPACE (TWO COLUMNS) */
+  .org-main-columns {
     display: grid;
-    grid-template-columns: 360px 1fr;
+    grid-template-columns: 340px 1fr;
     gap: 1.25rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
     align-items: stretch;
   }
 
   @media (max-width: 991px) {
-    .org-main-grid {
+    .org-main-columns {
       grid-template-columns: 1fr;
     }
   }
 
-  /* LEFT SIDEBAR */
-  .org-sidebar {
+  /* LEFT SINGLE CARD */
+  .org-left-card {
+    background: #ffffff;
+    border: 1px solid var(--org-border-subtle);
+    border-radius: 16px;
+    padding: 1.25rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    justify-content: space-between;
+    min-height: 500px;
   }
 
-  .org-filter-card {
-    background: #ffffff;
-    border: 1px solid var(--org-border);
-    border-radius: 12px;
-    padding: 1rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-  }
-
-  .org-search-row {
+  /* Search & City Inputs */
+  .org-inputs-row {
     display: flex;
     gap: 0.5rem;
     margin-bottom: 0.75rem;
   }
 
-  .org-input-wrap {
+  .org-input-box {
     position: relative;
     flex: 1;
-  }
-
-  .org-input-wrap.city-wrap {
-    flex: 0 0 110px;
-  }
-
-  .org-input-field {
-    width: 100%;
-    height: 38px;
-    border: 1px solid var(--org-border);
-    border-radius: 8px;
-    padding: 0.45rem 0.75rem;
-    font-size: 0.84rem;
-    color: #1e293b;
-    outline: none;
-    transition: border-color 0.2s ease;
-  }
-
-  .org-input-field:focus {
-    border-color: #b91c1c;
-    box-shadow: 0 0 0 2px rgba(185, 28, 28, 0.12);
-  }
-
-  .org-input-field::placeholder {
-    color: #94a3b8;
-  }
-
-  /* Filter Pill Chips */
-  .org-chip-row {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
+    align-items: center;
   }
 
-  .org-chip {
+  .org-input-box.city-box {
+    flex: 0 0 100px;
+  }
+
+  .org-input-icon {
+    position: absolute;
+    left: 10px;
+    color: #9ca3af;
+    font-size: 13px;
+    pointer-events: none;
+  }
+
+  .org-field {
+    width: 100%;
+    height: 36px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 0.4rem 0.65rem 0.4rem 28px;
+    font-size: 0.82rem;
+    color: var(--org-text-main);
+    outline: none;
+    transition: all 0.15s ease;
+  }
+
+  .org-field:focus {
+    background: #ffffff;
+    border-color: var(--org-crimson);
+    box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.12);
+  }
+
+  .org-field::placeholder {
+    color: #9ca3af;
+  }
+
+  /* Filter Chips */
+  .org-chips-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-bottom: 1rem;
+  }
+
+  .org-chips-row {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+
+  .org-pill-btn {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    padding: 0.32rem 0.65rem;
-    background: #f8fafc;
-    border: 1px solid var(--org-border);
+    padding: 3px 10px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
     border-radius: 9999px;
-    font-size: 0.75rem;
+    font-size: 11px;
     font-weight: 600;
-    color: #475569;
+    color: #4b5563;
     text-decoration: none;
     cursor: pointer;
     transition: all 0.15s ease;
   }
 
-  .org-chip:hover {
-    background: #f1f5f9;
-    border-color: #cbd5e1;
-    color: #1e293b;
+  .org-pill-btn:hover {
+    background: #f3f4f6;
+    color: #111827;
   }
 
-  .org-chip.active {
-    background: #0f172a;
-    border-color: #0f172a;
+  .org-pill-btn.active {
+    background: #60121d;
+    border-color: #60121d;
     color: #ffffff;
+    font-weight: 700;
   }
 
-  .org-chip-count {
-    font-size: 0.7rem;
-    opacity: 0.8;
+  .org-pill-btn.active .pill-counter {
+    color: #ffffff;
+    opacity: 0.95;
   }
 
-  /* List / Empty State */
-  .org-list-container {
+  .pill-counter {
+    font-size: 10px;
+    opacity: 0.75;
+  }
+
+  /* Center Empty State */
+  .org-empty-content {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
-    min-height: 280px;
-  }
-
-  .org-empty-box {
-    background: #ffffff;
-    border: 1px solid var(--org-border);
-    border-radius: 12px;
-    padding: 2.75rem 1.5rem;
+    align-items: center;
+    justify-content: center;
     text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    padding: 1.5rem 0.5rem;
+    margin: auto 0;
   }
 
-  .org-empty-icon-wrap {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
-    background: #ffe4e6;
-    color: #e11d48;
+  .org-pink-square {
+    width: 58px;
+    height: 58px;
+    background: #fee2e2;
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.35rem;
-    margin-bottom: 0.85rem;
     position: relative;
+    margin-bottom: 0.85rem;
+    color: #991b1b;
+    font-size: 1.6rem;
   }
 
-  .org-empty-icon-wrap .plus-dot {
+  .org-plus-circle {
     position: absolute;
     bottom: -3px;
     right: -3px;
-    width: 17px;
-    height: 17px;
-    background: #e11d48;
+    width: 18px;
+    height: 18px;
+    background: #dc2626;
     border: 2px solid #ffffff;
     border-radius: 50%;
     color: #ffffff;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 900;
     display: flex;
     align-items: center;
@@ -281,177 +309,126 @@
     line-height: 1;
   }
 
-  .org-empty-title {
-    font-size: 0.95rem;
+  .org-empty-h4 {
+    font-size: 14.5px;
     font-weight: 700;
-    color: #1e293b;
-    margin-bottom: 0.35rem;
+    color: var(--org-text-main);
+    margin: 0 0 0.35rem;
   }
 
-  .org-empty-desc {
-    font-size: 0.82rem;
-    color: var(--org-slate-text);
+  .org-empty-p {
+    font-size: 11.5px;
+    color: var(--org-text-muted);
     line-height: 1.45;
-    margin-bottom: 1.15rem;
-    max-width: 270px;
+    margin: 0 0 1rem;
+    max-width: 250px;
   }
 
-  .btn-org-invite {
-    background: #ffffff;
-    border: 1px solid var(--org-border);
-    color: #334155;
-    font-size: 0.82rem;
-    font-weight: 600;
-    padding: 0.45rem 0.95rem;
+  .btn-invite-solid {
+    background: var(--org-crimson);
+    color: #ffffff;
+    border: none;
+    font-weight: 700;
+    font-size: 12px;
+    padding: 8px 18px;
     border-radius: 8px;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.4rem;
-    text-decoration: none;
-    transition: all 0.2s ease;
+    width: 100%;
+    max-width: 240px;
+    box-shadow: 0 2px 6px rgba(220, 38, 38, 0.25);
     cursor: pointer;
+    transition: all 0.15s ease;
   }
 
-  .btn-org-invite:hover {
-    background: #f8fafc;
-    border-color: #cbd5e1;
-    color: #0f172a;
+  .btn-invite-solid:hover {
+    background: var(--org-crimson-hover);
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35);
   }
 
-  /* Organization Card When Results Exist */
-  .org-item-card {
-    background: #ffffff;
-    border: 1px solid var(--org-border);
-    border-radius: 12px;
-    padding: 0.95rem 1rem;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.02);
-    transition: all 0.2s ease;
+  /* Organization Cards When Results Are Present */
+  .org-cards-list {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.65rem;
+    max-height: 330px;
+    overflow-y: auto;
+    margin-bottom: 0.75rem;
+    padding-right: 2px;
+  }
+
+  .org-item-card {
+    background: #ffffff;
+    border: 1px solid var(--org-border-subtle);
+    border-radius: 10px;
+    padding: 0.75rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    transition: all 0.15s ease;
     cursor: pointer;
   }
 
   .org-item-card:hover {
-    border-color: #b91c1c;
-    box-shadow: 0 4px 14px rgba(185, 28, 28, 0.08);
-  }
-
-  .org-card-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 0.5rem;
+    border-color: var(--org-crimson);
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.08);
   }
 
   .org-item-name {
+    font-size: 0.88rem;
     font-weight: 700;
-    font-size: 0.92rem;
-    color: #0f172a;
-    line-height: 1.3;
+    color: var(--org-text-main);
     margin: 0;
   }
 
-  .org-dist-badge {
-    font-size: 0.72rem;
-    font-weight: 700;
-    color: #b91c1c;
-    background: #fef2f2;
-    border: 1px solid #fee2e2;
-    padding: 0.15rem 0.45rem;
-    border-radius: 6px;
-    white-space: nowrap;
-  }
-
-  .org-item-type {
-    font-size: 0.76rem;
-    color: #64748b;
-    display: flex;
-    align-items: center;
-    gap: 0.35rem;
-  }
-
-  .org-item-badges {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.35rem;
-    margin-top: 0.2rem;
-  }
-
-  .org-tag-haven {
-    background: #fffbeb;
-    color: #92400e;
-    border: 1px solid #fef3c7;
-    font-size: 0.7rem;
-    font-weight: 700;
-    padding: 0.15rem 0.4rem;
-    border-radius: 4px;
-  }
-
-  .org-tag-desk {
-    background: #eff6ff;
-    color: #1e40af;
-    border: 1px solid #dbeafe;
-    font-size: 0.7rem;
-    font-weight: 600;
-    padding: 0.15rem 0.4rem;
-    border-radius: 4px;
-  }
-
-  /* Bottom Trust Banner */
-  .org-trust-banner {
-    background: #ecfdf5;
-    border: 1px solid #a7f3d0;
-    border-radius: 10px;
-    padding: 0.75rem 0.9rem;
+  /* Bottom Trust Row */
+  .org-trust-row {
     display: flex;
     align-items: flex-start;
-    gap: 0.65rem;
+    gap: 0.5rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid #f3f4f6;
     margin-top: auto;
   }
 
   .org-trust-icon {
-    color: #059669;
-    font-size: 1.05rem;
-    line-height: 1.2;
+    font-size: 13.5px;
+    line-height: 1.25;
     flex-shrink: 0;
   }
 
-  .org-trust-text {
-    font-size: 0.78rem;
-    color: #065f46;
-    line-height: 1.45;
+  .org-trust-msg {
+    font-size: 11px;
+    color: #4b5563;
+    line-height: 1.4;
     font-weight: 500;
-    margin: 0;
   }
 
   /* RIGHT COLUMN: MAP CONTAINER & RADAR */
-  .org-map-wrapper {
+  .org-map-container {
     background: #ffffff;
-    border: 1px solid var(--org-border);
-    border-radius: 14px;
+    border: 1px solid var(--org-border-subtle);
+    border-radius: 16px;
     position: relative;
     overflow: hidden;
-    min-height: 540px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.04);
-    display: flex;
-    flex-direction: column;
+    height: 500px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
   }
 
   #orgRadarMap {
     width: 100%;
     height: 100%;
-    min-height: 540px;
-    flex: 1;
     z-index: 1;
   }
 
   /* Top Floating HUD */
-  .org-map-hud {
+  .org-hud-bar {
     position: absolute;
-    top: 14px;
-    left: 14px;
-    right: 14px;
+    top: 12px;
+    left: 12px;
+    right: 12px;
     z-index: 1000;
     display: flex;
     justify-content: space-between;
@@ -460,56 +437,59 @@
     pointer-events: none;
   }
 
-  .org-hud-pills {
+  .org-hud-stats-card {
+    pointer-events: auto;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(8px);
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 5px 14px;
     display: flex;
     align-items: center;
-    gap: 0.4rem;
-    flex-wrap: wrap;
-    pointer-events: auto;
+    gap: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   }
 
-  .org-hud-pill {
-    background: rgba(255, 255, 255, 0.96);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(226, 232, 240, 0.9);
-    border-radius: 9999px;
-    padding: 0.35rem 0.75rem;
-    font-size: 0.74rem;
-    font-weight: 700;
-    color: #1e293b;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    display: inline-flex;
+  .org-hud-item {
+    display: flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.45rem;
   }
 
-  .org-hud-pill.partner {
-    color: #0f172a;
-  }
-  .org-hud-pill.open247 {
-    color: #1e3a8a;
-  }
-  .org-hud-pill.responders {
-    color: #991b1b;
+  .org-hud-item-icon {
+    font-size: 14px;
+    line-height: 1;
   }
 
-  .org-hud-pill-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
+  .org-hud-item-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
   }
 
-  .btn-map-locate {
+  .org-hud-val {
+    font-weight: 800;
+    font-size: 13px;
+    color: var(--org-text-main);
+  }
+
+  .org-hud-lbl {
+    font-size: 10px;
+    color: var(--org-text-muted);
+    white-space: nowrap;
+  }
+
+  .btn-my-location-pill {
     pointer-events: auto;
     background: rgba(255, 255, 255, 0.96);
     backdrop-filter: blur(8px);
-    border: 1px solid rgba(226, 232, 240, 0.9);
+    border: 1px solid #e5e7eb;
     border-radius: 9999px;
-    padding: 0.4rem 0.85rem;
-    font-size: 0.76rem;
+    padding: 5px 12px;
+    font-size: 11px;
     font-weight: 700;
-    color: #334155;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    color: #1f2937;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
@@ -517,77 +497,90 @@
     transition: all 0.15s ease;
   }
 
-  .btn-map-locate:hover {
+  .btn-my-location-pill:hover {
     background: #ffffff;
-    color: #0f172a;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    color: #000000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Concentric Circle Distance Labels */
+  .radar-dist-tag {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(220, 38, 38, 0.35);
+    color: #b91c1c;
+    font-size: 9.5px;
+    font-weight: 800;
+    padding: 1px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
   }
 
   /* Bottom-Left Floating Legend */
-  .org-map-legend {
+  .org-legend-pill {
     position: absolute;
-    bottom: 14px;
-    left: 14px;
+    bottom: 12px;
+    left: 12px;
     z-index: 1000;
     background: rgba(255, 255, 255, 0.96);
     backdrop-filter: blur(8px);
-    border: 1px solid rgba(226, 232, 240, 0.9);
+    border: 1px solid #e5e7eb;
     border-radius: 9999px;
-    padding: 0.35rem 0.85rem;
+    padding: 4px 12px;
     display: flex;
     align-items: center;
-    gap: 0.85rem;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-    font-size: 0.72rem;
+    gap: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    font-size: 10.5px;
     font-weight: 600;
-    color: #475569;
+    color: #4b5563;
   }
 
-  .org-legend-item {
+  .org-legend-entry {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.3rem;
   }
 
-  .org-legend-dot {
-    width: 8px;
-    height: 8px;
+  .org-dot {
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
   }
 
   /* Floating Radar Callout Box */
-  .org-radar-callout {
+  .org-radar-callout-card {
     position: absolute;
-    bottom: 14px;
-    right: 14px;
+    bottom: 12px;
+    right: 12px;
     z-index: 1000;
     background: rgba(255, 255, 255, 0.96);
     backdrop-filter: blur(8px);
-    border: 1px solid rgba(226, 232, 240, 0.9);
+    border: 1px solid #e5e7eb;
     border-radius: 12px;
-    padding: 0.75rem 0.95rem;
-    max-width: 290px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    padding: 10px 16px;
+    max-width: 250px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   }
 
-  .org-callout-title {
-    font-size: 0.82rem;
-    font-weight: 700;
-    color: #0f172a;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    margin-bottom: 0.25rem;
+  .org-callout-head {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--org-text-main);
+    margin-bottom: 3px;
   }
 
-  .org-callout-desc {
-    font-size: 0.74rem;
-    color: #64748b;
-    line-height: 1.4;
+  .org-callout-msg {
+    font-size: 10.5px;
+    color: var(--org-text-muted);
+    line-height: 1.35;
     margin: 0;
   }
 
-  /* Radar Sweep & Disc Elements (Integrated) */
+  /* Radar Sweep Components */
   .radar-sweep-div-icon {
     background: transparent !important;
     border: none !important;
@@ -608,9 +601,9 @@
     border-radius: 50%;
     background: conic-gradient(
       from 0deg,
-      rgba(220, 38, 38, 0.32) 0deg,
-      rgba(220, 38, 38, 0.16) 38deg,
-      rgba(220, 38, 38, 0.04) 75deg,
+      rgba(220, 38, 38, 0.30) 0deg,
+      rgba(220, 38, 38, 0.15) 38deg,
+      rgba(220, 38, 38, 0.03) 75deg,
       rgba(220, 38, 38, 0.0) 90deg,
       rgba(220, 38, 38, 0.0) 360deg
     );
@@ -623,9 +616,9 @@
     left: 50%;
     top: 50%;
     width: 50%;
-    height: 2px;
-    background: linear-gradient(90deg, rgba(220, 38, 38, 0.95) 0%, rgba(239, 68, 68, 0.7) 70%, rgba(255, 255, 255, 0.9) 100%);
-    box-shadow: 0 0 8px rgba(220, 38, 38, 0.85);
+    height: 1.5px;
+    background: linear-gradient(90deg, rgba(220, 38, 38, 0.95) 0%, rgba(239, 68, 68, 0.6) 70%, rgba(255, 255, 255, 0.9) 100%);
+    box-shadow: 0 0 6px rgba(220, 38, 38, 0.8);
     transform-origin: 0% 50%;
     animation: radarSweepRotate 4s linear infinite;
   }
@@ -639,12 +632,12 @@
     position: absolute;
     left: 50%;
     top: 50%;
-    width: 30px;
-    height: 30px;
-    margin-left: -15px;
-    margin-top: -15px;
+    width: 24px;
+    height: 24px;
+    margin-left: -12px;
+    margin-top: -12px;
     border-radius: 50%;
-    border: 1.5px solid rgba(220, 38, 38, 0.6);
+    border: 1.5px solid rgba(220, 38, 38, 0.55);
     pointer-events: none;
     animation: radarSonarPulse 3s cubic-bezier(0.1, 0.2, 0.3, 1) infinite;
   }
@@ -654,28 +647,20 @@
   }
 
   @keyframes radarSonarPulse {
-    0% {
-      transform: scale(0.1);
-      opacity: 0.9;
-    }
-    70% {
-      opacity: 0.35;
-    }
-    100% {
-      transform: scale(8.5);
-      opacity: 0;
-    }
+    0% { transform: scale(0.1); opacity: 0.9; }
+    70% { opacity: 0.3; }
+    100% { transform: scale(8.5); opacity: 0; }
   }
 
-  /* User Blue Beacon Dot */
+  /* User Beacon Dot */
   .radar-user-beacon {
     position: relative;
-    width: 22px;
-    height: 22px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
     background: #2563eb;
-    border: 3px solid #ffffff;
-    box-shadow: 0 0 12px rgba(37, 99, 235, 0.6);
+    border: 2.5px solid #ffffff;
+    box-shadow: 0 0 8px rgba(37, 99, 235, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -683,9 +668,9 @@
 
   .radar-user-pulse {
     position: absolute;
-    inset: -6px;
+    inset: -5px;
     border-radius: 50%;
-    border: 2px solid rgba(37, 99, 235, 0.5);
+    border: 1.5px solid rgba(37, 99, 235, 0.5);
     animation: userPulseAnim 2s infinite ease-out;
   }
 
@@ -694,303 +679,301 @@
     100% { transform: scale(2.2); opacity: 0; }
   }
 
-  /* 3. BOTTOM SECTION: 3 STEPS + CTA CARD */
-  .org-bottom-section {
+  /* 3. BOTTOM ROW: 3 STEPS + CTA CARD */
+  .org-bottom-row {
     display: grid;
-    grid-template-columns: repeat(3, 1fr) 1.35fr;
+    grid-template-columns: repeat(3, 1fr) 1.4fr;
     gap: 1rem;
     align-items: stretch;
   }
 
   @media (max-width: 1100px) {
-    .org-bottom-section {
+    .org-bottom-row {
       grid-template-columns: repeat(3, 1fr);
     }
-    .org-cta-card {
+    .org-maroon-cta {
       grid-column: span 3;
     }
   }
 
   @media (max-width: 768px) {
-    .org-bottom-section {
+    .org-bottom-row {
       grid-template-columns: 1fr;
     }
-    .org-cta-card {
+    .org-maroon-cta {
       grid-column: span 1;
     }
   }
 
-  .org-step-card {
+  .org-step-box {
     background: #ffffff;
-    border: 1px solid var(--org-border);
-    border-radius: 12px;
-    padding: 1.25rem 1.15rem;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    border: 1px solid var(--org-border-subtle);
+    border-radius: 16px;
+    padding: 1.2rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
+    gap: 0.5rem;
   }
 
-  .org-step-num {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: #f1f5f9;
-    color: #475569;
-    font-size: 0.82rem;
+  .org-step-badge {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    background: #fdf2f2;
+    color: #991b1b;
+    font-size: 11px;
     font-weight: 800;
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
-  .org-step-title {
-    font-size: 0.92rem;
+  .org-step-h3 {
+    font-size: 13.5px;
     font-weight: 700;
-    color: #0f172a;
+    color: var(--org-text-main);
     margin: 0;
   }
 
-  .org-step-desc {
-    font-size: 0.8rem;
-    color: var(--org-slate-text);
+  .org-step-p {
+    font-size: 11.5px;
+    color: var(--org-text-muted);
     line-height: 1.45;
     margin: 0;
   }
 
   /* Maroon CTA Card */
-  .org-cta-card {
-    background: #5c1320;
-    border-radius: 12px;
-    padding: 1.35rem 1.45rem;
+  .org-maroon-cta {
+    background: var(--org-maroon);
+    border-radius: 16px;
+    padding: 1.25rem 1.4rem;
     color: #ffffff;
     display: flex;
-    flex-direction: column;
+    align-items: center;
     justify-content: space-between;
-    box-shadow: 0 8px 24px rgba(92, 19, 32, 0.25);
-    position: relative;
-    overflow: hidden;
+    gap: 1rem;
+    box-shadow: 0 4px 16px rgba(92, 19, 32, 0.2);
   }
 
-  .org-cta-card::before {
-    content: '';
-    position: absolute;
-    top: -30%;
-    right: -20%;
-    width: 220px;
-    height: 220px;
-    background: radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, transparent 70%);
-    border-radius: 50%;
-    pointer-events: none;
+  .org-cta-left {
+    flex: 1;
   }
 
-  .org-cta-title {
+  .org-cta-h3 {
     font-family: 'Plus Jakarta Sans', sans-serif;
     font-weight: 800;
-    font-size: 1.12rem;
-    margin: 0 0 0.35rem;
-    line-height: 1.3;
+    font-size: 13.5px;
+    margin: 0 0 0.25rem;
     color: #ffffff;
+    line-height: 1.3;
   }
 
-  .org-cta-desc {
-    font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.82);
-    margin: 0 0 0.85rem;
-    line-height: 1.4;
+  .org-cta-sub {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.85);
+    margin: 0 0 0.55rem;
+    line-height: 1.35;
   }
 
-  .org-cta-badges {
+  .org-cta-checks {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
-    font-size: 0.74rem;
-    font-weight: 600;
+    gap: 0.85rem;
+    font-size: 10.5px;
     color: rgba(255, 255, 255, 0.9);
+    font-weight: 600;
   }
 
-  .org-cta-badges span {
+  .org-cta-checks span {
     display: inline-flex;
     align-items: center;
-    gap: 0.3rem;
+    gap: 0.25rem;
   }
 
-  .btn-partner-cta {
-    background: #f59e0b;
+  .btn-gold-partner {
+    background: var(--org-gold);
     border: none;
     color: #1c1917;
-    font-weight: 800;
-    font-size: 0.84rem;
-    padding: 0.55rem 1.15rem;
+    font-weight: 700;
+    font-size: 11.5px;
+    padding: 7px 15px;
     border-radius: 8px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.4rem;
     text-decoration: none;
-    transition: all 0.2s ease;
-    align-self: flex-start;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
   }
 
-  .btn-partner-cta:hover {
-    background: #d97706;
+  .btn-gold-partner:hover {
+    background: var(--org-gold-hover);
     color: #ffffff;
     transform: translateY(-1px);
-    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
-  }
-
-  /* MODAL */
-  .modal-org-invite .modal-content {
-    border-radius: 14px;
-    border: 1px solid var(--org-border);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);
   }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="org-page-wrap">
+<div class="org-dashboard-outer">
 
-  <!-- 1. TOP HEADER SECTION -->
+  <!-- 1. TOP HEADER -->
   <div class="org-top-header">
     <div>
-      <div class="org-inst-pill">
+      <div class="org-tag-pill">
         <i class="bi bi-building"></i> Institutional network
       </div>
-      <h1 class="org-header-title">Verified Organization Network</h1>
-      <p class="org-header-subtitle">
+      <h1 class="org-title">Verified Organization Network</h1>
+      <p class="org-subtitle">
         Campuses, hospitals and shelters with 24/7 security desks and designated first responders.
       </p>
     </div>
 
-    <div class="org-header-actions">
-      <a href="#orgRadarMap" class="btn-org-explore" onclick="document.getElementById('orgSearchInput').focus();">
+    <div class="org-header-btn-group">
+      <a href="#orgRadarMap" class="btn-explore-white" onclick="document.getElementById('orgSearchInput').focus();">
         <i class="bi bi-search"></i> Explore verified campuses
       </a>
-      <a href="{% url 'org_register' %}" class="btn-org-register">
+      <a href="{% url 'org_register' %}" class="btn-register-red">
         <i class="bi bi-building"></i> Register your organization
       </a>
     </div>
   </div>
 
-  <!-- 2. TWO-COLUMN MAIN WORKSPACE -->
-  <div class="org-main-grid">
+  <!-- 2. TWO-COLUMN WORKSPACE -->
+  <div class="org-main-columns">
 
-    <!-- LEFT COLUMN: SEARCH, FILTER, CARDS & TRUST BANNER -->
-    <div class="org-sidebar">
+    <!-- LEFT COLUMN: SINGLE UNIFIED CARD -->
+    <div class="org-left-card">
 
-      <div class="org-filter-card">
-        <!-- Search Inputs -->
-        <div class="org-search-row">
-          <div class="org-input-wrap">
-            <input type="text" id="orgSearchInput" class="org-input-field" placeholder="Search institutions" value="{{ search_query }}">
+      <div>
+        <!-- Search & City Inputs Row -->
+        <div class="org-inputs-row">
+          <div class="org-input-box">
+            <i class="bi bi-search org-input-icon"></i>
+            <input type="text" id="orgSearchInput" class="org-field" placeholder="Search institutions" value="{{ search_query }}">
           </div>
-          <div class="org-input-wrap city-wrap">
-            <input type="text" id="orgCityInput" class="org-input-field" placeholder="City" value="{{ search_city }}">
+          <div class="org-input-box city-box">
+            <i class="bi bi-geo-alt org-input-icon"></i>
+            <input type="text" id="orgCityInput" class="org-field" placeholder="City" value="{{ search_city }}">
           </div>
         </div>
 
-        <!-- Filter Pills Chips -->
-        <div class="org-chip-row" id="orgCategoryChips">
-          <button type="button" class="org-chip {% if selected_category == 'all' or not selected_category %}active{% endif %}" data-cat="all">
-            All <span class="org-chip-count">{{ total_orgs_count }}</span>
-          </button>
-          <button type="button" class="org-chip {% if selected_category == 'campuses' or selected_category == 'college' %}active{% endif %}" data-cat="college">
-            Campuses <span class="org-chip-count">{{ colleges_count }}</span>
-          </button>
-          <button type="button" class="org-chip {% if selected_category == 'hospitals' or selected_category == 'hospital' %}active{% endif %}" data-cat="hospital">
-            Hospitals <span class="org-chip-count">{{ hospitals_count }}</span>
-          </button>
-          <button type="button" class="org-chip {% if selected_category == 'corporate' or selected_category == 'company' %}active{% endif %}" data-cat="company">
-            Corporate <span class="org-chip-count">{{ corporate_count }}</span>
-          </button>
-          <button type="button" class="org-chip {% if selected_category == 'ngos' or selected_category == 'ngo' %}active{% endif %}" data-cat="ngo">
-            NGOs <span class="org-chip-count">{{ ngos_count }}</span>
-          </button>
-          <button type="button" class="org-chip {% if selected_category == 'transit' or selected_category == 'government' %}active{% endif %}" data-cat="government">
-            Transit <span class="org-chip-count">{{ transit_count }}</span>
-          </button>
+        <!-- Filter Pill Chips -->
+        <div class="org-chips-wrap" id="orgCategoryChips">
+          <div class="org-chips-row">
+            <button type="button" class="org-pill-btn {% if selected_category == 'all' or not selected_category %}active{% endif %}" data-cat="all">
+              All <span class="pill-counter">{{ total_orgs_count }}</span>
+            </button>
+            <button type="button" class="org-pill-btn {% if selected_category == 'campuses' or selected_category == 'college' %}active{% endif %}" data-cat="college">
+              Campuses <span class="pill-counter">{{ colleges_count }}</span>
+            </button>
+            <button type="button" class="org-pill-btn {% if selected_category == 'hospitals' or selected_category == 'hospital' %}active{% endif %}" data-cat="hospital">
+              Hospitals <span class="pill-counter">{{ hospitals_count }}</span>
+            </button>
+          </div>
+          <div class="org-chips-row">
+            <button type="button" class="org-pill-btn {% if selected_category == 'corporate' or selected_category == 'company' %}active{% endif %}" data-cat="company">
+              Corporate <span class="pill-counter">{{ corporate_count }}</span>
+            </button>
+            <button type="button" class="org-pill-btn {% if selected_category == 'ngos' or selected_category == 'ngo' %}active{% endif %}" data-cat="ngo">
+              NGOs <span class="pill-counter">{{ ngos_count }}</span>
+            </button>
+            <button type="button" class="org-pill-btn {% if selected_category == 'transit' or selected_category == 'government' %}active{% endif %}" data-cat="government">
+              Transit <span class="pill-counter">{{ transit_count }}</span>
+            </button>
+          </div>
         </div>
-      </div>
 
-      <!-- List Container: Real Cards or Clean Empty State -->
-      <div class="org-list-container" id="orgListWrap">
-        {% if organizations %}
+        <!-- Dynamic Results List (If organizations exist) -->
+        <div class="org-cards-list" id="orgCardsList" style="{% if not organizations %}display:none;{% endif %}">
           {% for org in organizations %}
-          <div class="org-item-card" data-org-id="{{ org.id }}" data-cat="{{ org.org_type }}" data-name="{{ org.name|lower }}" data-city="{{ org.city|lower }}" data-lat="{{ org.latitude|default:'' }}" data-lng="{{ org.longitude|default:'' }}" onclick="focusOrgMarker({{ org.id }})">
-            <div class="org-card-head">
-              <h4 class="org-item-name">{{ org.name }}</h4>
-              <span class="org-dist-badge"><i class="bi bi-patch-check-fill text-success me-1"></i>Verified</span>
+          <div class="org-item-card" data-org-id="{{ org.id }}" data-cat="{{ org.org_type }}" data-name="{{ org.name|lower }}" data-city="{{ org.city|lower }}" onclick="focusOrgMarker({{ org.id }})">
+            <div class="d-flex justify-content-between align-items-center">
+              <h5 class="org-item-name">{{ org.name }}</h5>
+              <span class="badge bg-success-subtle text-success border border-success-subtle py-1 px-2" style="font-size:10px;">
+                <i class="bi bi-patch-check-fill me-1"></i>Verified
+              </span>
             </div>
-            <div class="org-item-type">
-              <i class="bi {{ org.get_icon }}"></i> {{ org.get_org_type_display }}{% if org.city %}&nbsp;&bull;&nbsp;{{ org.city }}{% endif %}
+            <div class="text-muted small mt-1" style="font-size:11px;">
+              <i class="bi {{ org.get_icon }} me-1 text-danger"></i>{{ org.get_org_type_display }}{% if org.city %}&nbsp;&bull;&nbsp;{{ org.city }}{% endif %}
             </div>
-            <div class="org-item-badges">
-              {% if org.has_safe_haven %}
-              <span class="org-tag-haven"><i class="bi bi-house-heart me-1"></i>Safe Haven</span>
-              {% endif %}
-              <span class="org-tag-desk"><i class="bi bi-clock-history me-1"></i>24/7 Desk</span>
-              {% if org.cctv_monitored %}
-              <span class="org-tag-desk"><i class="bi bi-camera-video me-1"></i>CCTV</span>
-              {% endif %}
-            </div>
-            <div class="d-flex justify-content-between align-items-center mt-1 pt-1 border-top">
-              <a href="tel:{{ org.hotline_display }}" class="text-danger fw-bold small text-decoration-none" onclick="event.stopPropagation();">
+            <div class="d-flex justify-content-between align-items-center mt-2 pt-1 border-top" style="font-size:11px;">
+              <a href="tel:{{ org.hotline_display }}" class="text-danger fw-bold text-decoration-none" onclick="event.stopPropagation();">
                 <i class="bi bi-telephone-fill me-1"></i>{{ org.hotline_display }}
               </a>
-              <a href="{% url 'org_detail' org.id %}" class="btn btn-sm btn-outline-dark py-0 px-2 small fw-semibold" onclick="event.stopPropagation();">
+              <a href="{% url 'org_detail' org.id %}" class="text-dark fw-semibold text-decoration-none" onclick="event.stopPropagation();">
                 Profile &rarr;
               </a>
             </div>
           </div>
           {% endfor %}
-        {% else %}
-          <!-- Empty State (Exact Match to Reference Screenshot) -->
-          <div class="org-empty-box" id="orgEmptyState">
-            <div class="org-empty-icon-wrap">
-              <i class="bi bi-building"></i>
-              <div class="plus-dot">+</div>
-            </div>
-            <div class="org-empty-title">No partner organizations here yet</div>
-            <div class="org-empty-desc">
-              Be the first. Invite your college, hospital or workplace to join the verified safety network.
-            </div>
-            <button type="button" class="btn-org-invite" data-bs-toggle="modal" data-bs-target="#inviteOrgModal">
-              <i class="bi bi-envelope"></i> Invite an organization
-            </button>
-          </div>
-        {% endif %}
+        </div>
       </div>
 
-      <!-- Trust Note at Bottom of Sidebar -->
-      <div class="org-trust-banner">
-        <i class="bi bi-shield-check org-trust-icon"></i>
-        <p class="org-trust-text">
-          Only designated staff, approved by the organization itself, act as responders. Not every student or employee.
+      <!-- Center Empty State (Exact Match to Given Image) -->
+      <div class="org-empty-content" id="orgEmptyState" style="{% if organizations %}display:none;{% endif %}">
+        <div class="org-pink-square">
+          <i class="bi bi-building"></i>
+          <div class="org-plus-circle">+</div>
+        </div>
+        <h4 class="org-empty-h4">No partner organizations here yet</h4>
+        <p class="org-empty-p">
+          Be the first. Invite your college, hospital or workplace to join the verified safety network.
         </p>
+        <button type="button" class="btn-invite-solid" data-bs-toggle="modal" data-bs-target="#inviteOrgModal">
+          <i class="bi bi-building me-1"></i> Invite an organization
+        </button>
+      </div>
+
+      <!-- Bottom Trust Note -->
+      <div class="org-trust-row">
+        <i class="bi bi-shield-check text-success org-trust-icon"></i>
+        <span class="org-trust-msg">
+          Only designated staff, approved by the organization itself, act as responders. Not every student or employee.
+        </span>
       </div>
 
     </div>
 
     <!-- RIGHT COLUMN: INTERACTIVE RADAR MAP -->
-    <div class="org-map-wrapper">
+    <div class="org-map-container">
 
-      <!-- Top Floating HUD -->
-      <div class="org-map-hud">
-        <div class="org-hud-pills">
-          <div class="org-hud-pill partner">
-            <i class="bi bi-shield-shaded text-danger"></i> <span id="hudPartnersCount">{{ total_orgs_count }}</span> verified partners
+      <!-- Top Floating HUD Bar -->
+      <div class="org-hud-bar">
+        <!-- Left Stats Card -->
+        <div class="org-hud-stats-card">
+          <!-- 1. Verified Partners -->
+          <div class="org-hud-item">
+            <i class="bi bi-shield-shaded text-danger org-hud-item-icon"></i>
+            <div class="org-hud-item-text">
+              <span class="org-hud-val" id="hudPartnersCount">{{ total_orgs_count }}</span>
+              <span class="org-hud-lbl">verified partners</span>
+            </div>
           </div>
-          <div class="org-hud-pill open247">
-            <i class="bi bi-moon-stars text-primary"></i> <span id="hud247Count">{{ safe_havens_count }}</span> open 24/7
+          <!-- 2. Open 24/7 -->
+          <div class="org-hud-item">
+            <i class="bi bi-moon-stars-fill text-warning org-hud-item-icon"></i>
+            <div class="org-hud-item-text">
+              <span class="org-hud-val" id="hud247Count">{{ safe_havens_count }}</span>
+              <span class="org-hud-lbl">open 24/7</span>
+            </div>
           </div>
-          <div class="org-hud-pill responders">
-            <span class="org-hud-pill-dot bg-danger"></span> <span id="hudRespondersCount">{{ responders_count }}</span> responders on duty
+          <!-- 3. Responders on Duty -->
+          <div class="org-hud-item">
+            <span class="org-dot bg-danger" style="width:7px; height:7px;"></span>
+            <div class="org-hud-item-text">
+              <span class="org-hud-val" id="hudRespondersCount">{{ responders_count }}</span>
+              <span class="org-hud-lbl">responders on duty</span>
+            </div>
           </div>
         </div>
 
-        <button type="button" class="btn-map-locate" onclick="locateUserAndCenter();">
-          <i class="bi bi-crosshair"></i> My location
+        <!-- Right Locate Button -->
+        <button type="button" class="btn-my-location-pill" onclick="locateUserAndCenter();">
+          <i class="bi bi-crosshair text-danger"></i> My location
         </button>
       </div>
 
@@ -998,30 +981,30 @@
       <div id="orgRadarMap"></div>
 
       <!-- Bottom-Left Floating Legend -->
-      <div class="org-map-legend">
-        <span class="org-legend-item">
-          <span class="org-legend-dot" style="background: var(--org-red-badge);"></span> Campus
+      <div class="org-legend-pill">
+        <span class="org-legend-entry">
+          <span class="org-dot" style="background: #dc2626;"></span> Campuse
         </span>
-        <span class="org-legend-item">
-          <span class="org-legend-dot" style="background: var(--org-hospital-badge);"></span> Hospital
+        <span class="org-legend-entry">
+          <span class="org-dot" style="background: #991b1b;"></span> Hospital
         </span>
-        <span class="org-legend-item">
-          <span class="org-legend-dot" style="background: var(--org-corp-badge);"></span> Corporate
+        <span class="org-legend-entry">
+          <span class="org-dot" style="background: #2563eb;"></span> Corporate
         </span>
-        <span class="org-legend-item">
-          <span class="org-legend-dot" style="background: var(--org-ngo-badge);"></span> NGO
+        <span class="org-legend-entry">
+          <span class="org-dot" style="background: #d97706;"></span> NGO
         </span>
-        <span class="org-legend-item">
-          <span class="org-legend-dot" style="background: var(--org-transit-badge);"></span> Transit
+        <span class="org-legend-entry">
+          <span class="org-dot" style="background: #334155;"></span> Transit
         </span>
       </div>
 
       <!-- Floating Radar Callout Box -->
-      <div class="org-radar-callout">
-        <div class="org-callout-title">
-          <i class="bi bi-radar text-danger"></i> Scanning your 3 km radius
+      <div class="org-radar-callout-card">
+        <div class="org-callout-head">
+          Scanning your 3 km radius
         </div>
-        <div class="org-callout-desc" id="radarCalloutText">
+        <div class="org-callout-msg" id="radarCalloutText">
           {% if total_orgs_count > 0 %}
           Showing active verified institutional safety desks and response perimeters within reach.
           {% else %}
@@ -1034,43 +1017,43 @@
 
   </div>
 
-  <!-- 3. BOTTOM SECTION: 3 FEATURE STEPS + MAROON CTA -->
-  <div class="org-bottom-section">
+  <!-- 3. BOTTOM ROW: 3 STEPS + MAROON CTA -->
+  <div class="org-bottom-row">
 
     <!-- Step 1 -->
-    <div class="org-step-card">
-      <div class="org-step-num">1</div>
-      <h3 class="org-step-title">SOS inside the perimeter</h3>
-      <p class="org-step-desc">The organization's desk gets an instant dashboard alert.</p>
+    <div class="org-step-box">
+      <div class="org-step-badge">1</div>
+      <h3 class="org-step-h3">SOS inside the perimeter</h3>
+      <p class="org-step-p">The organization's desk gets an instant dashboard alert.</p>
     </div>
 
     <!-- Step 2 -->
-    <div class="org-step-card">
-      <div class="org-step-num">2</div>
-      <h3 class="org-step-title">Designated responders</h3>
-      <p class="org-step-desc">Approved staff are notified and must accept.</p>
+    <div class="org-step-box">
+      <div class="org-step-badge">2</div>
+      <h3 class="org-step-h3">Designated responders</h3>
+      <p class="org-step-p">Approved staff are notified and must accept.</p>
     </div>
 
     <!-- Step 3 -->
-    <div class="org-step-card">
-      <div class="org-step-num">3</div>
-      <h3 class="org-step-title">Walk-in safe haven</h3>
-      <p class="org-step-desc">Anyone can enter a verified 24/7 desk for help.</p>
+    <div class="org-step-box">
+      <div class="org-step-badge">3</div>
+      <h3 class="org-step-h3">Walk-in safe haven</h3>
+      <p class="org-step-p">Anyone can enter a verified 24/7 desk for help.</p>
     </div>
 
-    <!-- Right Maroon CTA Card -->
-    <div class="org-cta-card">
-      <div>
-        <h3 class="org-cta-title">Is your college, tech park or hospital ready?</h3>
-        <p class="org-cta-desc">
+    <!-- Maroon CTA Card -->
+    <div class="org-maroon-cta">
+      <div class="org-cta-left">
+        <h3 class="org-cta-h3">Is your college, tech park or hospital ready?</h3>
+        <p class="org-cta-sub">
           Protect students, staff and the neighborhood with real-time perimeter SOS alerts.
         </p>
-        <div class="org-cta-badges">
+        <div class="org-cta-checks">
           <span><i class="bi bi-check-circle-fill text-warning"></i> Free to join</span>
           <span><i class="bi bi-check-circle-fill text-warning"></i> Verified in 48 h</span>
         </div>
       </div>
-      <a href="{% url 'org_register' %}" class="btn-partner-cta">
+      <a href="{% url 'org_register' %}" class="btn-gold-partner">
         Partner with us
       </a>
     </div>
@@ -1080,18 +1063,18 @@
 </div>
 
 <!-- Invite Organization Modal -->
-<div class="modal fade modal-org-invite" id="inviteOrgModal" tabindex="-1" aria-labelledby="inviteOrgModalLabel" aria-hidden="true">
+<div class="modal fade" id="inviteOrgModal" tabindex="-1" aria-labelledby="inviteOrgModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content shadow">
+    <div class="modal-content shadow border-0" style="border-radius:16px;">
       <div class="modal-header border-0 pb-0">
         <h5 class="modal-title fw-bold text-dark" id="inviteOrgModalLabel">
-          <i class="bi bi-envelope-heart text-danger me-2"></i>Invite an Organization
+          <i class="bi bi-building-add text-danger me-2"></i>Invite an Organization
         </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <p class="small text-muted mb-3">
-          Know a college, hospital, NGO, or corporate workplace that should join the Women Safety Shield Network? Let them know or share an invitation!
+          Know a college, hospital, NGO, or corporate workplace that should join the Women Safety Shield Network? Share an invitation directly with their security &amp; safety team!
         </p>
         <form onsubmit="handleSendInvite(event);">
           <div class="mb-3">
@@ -1128,24 +1111,25 @@
   // Pins data from Django view
   const orgPinsData = {{ map_pins_json|safe }};
 
-  // State coordinates (defaults to user or Delhi NCR)
+  // Coordinates
   let userLat = 28.6139;
   let userLng = 77.2090;
   let mapObj = null;
   let userBeacon = null;
   let circle1500 = null;
   let circle3000 = null;
+  let label1500Marker = null;
+  let label3000Marker = null;
   let radarMarker = null;
   let orgMarkers = {};
 
-  // Color mapping matching legend
   const CATEGORY_COLORS = {
     'college': '#dc2626',
-    'hospital': '#7f1d1d',
+    'hospital': '#991b1b',
     'company': '#2563eb',
     'ngo': '#d97706',
-    'government': '#475569',
-    'other': '#475569'
+    'government': '#334155',
+    'other': '#334155'
   };
 
   function getRadarRadiusPx(lat, lng, radiusMeters = 3000) {
@@ -1212,11 +1196,42 @@
     }
   }
 
+  function updateDistanceCircleLabels(lat, lng) {
+    const raw = mapObj ? (mapObj.rawMap || mapObj) : null;
+    if (!raw || !window.L) return;
+
+    if (label1500Marker) {
+      try { label1500Marker.remove(); } catch(e){}
+    }
+    if (label3000Marker) {
+      try { label3000Marker.remove(); } catch(e){}
+    }
+
+    const offset1500 = 1500 / 111320;
+    const offset3000 = 3000 / 111320;
+
+    const icon1500 = L.divIcon({
+      className: 'radar-sweep-div-icon',
+      html: `<div class="radar-dist-tag">1.5 km</div>`,
+      iconSize: [0, 0],
+      iconAnchor: [0, 0]
+    });
+
+    const icon3000 = L.divIcon({
+      className: 'radar-sweep-div-icon',
+      html: `<div class="radar-dist-tag">3 km</div>`,
+      iconSize: [0, 0],
+      iconAnchor: [0, 0]
+    });
+
+    label1500Marker = L.marker([lat + offset1500, lng], { icon: icon1500, interactive: false, zIndexOffset: 800 }).addTo(raw);
+    label3000Marker = L.marker([lat + offset3000, lng], { icon: icon3000, interactive: false, zIndexOffset: 800 }).addTo(raw);
+  }
+
   function initOrgRadarMap() {
     const mapEl = document.getElementById('orgRadarMap');
     if (!mapEl) return;
 
-    // Use first org coordinates if available, or Delhi fallback
     if (orgPinsData.length > 0) {
       userLat = orgPinsData[0].lat;
       userLng = orgPinsData[0].lng;
@@ -1234,49 +1249,48 @@
 
     const raw = mapObj.rawMap || mapObj;
 
-    // Inner 1.5 km circle
+    // Inner 1.5 km dashed circle
     circle1500 = GoogleMapsShield.createRadiusCircle(mapObj, {
       lat: userLat,
       lng: userLng,
       radius: 1500,
       strokeColor: '#94a3b8',
-      strokeOpacity: 0.5,
+      strokeOpacity: 0.6,
       strokeWeight: 1.5,
       fillColor: 'transparent',
       fillOpacity: 0,
-      dashArray: '6, 6'
+      dashArray: '5, 5'
     });
 
-    // Outer 3.0 km circle
+    // Outer 3.0 km crimson dashed circle
     circle3000 = GoogleMapsShield.createRadiusCircle(mapObj, {
       lat: userLat,
       lng: userLng,
       radius: 3000,
       strokeColor: '#dc2626',
-      strokeOpacity: 0.7,
+      strokeOpacity: 0.75,
       strokeWeight: 1.5,
-      fillColor: 'rgba(220, 38, 38, 0.03)',
-      fillOpacity: 0.03,
-      dashArray: '6, 6'
+      fillColor: 'rgba(220, 38, 38, 0.02)',
+      fillOpacity: 0.02,
+      dashArray: '5, 5'
     });
 
     // Continuous 360 degree Rotating Radar Sweep
     createRotatingRadarSweep(userLat, userLng, 3000);
+    updateDistanceCircleLabels(userLat, userLng);
 
-    // Dynamic resize on map zoom or view change
     if (raw && typeof raw.on === 'function') {
       raw.on('zoom', updateRadarSweepSize);
       raw.on('zoomend', updateRadarSweepSize);
       raw.on('resize', updateRadarSweepSize);
     }
 
-    // User Blue Beacon Pin at Center
+    // Center Blue Beacon Pin
     renderUserBeacon(userLat, userLng);
 
-    // Plot verified organizations on the map
+    // Plot Org Markers
     plotOrgMarkers(orgPinsData);
 
-    // Try geolocation to align user
     locateUserSilent();
   }
 
@@ -1295,11 +1309,10 @@
         html: `
           <div class="radar-user-beacon">
             <div class="radar-user-pulse"></div>
-            <i class="bi bi-person-fill text-white" style="font-size:11px;"></i>
           </div>
         `,
-        iconSize: [22, 22],
-        iconAnchor: [11, 11]
+        iconSize: [18, 18],
+        iconAnchor: [9, 9]
       });
 
       userBeacon = L.marker([lat, lng], {
@@ -1310,7 +1323,6 @@
   }
 
   function plotOrgMarkers(pins) {
-    // Clear old markers
     Object.values(orgMarkers).forEach(m => {
       try {
         if (m.setMap) m.setMap(null);
@@ -1322,15 +1334,15 @@
     pins.forEach(p => {
       const color = CATEGORY_COLORS[p.type_raw] || '#dc2626';
       const popupHtml = `
-        <div style="font-family:'Inter',sans-serif;min-width:220px;padding:4px;">
-          <div style="font-weight:700;color:#0f172a;font-size:1.02rem;margin-bottom:2px;">${p.name}</div>
-          <div style="font-size:0.78rem;color:#64748b;margin-bottom:6px;"><i class="bi bi-geo-alt text-danger"></i> ${p.address}</div>
-          <div style="font-size:0.8rem;font-weight:700;color:#b91c1c;margin-bottom:8px;">
-            <i class="bi bi-telephone-fill"></i> 24/7 Desk: <a href="tel:${p.hotline}" style="color:#b91c1c;text-decoration:none;">${p.hotline}</a>
+        <div style="font-family:'Inter',sans-serif;min-width:210px;padding:3px;">
+          <div style="font-weight:700;color:#111827;font-size:1rem;margin-bottom:2px;">${p.name}</div>
+          <div style="font-size:0.75rem;color:#6b7280;margin-bottom:6px;"><i class="bi bi-geo-alt text-danger"></i> ${p.address}</div>
+          <div style="font-size:0.78rem;font-weight:700;color:#dc2626;margin-bottom:8px;">
+            <i class="bi bi-telephone-fill"></i> 24/7 Desk: <a href="tel:${p.hotline}" style="color:#dc2626;text-decoration:none;">${p.hotline}</a>
           </div>
           <div style="display:flex;gap:6px;">
-            <a href="${p.detail_url}" class="btn btn-sm btn-outline-dark" style="font-size:0.75rem;padding:3px 9px;border-radius:6px;text-decoration:none;">Profile</a>
-            <a href="https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}" target="_blank" class="btn btn-sm btn-danger" style="font-size:0.75rem;padding:3px 9px;border-radius:6px;color:#fff;text-decoration:none;">Directions</a>
+            <a href="${p.detail_url}" class="btn btn-sm btn-outline-dark" style="font-size:0.72rem;padding:2px 8px;border-radius:6px;text-decoration:none;">Profile</a>
+            <a href="https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}" target="_blank" class="btn btn-sm btn-danger" style="font-size:0.72rem;padding:2px 8px;border-radius:6px;color:#fff;text-decoration:none;">Directions</a>
           </div>
         </div>
       `;
@@ -1376,6 +1388,7 @@
 
           createRotatingRadarSweep(userLat, userLng, 3000);
           updateRadarSweepSize();
+          updateDistanceCircleLabels(userLat, userLng);
         },
         err => {
           console.warn('Geolocation access declined or unavailable:', err.message);
@@ -1397,6 +1410,7 @@
           if (circle3000 && circle3000.setCenter) circle3000.setCenter({ lat: userLat, lng: userLng });
           createRotatingRadarSweep(userLat, userLng, 3000);
           updateRadarSweepSize();
+          updateDistanceCircleLabels(userLat, userLng);
         },
         () => {},
         { enableHighAccuracy: false, timeout: 4000 }
@@ -1404,7 +1418,7 @@
     }
   }
 
-  // Client-side search and category filtering
+  // Client-side filtering
   let activeCategory = 'all';
 
   function filterOrganizations() {
@@ -1431,7 +1445,7 @@
       const matchCity = !city || cardCity.includes(city);
 
       if (matchCat && matchQ && matchCity) {
-        card.style.display = 'flex';
+        card.style.display = 'block';
         visibleCount++;
         const pin = orgPinsData.find(p => p.id === cardId);
         if (pin) matchingPins.push(pin);
@@ -1441,20 +1455,25 @@
     });
 
     const emptyBox = document.getElementById('orgEmptyState');
-    if (emptyBox) {
-      emptyBox.style.display = (visibleCount === 0) ? 'flex' : 'none';
+    const cardsList = document.getElementById('orgCardsList');
+    if (emptyBox && cardsList) {
+      if (visibleCount === 0) {
+        emptyBox.style.display = 'flex';
+        cardsList.style.display = 'none';
+      } else {
+        emptyBox.style.display = 'none';
+        cardsList.style.display = 'flex';
+      }
     }
 
-    // Update HUD counters
     const hudPartners = document.getElementById('hudPartnersCount');
     if (hudPartners) hudPartners.textContent = visibleCount;
 
     plotOrgMarkers(matchingPins);
   }
 
-  // Bind filter chips
   document.addEventListener('DOMContentLoaded', function() {
-    const chipBtns = document.querySelectorAll('#orgCategoryChips .org-chip');
+    const chipBtns = document.querySelectorAll('#orgCategoryChips .org-pill-btn');
     chipBtns.forEach(btn => {
       btn.addEventListener('click', function() {
         chipBtns.forEach(b => b.classList.remove('active'));
@@ -1469,7 +1488,6 @@
     if (searchInp) searchInp.addEventListener('input', filterOrganizations);
     if (cityInp) cityInp.addEventListener('input', filterOrganizations);
 
-    // Initialize Map via GoogleMapsShield
     if (window.GoogleMapsShield) {
       window.GoogleMapsShield.load("{{ GOOGLE_MAPS_API_KEY|default:'' }}", initOrgRadarMap);
     } else {
@@ -1477,7 +1495,6 @@
     }
   });
 
-  // Modal invite submission
   function handleSendInvite(e) {
     e.preventDefault();
     const name = document.getElementById('inviteOrgName').value;
@@ -1488,7 +1505,6 @@
     const modal = bootstrap.Modal.getInstance(modalEl);
     if (modal) modal.hide();
 
-    // Trigger mailto or notification
     const subject = encodeURIComponent(`Invitation to join Women Safety Shield Verified Network - ${name}`);
     const body = encodeURIComponent(`Hello ${name} Security & Operations Team,\n\nWe would like to invite your organization in ${city} to join the Women Safety Shield verified institutional safety network.\n\nLearn more and register free at: ${window.location.origin}/organization/register/\n\nThank you!`);
     
