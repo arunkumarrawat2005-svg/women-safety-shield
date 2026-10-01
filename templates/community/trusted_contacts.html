@@ -1,866 +1,1491 @@
 {% extends 'base.html' %}
+{% load static %}
+
 {% block title %}My Trusted Circle - Women Safety Shield{% endblock %}
 
 {% block extra_css %}
 <style>
-  /* Segmented Pill Tabs for Add Contact */
-  #addContactTabs {
-    background: #f1f5f9;
-    padding: 5px;
-    border-radius: 8px;
-    border: 1px solid #e2e8f0;
-    gap: 6px;
+  :root {
+    --tc-canvas-bg: #fbfbfa;
+    --tc-card-bg: #ffffff;
+    --tc-border: #edf0f3;
+    --tc-text-main: #111827;
+    --tc-text-muted: #6b7280;
+    --tc-crimson: #dc2626;
+    --tc-crimson-hover: #b91c1c;
+    --tc-pink-bg: #fdf2f2;
+    --tc-pink-border: #fee2e2;
+    --tc-pink-text: #991b1b;
   }
-  #addContactTabs .nav-item {
-    flex: 1;
+
+  body {
+    background-color: var(--tc-canvas-bg) !important;
   }
-  #addContactTabs .nav-link {
-    color: #475569 !important;
-    background: transparent !important;
-    border: none !important;
-    border-radius: 8px !important;
+
+  /* Outer Container */
+  .tc-page-outer {
+    max-width: 1280px;
+    margin: 1.5rem auto 3.5rem;
+    padding: 2rem 2.25rem;
+    background: #ffffff;
+    border: 1px solid var(--tc-border);
+    border-radius: 24px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.02);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  @media (max-width: 768px) {
+    .tc-page-outer {
+      padding: 1.25rem 1rem;
+      border-radius: 16px;
+      margin: 0.75rem auto 2rem;
+    }
+  }
+
+  /* 1. TOP HEADER */
+  .tc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    margin-bottom: 1.75rem;
+  }
+
+  .tc-pill-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: var(--tc-pink-bg);
+    border: 1px solid var(--tc-pink-border);
+    color: var(--tc-pink-text);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 6px;
+    margin-bottom: 0.4rem;
+  }
+
+  .tc-title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 800;
+    font-size: 1.85rem;
+    letter-spacing: -0.02em;
+    color: var(--tc-text-main);
+    margin: 0 0 0.3rem;
+    line-height: 1.2;
+  }
+
+  .tc-subtitle {
+    color: var(--tc-text-muted);
+    font-size: 0.88rem;
+    margin: 0;
+    line-height: 1.45;
+    max-width: 680px;
+  }
+
+  .tc-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-fake-call {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    color: #374151;
     font-weight: 600;
-    font-size: 0.85rem;
-    padding: 8px 12px;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 0.82rem;
+    padding: 0.55rem 1rem;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    text-decoration: none;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    transition: all 0.15s ease;
+    cursor: pointer;
+  }
+
+  .btn-fake-call:hover {
+    background: #f9fafb;
+    border-color: #d1d5db;
+    color: #111827;
+  }
+
+  .btn-reached-safely {
+    background: var(--tc-crimson);
+    border: 1px solid var(--tc-crimson);
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.82rem;
+    padding: 0.55rem 1.15rem;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    text-decoration: none;
+    box-shadow: 0 2px 6px rgba(220, 38, 38, 0.25);
+    transition: all 0.15s ease;
+    cursor: pointer;
+  }
+
+  .btn-reached-safely:hover {
+    background: var(--tc-crimson-hover);
+    border-color: var(--tc-crimson-hover);
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35);
+  }
+
+  /* 2. CIRCLE PROTECTION BANNER */
+  .tc-protection-card {
+    background: #ffffff;
+    border: 1px solid var(--tc-border);
+    border-radius: 16px;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+    flex-wrap: wrap;
+  }
+
+  .tc-prot-left {
+    display: flex;
+    align-items: center;
+    gap: 1.15rem;
+  }
+
+  .tc-gauge-ring {
+    position: relative;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: conic-gradient(
+      var(--tc-crimson) 0deg,
+      var(--tc-crimson) calc({{ score }} * 3.6deg),
+      #fee2e2 calc({{ score }} * 3.6deg),
+      #fee2e2 360deg
+    );
     display: flex;
     align-items: center;
     justify-content: center;
-  }
-  #addContactTabs .nav-link:hover:not(.active) {
-    color: var(--crimson, #C41E3D) !important;
-    background: #ffffff !important;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  }
-  #addContactTabs .nav-link.active {
-    background: linear-gradient(135deg, #7A1F2B 0%, #C41E3D 100%) !important;
-    color: #ffffff !important;
-    box-shadow: 0 4px 12px rgba(196, 30, 61, 0.3) !important;
-    font-weight: 700;
+    flex-shrink: 0;
   }
 
-  /* Signature Brand Action Button */
-  .btn-trusted-submit {
-    background: linear-gradient(135deg, #7A1F2B 0%, #C41E3D 100%) !important;
-    color: #ffffff !important;
-    border: none !important;
+  .tc-gauge-inner {
+    width: 52px;
+    height: 52px;
+    background: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 14px;
+    color: var(--tc-text-main);
+  }
+
+  .tc-prot-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .tc-prot-title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .tc-prot-h3 {
+    font-weight: 800;
+    font-size: 14.5px;
+    color: var(--tc-text-main);
+    margin: 0;
+  }
+
+  .tc-status-pill {
+    font-size: 10.5px;
     font-weight: 700;
-    font-size: 0.92rem;
-    padding: 0.65rem 1.25rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 14px rgba(196, 30, 61, 0.28);
-    transition: all 0.25s ease;
+    padding: 2px 7px;
+    border-radius: 6px;
+    background: var(--tc-pink-bg);
+    color: var(--tc-pink-text);
+    border: 1px solid var(--tc-pink-border);
+  }
+
+  .tc-prot-sub {
+    font-size: 11.5px;
+    color: var(--tc-text-muted);
+    margin: 0;
+  }
+
+  /* Center Checklist */
+  .tc-checklist {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .tc-check-item {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 11.5px;
+    color: #4b5563;
+    font-weight: 500;
+  }
+
+  .tc-check-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1.5px solid #cbd5e1;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    text-decoration: none;
-  }
-  .btn-trusted-submit:hover {
-    background: linear-gradient(135deg, #631722 0%, #a81732 100%) !important;
-    transform: translateY(-2px);
-    box-shadow: 0 7px 20px rgba(196, 30, 61, 0.38);
-    color: #ffffff !important;
-  }
-  .btn-trusted-submit:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 8px rgba(196, 30, 61, 0.2);
+    font-size: 8px;
+    color: transparent;
   }
 
-  /* Quick action buttons hover lift */
-  .hover-lift {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-  .hover-lift:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08) !important;
+  .tc-check-dot.checked {
+    border-color: #10b981;
+    background: #10b981;
+    color: #ffffff;
   }
 
-  /* Refined quick message pills */
-  .quick-msg-btn {
-    border-color: #e2e8f0;
-    color: #475569;
+  /* Right Stats */
+  .tc-channel-stats {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .tc-stat-box {
+    background: #f9fafb;
+    border: 1px solid #f3f4f6;
+    border-radius: 10px;
+    padding: 0.5rem 0.85rem;
+    text-align: center;
+    min-width: 68px;
+  }
+
+  .tc-stat-num {
+    font-weight: 800;
+    font-size: 14px;
+    color: var(--tc-text-main);
+    line-height: 1.1;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .tc-stat-lbl {
+    font-size: 10px;
+    color: var(--tc-text-muted);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    white-space: nowrap;
+  }
+
+  /* 3. MAIN WORKSPACE GRID */
+  .tc-main-grid {
+    display: grid;
+    grid-template-columns: 1fr 370px;
+    gap: 1.5rem;
+    align-items: flex-start;
+  }
+
+  @media (max-width: 991px) {
+    .tc-main-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* LEFT SECTION */
+  .tc-left-col {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .tc-section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.65rem;
+  }
+
+  .tc-section-title {
+    font-weight: 800;
+    font-size: 14.5px;
+    color: var(--tc-text-main);
+    margin: 0;
+  }
+
+  .tc-order-hint {
+    font-size: 11px;
+    color: var(--tc-text-muted);
+  }
+
+  /* Empty State Card */
+  .tc-empty-card {
     background: #ffffff;
-    font-size: 0.8rem;
-    transition: all 0.2s ease;
+    border: 1px solid var(--tc-border);
+    border-radius: 16px;
+    padding: 3.25rem 1.5rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
   }
-  .quick-msg-btn:hover {
-    background: #fff0f3;
-    border-color: #fecdd3;
-    color: var(--crimson, #C41E3D);
+
+  .tc-empty-icon-square {
+    width: 58px;
+    height: 58px;
+    background: #fee2e2;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--tc-crimson);
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+  }
+
+  .tc-empty-h4 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--tc-text-main);
+    margin: 0 0 0.35rem;
+  }
+
+  .tc-empty-p {
+    font-size: 12px;
+    color: var(--tc-text-muted);
+    line-height: 1.5;
+    margin: 0 0 1.25rem;
+    max-width: 360px;
+  }
+
+  .btn-add-first-guardian {
+    background: var(--tc-crimson);
+    color: #ffffff;
+    border: none;
+    font-weight: 700;
+    font-size: 12px;
+    padding: 8px 18px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    box-shadow: 0 2px 6px rgba(220, 38, 38, 0.25);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .btn-add-first-guardian:hover {
+    background: var(--tc-crimson-hover);
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35);
+  }
+
+  /* Contact List Cards (When contacts exist) */
+  .tc-contacts-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .tc-contact-item {
+    background: #ffffff;
+    border: 1px solid var(--tc-border);
+    border-radius: 14px;
+    padding: 1rem 1.15rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.02);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    transition: all 0.15s ease;
+  }
+
+  .tc-contact-item:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  }
+
+  .tc-contact-item.is-primary {
+    border-color: #fecaca;
+    background: #fffdfd;
+  }
+
+  .tc-contact-left {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+  }
+
+  .tc-avatar-circle {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #fee2e2;
+    color: var(--tc-crimson);
+    font-weight: 800;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .tc-contact-name {
+    font-weight: 700;
+    font-size: 13.5px;
+    color: var(--tc-text-main);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .tc-primary-star-badge {
+    background: #fef3c7;
+    border: 1px solid #fde68a;
+    color: #92400e;
+    font-size: 9.5px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 4px;
+  }
+
+  .tc-contact-meta {
+    font-size: 11px;
+    color: var(--tc-text-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 2px;
+  }
+
+  .tc-actions-group {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .btn-icon-tc {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+    background: #ffffff;
+    color: #4b5563;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    text-decoration: none;
+    transition: all 0.15s ease;
+    cursor: pointer;
+  }
+
+  .btn-icon-tc:hover {
+    background: #f9fafb;
+    color: #111827;
+  }
+
+  .btn-icon-tc.text-danger:hover {
+    background: #fee2e2;
+    border-color: #fca5a5;
+    color: #b91c1c !important;
+  }
+
+  /* "What happens when you send an SOS" Card */
+  .tc-sos-explainer-card {
+    background: #ffffff;
+    border: 1px solid var(--tc-border);
+    border-radius: 16px;
+    padding: 1.35rem 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+  }
+
+  .tc-explainer-title {
+    font-weight: 800;
+    font-size: 14.5px;
+    color: var(--tc-text-main);
+    margin: 0 0 1rem;
+  }
+
+  .tc-explainer-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .tc-explainer-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .tc-step-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .tc-step-icon-box {
+    width: 34px;
+    height: 34px;
+    background: #fee2e2;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--tc-crimson);
+    font-size: 14px;
+    margin-bottom: 0.35rem;
+  }
+
+  .tc-step-h4 {
+    font-weight: 700;
+    font-size: 12.5px;
+    color: var(--tc-text-main);
+    margin: 0;
+  }
+
+  .tc-step-desc {
+    font-size: 11px;
+    color: var(--tc-text-muted);
+    line-height: 1.4;
+    margin: 0;
+  }
+
+  /* 24/7 Helplines Card */
+  .tc-helplines-card {
+    background: #ffffff;
+    border: 1px solid var(--tc-border);
+    border-radius: 16px;
+    padding: 1.15rem 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+  }
+
+  .tc-helplines-head {
+    font-weight: 800;
+    font-size: 13px;
+    color: var(--tc-text-main);
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .tc-helplines-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.65rem;
+  }
+
+  @media (max-width: 576px) {
+    .tc-helplines-row {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .tc-helpline-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: #ffffff;
+    border: 1px solid #fee2e2;
+    border-radius: 8px;
+    padding: 0.45rem 0.75rem;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .tc-helpline-btn:hover {
+    background: #fef2f2;
+    border-color: #fca5a5;
+    transform: translateY(-1px);
+  }
+
+  .tc-hl-num {
+    font-weight: 800;
+    font-size: 13px;
+    color: var(--tc-crimson);
+  }
+
+  .tc-hl-lbl {
+    font-size: 11px;
+    color: #4b5563;
+    font-weight: 600;
+  }
+
+  /* RIGHT SECTION: ADD TO YOUR CIRCLE */
+  .tc-add-card {
+    background: #ffffff;
+    border: 1px solid var(--tc-border);
+    border-radius: 16px;
+    padding: 1.4rem;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.03);
+    position: sticky;
+    top: 90px;
+  }
+
+  .tc-add-head {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .tc-phone-icon-box {
+    width: 32px;
+    height: 32px;
+    background: #fee2e2;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--tc-crimson);
+    font-size: 14px;
+  }
+
+  .tc-add-title {
+    font-weight: 800;
+    font-size: 15px;
+    color: var(--tc-text-main);
+    margin: 0;
+  }
+
+  .tc-add-subtitle {
+    font-size: 11.5px;
+    color: var(--tc-text-muted);
+    line-height: 1.45;
+    margin: 0 0 1rem;
+  }
+
+  /* Segmented Nav Tabs */
+  .tc-tabs-nav {
+    display: flex;
+    background: #f3f4f6;
+    border-radius: 8px;
+    padding: 3px;
+    gap: 4px;
+    margin-bottom: 1rem;
+    border: 1px solid #e5e7eb;
+  }
+
+  .tc-tab-btn {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+  }
+
+  .tc-tab-btn.active {
+    background: #ffffff;
+    color: var(--tc-pink-text);
+    font-weight: 700;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+
+  /* Form Elements */
+  .tc-form-row {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 0.65rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .tc-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .tc-label {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--tc-text-main);
+  }
+
+  .tc-input {
+    width: 100%;
+    height: 38px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 0.45rem 0.75rem;
+    font-size: 12px;
+    color: var(--tc-text-main);
+    outline: none;
+    transition: all 0.15s ease;
+    background: #ffffff;
+  }
+
+  .tc-input:focus {
+    border-color: var(--tc-crimson);
+    box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.12);
+  }
+
+  .tc-input-group {
+    display: flex;
+    align-items: center;
+  }
+
+  .tc-addon {
+    height: 38px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-right: none;
+    border-radius: 8px 0 0 8px;
+    padding: 0.45rem 0.65rem;
+    font-size: 12px;
+    font-weight: 700;
+    color: #4b5563;
+    display: flex;
+    align-items: center;
+  }
+
+  .tc-input-addon {
+    border-radius: 0 8px 8px 0 !important;
+  }
+
+  .tc-help-hint {
+    font-size: 11px;
+    color: var(--tc-text-muted);
+    margin-top: 0.25rem;
+  }
+
+  .tc-optional-link {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--tc-pink-text);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    cursor: pointer;
+    margin-bottom: 0.85rem;
+  }
+
+  /* Make Primary Guardian Toggle Box */
+  .tc-primary-toggle-box {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 0.75rem 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.15rem;
+  }
+
+  .tc-pt-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .tc-pt-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--tc-text-main);
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .tc-pt-sub {
+    font-size: 10.5px;
+    color: var(--tc-text-muted);
+    line-height: 1.35;
+  }
+
+  /* Switch Toggle */
+  .tc-switch {
+    position: relative;
+    display: inline-block;
+    width: 38px;
+    height: 22px;
+    flex-shrink: 0;
+  }
+
+  .tc-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .tc-slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: #cbd5e1;
+    transition: 0.2s;
+    border-radius: 22px;
+  }
+
+  .tc-slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.2s;
+    border-radius: 50%;
+  }
+
+  input:checked + .tc-slider {
+    background-color: #10b981;
+  }
+
+  input:checked + .tc-slider:before {
+    transform: translateX(16px);
+  }
+
+  .btn-submit-circle {
+    background: var(--tc-crimson);
+    color: #ffffff;
+    border: none;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 10px 18px;
+    border-radius: 8px;
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.25);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .btn-submit-circle:hover {
+    background: var(--tc-crimson-hover);
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(220, 38, 38, 0.35);
   }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid px-3 px-xl-4 my-4">
+<div class="tc-page-outer">
 
-  <!-- 1. Header & Safety Readiness Console -->
-  <div class="card border-0 shadow-sm rounded-3 mb-4" style="background: linear-gradient(135deg, #ffffff 0%, #fdf8f6 100%); border-left: 6px solid var(--crimson) !important;">
-    <div class="card-body p-4">
-      <div class="row align-items-center g-3">
-        <div class="col-lg-7">
-          <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
-            <span class="badge bg-danger px-3 py-1 fw-bold text-uppercase" style="letter-spacing:0.04em;">
-              <i class="bi bi-shield-fill-check me-1"></i>Safety Guardian Network
-            </span>
-            <span class="badge bg-{{ score_color }} px-3 py-1 fw-semibold text-white">
-              {{ score_badge }}
-            </span>
-            <span class="small text-muted fw-semibold">
-              <i class="bi bi-people-fill me-1"></i>{{ contact_count }} Designated Contact{{ contact_count|pluralize }}
-            </span>
-          </div>
-          <h2 class="fw-bold mb-1" style="color:var(--text-primary); font-family:'Plus Jakarta Sans',sans-serif; letter-spacing:-0.025em;">
-            <i class="bi bi-person-heart text-danger me-2"></i>My Trusted Circle
-          </h2>
-          <p class="text-muted mb-3" style="max-width: 650px; font-size: 0.95rem;">
-            Your first line of defense. When you trigger an SOS, these designated guardians receive instant SMS alerts with your real-time GPS coordinates, automated voice escalation, and live tracking links.
-          </p>
+  <!-- 1. TOP HEADER -->
+  <div class="tc-header">
+    <div>
+      <div class="tc-pill-tag">
+        <i class="bi bi-shield-check"></i> Safety guardian network
+      </div>
+      <h1 class="tc-title">My Trusted Circle</h1>
+      <p class="tc-subtitle">
+        The people who are alerted first when you send an SOS. They get your live location by SMS and a voice call if nobody responds.
+      </p>
+    </div>
 
-          <div class="d-flex flex-wrap gap-2">
-            <button type="button" class="btn btn-trusted-submit btn-sm fw-bold px-3 py-2 shadow-sm rounded-3 hover-lift" data-bs-toggle="modal" data-bs-target="#safeCheckinModal">
-              <i class="bi bi-geo-alt-fill me-1"></i>Send "I Reached Safely" Check-in
-            </button>
-            <button type="button" class="btn btn-outline-dark btn-sm fw-semibold px-3 py-2 rounded-3 hover-lift" data-bs-toggle="modal" data-bs-target="#fakeCallModal" style="border-color: #cbd5e1; background: #ffffff;">
-              <i class="bi bi-telephone-inbound-fill me-1 text-danger"></i>Fake Escape Call
-            </button>
-            <button type="button" class="btn btn-outline-secondary btn-sm fw-semibold px-3 py-2 rounded-3 hover-lift" data-bs-toggle="modal" data-bs-target="#helplinesModal" style="border-color: #cbd5e1; background: #ffffff;">
-              <i class="bi bi-shield-exclamation me-1 text-warning"></i>Helpline Directory
-            </button>
-          </div>
+    <div class="tc-header-actions">
+      <button type="button" class="btn-fake-call" data-bs-toggle="modal" data-bs-target="#fakeCallModal">
+        <i class="bi bi-telephone"></i> Fake escape call
+      </button>
+      <button type="button" class="btn-reached-safely" data-bs-toggle="modal" data-bs-target="#safeCheckinModal">
+        <i class="bi bi-check-circle"></i> I reached safely
+      </button>
+    </div>
+  </div>
+
+  <!-- 2. CIRCLE PROTECTION BANNER -->
+  <div class="tc-protection-card">
+    <!-- Left Meter -->
+    <div class="tc-prot-left">
+      <div class="tc-gauge-ring">
+        <div class="tc-gauge-inner">{{ score }}%</div>
+      </div>
+      <div class="tc-prot-details">
+        <div class="tc-prot-title-row">
+          <h3 class="tc-prot-h3">Circle protection</h3>
+          <span class="tc-status-pill">{{ score_badge }}</span>
         </div>
+        <p class="tc-prot-sub">
+          {% if contact_count == 0 %}
+          Add at least one contact so your SOS reaches someone.
+          {% else %}
+          {{ score_advice }}
+          {% endif %}
+        </p>
+      </div>
+    </div>
 
-        <!-- Circle Strength Meter Card -->
-        <div class="col-lg-5">
-          <div class="p-3 rounded-3 bg-white border shadow-sm">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <span class="small fw-bold text-muted text-uppercase" style="letter-spacing: 0.05em;">Circle Protection Level</span>
-              <span class="badge bg-{{ score_color }} text-white fw-bold fs-6">{{ score }}%</span>
-            </div>
-            <div class="progress mb-2" style="height: 10px; border-radius: 8px;">
-              <div class="progress-bar bg-{{ score_color }} progress-bar-striped progress-bar-animated" role="progressbar" style="width: {{ score }}%"></div>
-            </div>
-            <p class="small text-muted mb-3" style="font-size:0.82rem; line-height: 1.4;">
-              <i class="bi bi-info-circle-fill text-{{ score_color }} me-1"></i>{{ score_advice }}
-            </p>
+    <!-- Center Checklist -->
+    <div class="tc-checklist">
+      <div class="tc-check-item">
+        <span class="tc-check-dot {% if contact_count >= 1 %}checked{% endif %}">
+          {% if contact_count >= 1 %}&#10003;{% endif %}
+        </span>
+        <span>Add a trusted contact</span>
+      </div>
+      <div class="tc-check-item">
+        <span class="tc-check-dot {% if primary_contact %}checked{% endif %}">
+          {% if primary_contact %}&#10003;{% endif %}
+        </span>
+        <span>Choose a primary guardian</span>
+      </div>
+      <div class="tc-check-item">
+        <span class="tc-check-dot {% if contact_count >= 2 %}checked{% endif %}">
+          {% if contact_count >= 2 %}&#10003;{% endif %}
+        </span>
+        <span>Add a second contact</span>
+      </div>
+    </div>
 
-            <div class="d-flex flex-wrap gap-2 pt-2 border-top">
-              <span class="badge bg-light text-dark border small fw-normal py-1 px-2">
-                <i class="bi bi-chat-dots-fill text-danger me-1"></i>SMS: <strong>{{ sms_count }}</strong>
-              </span>
-              <span class="badge bg-light text-dark border small fw-normal py-1 px-2">
-                <i class="bi bi-whatsapp text-success me-1"></i>WhatsApp: <strong>{{ whatsapp_count }}</strong>
-              </span>
-              <span class="badge bg-light text-dark border small fw-normal py-1 px-2">
-                <i class="bi bi-geo-fill text-info me-1"></i>Live GPS: <strong>{{ location_count }}</strong>
-              </span>
-              <span class="badge bg-light text-dark border small fw-normal py-1 px-2">
-                <i class="bi bi-star-fill text-warning me-1"></i>Primary: <strong>{% if primary_contact %}Assigned{% else %}None{% endif %}</strong>
-              </span>
-            </div>
-          </div>
-        </div>
+    <!-- Right Channel Stats -->
+    <div class="tc-channel-stats">
+      <div class="tc-stat-box">
+        <span class="tc-stat-num">{{ sms_count }}</span>
+        <span class="tc-stat-lbl"><i class="bi bi-chat-text text-danger"></i> SMS</span>
+      </div>
+      <div class="tc-stat-box">
+        <span class="tc-stat-num">{{ whatsapp_count }}</span>
+        <span class="tc-stat-lbl"><i class="bi bi-whatsapp text-success"></i> WhatsApp</span>
+      </div>
+      <div class="tc-stat-box">
+        <span class="tc-stat-num">{{ location_count }}</span>
+        <span class="tc-stat-lbl"><i class="bi bi-geo-alt text-primary"></i> Live GPS</span>
       </div>
     </div>
   </div>
 
-  <!-- 2. Main Content Grid -->
-  <div class="row g-4">
+  <!-- 3. MAIN WORKSPACE (TWO COLUMNS) -->
+  <div class="tc-main-grid">
 
-    <!-- Left Column: Contact Cards -->
-    <div class="col-lg-7 col-xl-8">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="fw-bold mb-0" style="color:var(--maroon);font-family:'Plus Jakarta Sans',sans-serif;">
-          <i class="bi bi-shield-shaded text-danger me-2"></i>Designated Emergency Guardians ({{ contact_count }})
-        </h5>
-        {% if primary_contact %}
-        <span class="badge bg-warning-subtle text-dark border border-warning px-2 py-1 small fw-semibold">
-          <i class="bi bi-star-fill text-warning me-1"></i>Primary Lead: {{ primary_contact.display_name }}
-        </span>
+    <!-- LEFT COLUMN: GUARDIANS LIST + EXPLAINER + HELPLINES -->
+    <div class="tc-left-col">
+
+      <!-- Guardians Section -->
+      <div>
+        <div class="tc-section-head">
+          <h2 class="tc-section-title">Designated guardians ({{ contact_count }})</h2>
+          <span class="tc-order-hint">Alerted in this order</span>
+        </div>
+
+        {% if contacts %}
+        <div class="tc-contacts-stack">
+          {% for tc in contacts %}
+          <div class="tc-contact-item {% if tc.is_primary %}is-primary{% endif %}">
+            <div class="tc-contact-left">
+              <div class="tc-avatar-circle">
+                {{ tc.avatar_initial }}
+              </div>
+              <div>
+                <h4 class="tc-contact-name">
+                  {{ tc.display_name }}
+                  {% if tc.is_primary %}
+                  <span class="tc-primary-star-badge"><i class="bi bi-star-fill me-1"></i>Primary</span>
+                  {% endif %}
+                </h4>
+                <div class="tc-contact-meta">
+                  <span>{{ tc.get_relation_display|default:tc.relation|title }}</span>
+                  &bull;
+                  <a href="tel:{{ tc.display_phone }}" class="text-decoration-none text-muted" title="Click to Call">
+                    <i class="bi bi-telephone text-danger me-1"></i>{{ tc.display_phone }}
+                  </a>
+                  {% if tc.display_email %}
+                  &bull;
+                  <span><i class="bi bi-envelope me-1"></i>{{ tc.display_email }}</span>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="tc-actions-group">
+              <a href="{% url 'toggle_primary_contact' tc.pk %}" class="btn-icon-tc {% if tc.is_primary %}text-warning{% endif %}" title="{% if tc.is_primary %}Current Primary Guardian{% else %}Make Primary Guardian{% endif %}">
+                <i class="bi bi-star{% if tc.is_primary %}-fill{% endif %}"></i>
+              </a>
+              <a href="{% url 'test_trusted_contact' tc.pk %}" class="btn-icon-tc text-primary" title="Test Connection Drill">
+                <i class="bi bi-broadcast"></i>
+              </a>
+              <a href="{% url 'remove_trusted_contact' tc.pk %}" class="btn-icon-tc text-danger" onclick="return confirm('Remove {{ tc.display_name }} from your Trusted Circle?');" title="Remove Contact">
+                <i class="bi bi-trash"></i>
+              </a>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <!-- Empty State (Matching Screenshot Pixel-for-Pixel) -->
+        <div class="tc-empty-card">
+          <div class="tc-empty-icon-square">
+            <i class="bi bi-phone"></i>
+          </div>
+          <h3 class="tc-empty-h4">No trusted contacts yet</h3>
+          <p class="tc-empty-p">
+            In an emergency every second counts. Add someone who should know where you are the moment you send an SOS.
+          </p>
+          <button type="button" class="btn-add-first-guardian" onclick="document.getElementById('tcNameInput').focus();">
+            <i class="bi bi-plus-lg"></i> Add first guardian
+          </button>
+        </div>
         {% endif %}
       </div>
 
-      {% if contacts %}
-      <div class="row g-3">
-        {% for tc in contacts %}
-        <div class="col-md-6 col-xl-6">
-          <div class="card h-100 rounded-3 shadow-sm border-0 transition-hover position-relative"
-               style="background: #ffffff; border: 1px solid {% if tc.is_primary %}#D9A441 !important; box-shadow: 0 4px 15px rgba(217, 164, 65, 0.18) !important;{% else %}var(--line) !important;{% endif %}">
-            
-            {% if tc.is_primary %}
-            <div class="position-absolute top-0 end-0 m-2">
-              <span class="badge bg-warning text-dark fw-bold px-2 py-1 shadow-sm" style="font-size:0.72rem; letter-spacing:0.02em;">
-                <i class="bi bi-star-fill me-1"></i>PRIMARY GUARDIAN
-              </span>
+      <!-- What happens when you send an SOS Card -->
+      <div class="tc-sos-explainer-card">
+        <h3 class="tc-explainer-title">What happens when you send an SOS</h3>
+        <div class="tc-explainer-grid">
+          <!-- Step 1 -->
+          <div class="tc-step-item">
+            <div class="tc-step-icon-box">
+              <i class="bi bi-chat-text"></i>
             </div>
-            {% endif %}
-
-            <div class="card-body p-3 d-flex flex-column justify-content-between">
-              <div>
-                <!-- Top Row: Avatar & Name -->
-                <div class="d-flex align-items-center gap-3 mb-3">
-                  <div class="avatar-circle shadow-sm" style="width:50px; height:50px; font-size:1.3rem; font-weight:700; background:{% if tc.is_primary %}#D9A441{% else %}{% cycle '#B3243A' '#3498db' '#27ae60' '#9b59b6' '#e67e22' %}{% endif %}; color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                    {{ tc.avatar_initial }}
-                  </div>
-                  <div class="overflow-hidden pe-3">
-                    <h6 class="fw-bold mb-0 text-truncate" style="color:var(--charcoal); font-size:1.02rem;">
-                      {{ tc.display_name }}
-                    </h6>
-                    {% if tc.contact %}
-                    <small class="text-primary fw-semibold d-block text-truncate">
-                      <i class="bi bi-person-check-fill me-1"></i>@{{ tc.contact.username }}
-                    </small>
-                    {% else %}
-                    <small class="text-muted d-block text-truncate">
-                      <i class="bi bi-phone me-1"></i>External Phone Contact
-                    </small>
-                    {% endif %}
-                  </div>
-                </div>
-
-                <!-- Contact Meta: Relation & Phone -->
-                <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
-                  <span class="badge bg-light text-dark border px-2 py-1 fw-semibold" style="font-size:0.78rem;">
-                    {% if tc.relation == 'family' %} Family
-                    {% elif tc.relation == 'parent' %}<i class="bi bi-shield-fill-check text-primary me-1"></i> Parent / Guardian
-                    {% elif tc.relation == 'sibling' %} Sister / Brother
-                    {% elif tc.relation == 'spouse' %} Spouse / Partner
-                    {% elif tc.relation == 'friend' %}<i class="bi bi-person-heart me-1"></i> Friend
-                    {% elif tc.relation == 'colleague' %}<i class="bi bi-briefcase me-1"></i> Colleague
-                    {% elif tc.relation == 'neighbor' %}<i class="bi bi-house me-1"></i> Neighbor
-                    {% else %}<i class="bi bi-person-fill me-1"></i> Other{% endif %}
-                  </span>
-                  
-                  {% if tc.display_phone %}
-                  <a href="tel:{{ tc.display_phone }}" class="badge bg-light text-dark border text-decoration-none px-2 py-1 fw-semibold" style="font-size:0.78rem;" title="Tap to Call">
-                    <i class="bi bi-telephone-fill text-danger me-1"></i>{{ tc.display_phone }}
-                  </a>
-                  {% endif %}
-
-                  {% if tc.display_email %}
-                  <span class="badge bg-light text-muted border px-2 py-1 fw-normal text-truncate" style="max-width:160px; font-size:0.75rem;" title="{{ tc.display_email }}">
-                    <i class="bi bi-envelope me-1"></i>{{ tc.display_email }}
-                  </span>
-                  {% endif %}
-                </div>
-
-                <!-- Alert Channel Capabilities -->
-                <div class="d-flex flex-wrap gap-1 mb-3">
-                  {% if tc.alert_sms %}
-                  <span class="badge bg-danger-subtle text-danger px-2 py-1" style="font-size:0.7rem;" title="Instant SMS on SOS">
-                    <i class="bi bi-chat-dots-fill me-1"></i>SMS
-                  </span>
-                  {% endif %}
-                  {% if tc.alert_whatsapp %}
-                  <span class="badge bg-success-subtle text-success px-2 py-1" style="font-size:0.7rem;" title="WhatsApp Dispatch Enabled">
-                    <i class="bi bi-whatsapp me-1"></i>WhatsApp
-                  </span>
-                  {% endif %}
-                  {% if tc.alert_call %}
-                  <span class="badge bg-warning-subtle text-dark px-2 py-1" style="font-size:0.7rem;" title="Automated Voice Call Escalation">
-                    <i class="bi bi-telephone-outbound-fill me-1"></i>Voice Call
-                  </span>
-                  {% endif %}
-                  {% if tc.can_view_location %}
-                  <span class="badge bg-info-subtle text-info px-2 py-1" style="font-size:0.7rem;" title="Can track live GPS during SOS">
-                    <i class="bi bi-geo-alt-fill me-1"></i>Live GPS
-                  </span>
-                  {% endif %}
-                </div>
-
-                <!-- Test Drill Status -->
-                <div class="small mb-3" style="font-size:0.78rem;">
-                  {% if tc.last_tested_at %}
-                  <span class="text-success fw-semibold">
-                    <i class="bi bi-check-circle-fill me-1"></i>Connection verified (Tested {{ tc.last_tested_at|timesince }} ago)
-                  </span>
-                  {% else %}
-                  <span class="text-muted">
-                    <i class="bi bi-clock-history me-1"></i>Drill not tested yet &middot; <a href="{% url 'test_trusted_contact' tc.id %}" class="text-danger fw-semibold text-decoration-none">Send test drill</a>
-                  </span>
-                  {% endif %}
-                </div>
-              </div>
-
-              <!-- Bottom Action Toolbar -->
-              <div class="pt-2 border-top d-flex justify-content-between align-items-center gap-1">
-                <div class="d-flex gap-1">
-                  {% if tc.display_phone %}
-                  <a href="tel:{{ tc.display_phone }}" class="btn btn-outline-dark btn-sm px-2 py-1 rounded-3" title="Call {{ tc.display_name }}">
-                    <i class="bi bi-telephone-fill text-danger"></i> Call
-                  </a>
-                  <a href="https://wa.me/{{ tc.display_phone|cut:' '|cut:'+'|cut:'-' }}?text=Hello%20{{ tc.display_name }}%2C%20this%20is%20a%20message%20from%20my%20Women%20Safety%20Shield%20app."
-                     target="_blank" rel="noopener noreferrer" class="btn btn-outline-success btn-sm px-2 py-1 rounded-3" title="Message on WhatsApp">
-                    <i class="bi bi-whatsapp"></i> Chat
-                  </a>
-                  {% endif %}
-                  <a href="{% url 'test_trusted_contact' tc.id %}" class="btn btn-outline-secondary btn-sm px-2 py-1 rounded-3" style="border-color:#cbd5e1; color:#334155;" title="Simulate safety ping">
-                    <i class="bi bi-broadcast text-danger"></i> Test Ping
-                  </a>
-                </div>
-
-                <!-- More Options Dropdown -->
-                <div class="dropdown">
-                  <button class="btn btn-light btn-sm rounded-circle px-2 py-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="bi bi-three-dots-vertical"></i>
-                  </button>
-                  <ul class="dropdown-menu dropdown-menu-end shadow-sm rounded-3 border-0 py-2">
-                    <li>
-                      <a class="dropdown-item py-2 small" href="{% url 'toggle_primary_contact' tc.id %}">
-                        {% if tc.is_primary %}
-                        <i class="bi bi-star me-2 text-muted"></i>Remove as Primary
-                        {% else %}
-                        <i class="bi bi-star-fill me-2 text-warning"></i>Set as Primary Guardian
-                        {% endif %}
-                      </a>
-                    </li>
-                    <li>
-                      <button class="dropdown-item py-2 small" type="button" data-bs-toggle="modal" data-bs-target="#editModal{{ tc.id }}">
-                        <i class="bi bi-gear-fill me-2 text-secondary"></i>Edit Contact &amp; Channels
-                      </button>
-                    </li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li>
-                      <a class="dropdown-item py-2 small text-danger fw-semibold" href="{% url 'remove_trusted_contact' tc.id %}"
-                         onclick="return confirm('Remove {{ tc.display_name }} from your trusted circle?')">
-                        <i class="bi bi-trash3-fill me-2"></i>Remove Contact
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
+            <h4 class="tc-step-h4">Instant SMS</h4>
+            <p class="tc-step-desc">Every contact gets your exact GPS map link at the same time.</p>
+          </div>
+          <!-- Step 2 -->
+          <div class="tc-step-item">
+            <div class="tc-step-icon-box">
+              <i class="bi bi-telephone"></i>
             </div>
+            <h4 class="tc-step-h4">Voice call</h4>
+            <p class="tc-step-desc">Your primary guardian is called if nobody responds in 30 seconds.</p>
           </div>
-        </div>
-
-        <!-- Edit Modal for this contact -->
-        <div class="modal fade" id="editModal{{ tc.id }}" tabindex="-1" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content rounded-3 border-0 shadow">
-              <div class="modal-header border-bottom py-3" style="background:var(--cream);">
-                <h6 class="modal-title fw-bold" style="color:var(--maroon);font-family:'Plus Jakarta Sans',sans-serif;">
-                  <i class="bi bi-pencil-square me-2"></i>Edit {{ tc.display_name }}
-                </h6>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-              </div>
-              <form method="post" action="{% url 'edit_trusted_contact' tc.id %}">
-                {% csrf_token %}
-                <div class="modal-body p-4">
-                  <div class="mb-3">
-                    <label class="form-label small fw-bold">Contact Name / Nickname</label>
-                    <input type="text" name="name" class="form-control" value="{{ tc.display_name }}" required>
-                  </div>
-                  {% if not tc.contact %}
-                  <div class="mb-3">
-                    <label class="form-label small fw-bold">Mobile Phone</label>
-                    <input type="text" name="phone" class="form-control" value="{{ tc.phone }}" required>
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label small fw-bold">Email (Optional)</label>
-                    <input type="email" name="email" class="form-control" value="{{ tc.email }}">
-                  </div>
-                  {% endif %}
-
-                  <div class="mb-3">
-                    <label class="form-label small fw-bold">Relationship</label>
-                    <select name="relation" class="form-select">
-                      {% for val, label in relation_choices %}
-                      <option value="{{ val }}" {% if tc.relation == val %}selected{% endif %}>{{ label }}</option>
-                      {% endfor %}
-                    </select>
-                  </div>
-
-                  <h6 class="fw-bold small text-uppercase text-muted mt-3 mb-2" style="letter-spacing:0.04em;">Emergency Notification Channels</h6>
-                  <div class="form-check form-switch mb-2">
-                    <input class="form-check-input" type="checkbox" name="alert_sms" id="sms{{ tc.id }}" {% if tc.alert_sms %}checked{% endif %}>
-                    <label class="form-check-label small fw-semibold" for="sms{{ tc.id }}">Receive SMS with live GPS on SOS trigger</label>
-                  </div>
-                  <div class="form-check form-switch mb-2">
-                    <input class="form-check-input" type="checkbox" name="alert_whatsapp" id="wa{{ tc.id }}" {% if tc.alert_whatsapp %}checked{% endif %}>
-                    <label class="form-check-label small fw-semibold" for="wa{{ tc.id }}">Allow WhatsApp dispatch</label>
-                  </div>
-                  <div class="form-check form-switch mb-2">
-                    <input class="form-check-input" type="checkbox" name="alert_call" id="call{{ tc.id }}" {% if tc.alert_call %}checked{% endif %}>
-                    <label class="form-check-label small fw-semibold" for="call{{ tc.id }}">Trigger automated voice escalation if unanswered</label>
-                  </div>
-                  <div class="form-check form-switch mb-2">
-                    <input class="form-check-input" type="checkbox" name="can_view_location" id="loc{{ tc.id }}" {% if tc.can_view_location %}checked{% endif %}>
-                    <label class="form-check-label small fw-semibold" for="loc{{ tc.id }}">Grant live tracker access during emergency</label>
-                  </div>
-                </div>
-                <div class="modal-footer border-top py-2 bg-light rounded-bottom-3">
-                  <button type="button" class="btn btn-sm btn-light border px-3" data-bs-dismiss="modal">Cancel</button>
-                  <button type="submit" class="btn btn-sm btn-trusted-submit fw-semibold px-3">Save Changes</button>
-                </div>
-              </form>
+          <!-- Step 3 -->
+          <div class="tc-step-item">
+            <div class="tc-step-icon-box">
+              <i class="bi bi-geo-alt"></i>
             </div>
+            <h4 class="tc-step-h4">Live map</h4>
+            <p class="tc-step-desc">Your circle can follow your moving GPS path in real time.</p>
           </div>
-        </div>
-        {% endfor %}
-      </div>
-      {% else %}
-      <!-- Empty State -->
-      <div class="card border-0 shadow-sm rounded-3 text-center py-5 px-4" style="background:#fff;">
-        <div class="mb-3">
-          <div style="width:72px; height:72px; background:var(--cream); color:var(--crimson); border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:2.2rem;">
-            <i class="bi bi-shield-x"></i>
-          </div>
-        </div>
-        <h4 class="fw-bold" style="color:var(--maroon);font-family:'Plus Jakarta Sans',sans-serif;">No Trusted Contacts Added Yet</h4>
-        <p class="text-muted mx-auto mb-4" style="max-width:480px; font-size:0.92rem;">
-          In an emergency, every second counts. Add your mother, father, sister, partner, or close friend to your circle now so they are immediately alerted with your live location during an SOS.
-        </p>
-        <div>
-          <button type="button" class="btn btn-trusted-submit fw-bold px-4 py-2 rounded-3 shadow-sm hover-lift" onclick="document.getElementById('contactNameInput').focus();">
-            <i class="bi bi-person-plus-fill me-1"></i>Add First Guardian
-          </button>
-        </div>
-      </div>
-      {% endif %}
-
-      <!-- 24/7 National Emergency Helplines Horizontal Bar -->
-      <div class="card border-0 shadow-sm rounded-3 mt-4 p-3" style="background:#ffffff; border-left: 4px solid var(--gold) !important;">
-        <div class="d-flex justify-content-between align-items-center mb-2">
-          <h6 class="fw-bold mb-0 text-dark" style="font-family:'Plus Jakarta Sans',sans-serif;">
-            <i class="bi bi-telephone-fill text-warning me-2"></i>Official 24/7 Women Helplines (Direct Tap)
-          </h6>
-          <span class="badge bg-warning-subtle text-dark border small fw-semibold">Toll-Free &middot; Immediate</span>
-        </div>
-        <div class="row g-2 mt-1">
-          <div class="col-6 col-md-3">
-            <a href="tel:112" class="btn btn-light border w-100 text-start p-2 rounded-3 text-decoration-none hover-lift">
-              <span class="d-block fw-bold text-danger fs-6"><i class="bi bi-exclamation-triangle-fill text-danger me-1"></i> 112</span>
-              <span class="text-muted small" style="font-size:0.75rem;">National Emergency</span>
-            </a>
-          </div>
-          <div class="col-6 col-md-3">
-            <a href="tel:1091" class="btn btn-light border w-100 text-start p-2 rounded-3 text-decoration-none hover-lift">
-              <span class="d-block fw-bold text-danger fs-6"> 1091</span>
-              <span class="text-muted small" style="font-size:0.75rem;">Women Helpline</span>
-            </a>
-          </div>
-          <div class="col-6 col-md-3">
-            <a href="tel:181" class="btn btn-light border w-100 text-start p-2 rounded-3 text-decoration-none hover-lift">
-              <span class="d-block fw-bold text-primary fs-6"><i class="bi bi-shield-fill-check text-primary me-1"></i> 181</span>
-              <span class="text-muted small" style="font-size:0.75rem;">Women in Distress</span>
-            </a>
-          </div>
-          <div class="col-6 col-md-3">
-            <a href="tel:100" class="btn btn-light border w-100 text-start p-2 rounded-3 text-decoration-none hover-lift">
-              <span class="d-block fw-bold text-dark fs-6"><i class="bi bi-shield-lock me-1"></i> 100</span>
-              <span class="text-muted small" style="font-size:0.75rem;">Police Control</span>
-            </a>
+          <!-- Step 4 -->
+          <div class="tc-step-item">
+            <div class="tc-step-icon-box">
+              <i class="bi bi-shield-check"></i>
+            </div>
+            <h4 class="tc-step-h4">Safe arrival</h4>
+            <p class="tc-step-desc">Tap "I reached safely" to reassure everyone with one tap.</p>
           </div>
         </div>
       </div>
+
+      <!-- Official 24/7 Helplines Card -->
+      <div class="tc-helplines-card">
+        <div class="tc-helplines-head">
+          <i class="bi bi-telephone-fill text-warning"></i> Official 24/7 helplines
+        </div>
+        <div class="tc-helplines-row">
+          <a href="tel:112" class="tc-helpline-btn">
+            <span class="tc-hl-num">112</span>
+            <span class="tc-hl-lbl">Emergency</span>
+          </a>
+          <a href="tel:1091" class="tc-helpline-btn">
+            <span class="tc-hl-num">1091</span>
+            <span class="tc-hl-lbl">Women</span>
+          </a>
+          <a href="tel:181" class="tc-helpline-btn">
+            <span class="tc-hl-num">181</span>
+            <span class="tc-hl-lbl">Distress</span>
+          </a>
+          <a href="tel:100" class="tc-helpline-btn">
+            <span class="tc-hl-num">100</span>
+            <span class="tc-hl-lbl">Police</span>
+          </a>
+        </div>
+      </div>
+
     </div>
 
-    <!-- Right Column: Add Contact Form & Rules -->
-    <div class="col-lg-5 col-xl-4">
-      <div class="card border-0 shadow-sm rounded-3 sticky-top" style="top:90px;">
-        <div class="card-header border-0 rounded-top-3 p-3 text-white" style="background: linear-gradient(135deg, var(--maroon, #7A1F2B) 0%, var(--crimson, #C41E3D) 100%) !important;">
-          <div class="d-flex justify-content-between align-items-center">
-            <h6 class="fw-bold mb-0 text-white" style="font-family:'Plus Jakarta Sans',sans-serif;">
-              <i class="bi bi-person-plus-fill me-2"></i>Add to Trusted Circle
-            </h6>
-            <span class="badge rounded-2 fw-bold px-2 py-1" style="background: rgba(255,255,255,0.22); color: #ffffff; backdrop-filter: blur(4px); font-size: 0.72rem; letter-spacing: 0.04em;">UNIVERSAL ADD</span>
-          </div>
-        </div>
-
-        <div class="card-body p-3">
-          <!-- Dual Add Tabs -->
-          <ul class="nav nav-pills nav-fill mb-3" id="addContactTabs" role="tablist">
-            <li class="nav-item" role="presentation">
-              <button class="nav-link active small fw-bold py-2" id="phone-tab" data-bs-toggle="pill" data-bs-target="#phoneAddPane" type="button" role="tab">
-                <i class="bi bi-phone me-1"></i>Direct Contact
-              </button>
-            </li>
-            <li class="nav-item" role="presentation">
-              <button class="nav-link small fw-bold py-2" id="user-tab" data-bs-toggle="pill" data-bs-target="#userAddPane" type="button" role="tab">
-                <i class="bi bi-person-badge me-1"></i>Search User
-              </button>
-            </li>
-          </ul>
-
-          <div class="tab-content" id="addContactTabContent">
-            <!-- Pane 1: Direct Phone Contact -->
-            <div class="tab-pane fade show active" id="phoneAddPane" role="tabpanel">
-              <form method="post" action="{% url 'add_trusted_contact' %}">
-                {% csrf_token %}
-                <input type="hidden" name="add_type" value="phone">
-
-                <div class="mb-3">
-                  <label class="form-label small fw-bold">Full Name <span class="text-danger">*</span></label>
-                  <input type="text" name="name" id="contactNameInput" class="form-control rounded-3" placeholder="e.g. Papa, Sunita Sharma, Priya" required>
-                </div>
-
-                <div class="mb-3">
-                  <label class="form-label small fw-bold">Mobile Phone Number <span class="text-danger">*</span></label>
-                  <div class="input-group">
-                    <span class="input-group-text bg-light border-end-0 small fw-semibold">+91</span>
-                    <input type="tel" name="phone" class="form-control rounded-end-3" placeholder="10-digit mobile number" required>
-                  </div>
-                  <small class="text-muted" style="font-size:0.75rem;">Will receive SMS alert &amp; voice calls during SOS.</small>
-                </div>
-
-                <div class="mb-3">
-                  <label class="form-label small fw-bold">Relationship <span class="text-danger">*</span></label>
-                  <select name="relation" class="form-select rounded-3">
-                    <option value="parent"><i class="bi bi-shield-fill-check text-primary me-1"></i> Parent / Guardian</option>
-                    <option value="family" selected> Family</option>
-                    <option value="sibling"> Sister / Brother</option>
-                    <option value="spouse"> Spouse / Partner</option>
-                    <option value="friend"><i class="bi bi-person-heart me-1"></i> Friend / Roommate</option>
-                    <option value="colleague"><i class="bi bi-briefcase me-1"></i> Colleague / Work</option>
-                    <option value="neighbor"><i class="bi bi-house me-1"></i> Local Neighbor</option>
-                    <option value="other"><i class="bi bi-person-fill me-1"></i> Other</option>
-                  </select>
-                </div>
-
-                <div class="mb-3">
-                  <label class="form-label small fw-bold">Email Address <span class="text-muted fw-normal">(Optional)</span></label>
-                  <input type="email" name="email" class="form-control rounded-3" placeholder="guardian@domain.com">
-                </div>
-
-                <div class="form-check p-3 rounded-3 bg-light border mb-3">
-                  <input class="form-check-input ms-0 me-2" type="checkbox" name="is_primary" id="isPrimaryCheckPhone" {% if not primary_contact %}checked{% endif %}>
-                  <label class="form-check-label small fw-bold text-dark" for="isPrimaryCheckPhone">
-                    <i class="bi bi-star-fill text-warning me-1"></i> Designate as Primary Emergency Guardian
-                  </label>
-                  <small class="text-muted d-block mt-1" style="font-size:0.73rem;">
-                    First person to receive automated voice call and instant priority SMS.
-                  </small>
-                </div>
-
-                <div class="d-grid">
-                  <button type="submit" class="btn btn-trusted-submit py-2 rounded-3 shadow-sm">
-                    <i class="bi bi-shield-plus me-1"></i>Add Emergency Contact
-                  </button>
-                </div>
-              </form>
-            </div>
-
-            <!-- Pane 2: Registered Platform User -->
-            <div class="tab-pane fade" id="userAddPane" role="tabpanel">
-              <form method="post" action="{% url 'add_trusted_contact' %}">
-                {% csrf_token %}
-                <input type="hidden" name="add_type" value="user">
-
-                <div class="mb-3">
-                  <label class="form-label small fw-bold">Select Shield User <span class="text-danger">*</span></label>
-                  <select name="contact_id" class="form-select rounded-3" required id="userContactSelect">
-                    <option value="">Choose registered user...</option>
-                    {% for u in all_users %}
-                    <option value="{{ u.id }}">{{ u.full_name|default:u.username }}{% if u.username %} (@{{ u.username|cut:"@" }}){% endif %}</option>
-                    {% endfor %}
-                  </select>
-                  <small class="text-muted" style="font-size:0.75rem;">Connects to their Women Safety Shield app account.</small>
-                </div>
-
-                <div class="mb-3">
-                  <label class="form-label small fw-bold">Relationship <span class="text-danger">*</span></label>
-                  <select name="relation" class="form-select rounded-3">
-                    <option value="family"> Family</option>
-                    <option value="parent"><i class="bi bi-shield-fill-check text-primary me-1"></i> Parent / Guardian</option>
-                    <option value="sibling"> Sister / Brother</option>
-                    <option value="spouse"> Spouse / Partner</option>
-                    <option value="friend" selected><i class="bi bi-person-heart me-1"></i> Friend</option>
-                    <option value="colleague"><i class="bi bi-briefcase me-1"></i> Colleague</option>
-                    <option value="neighbor"><i class="bi bi-house me-1"></i> Neighbor</option>
-                    <option value="other"><i class="bi bi-person-fill me-1"></i> Other</option>
-                  </select>
-                </div>
-
-                <div class="form-check p-3 rounded-3 bg-light border mb-3">
-                  <input class="form-check-input ms-0 me-2" type="checkbox" name="is_primary" id="isPrimaryCheckUser">
-                  <label class="form-check-label small fw-bold text-dark" for="isPrimaryCheckUser">
-                    <i class="bi bi-star-fill text-warning me-1"></i> Designate as Primary Emergency Guardian
-                  </label>
-                  <small class="text-muted d-block mt-1" style="font-size:0.73rem;">
-                    First person to receive automated voice call and priority notification.
-                  </small>
-                </div>
-
-                <div class="d-grid">
-                  <button type="submit" class="btn btn-trusted-submit py-2 rounded-3 shadow-sm">
-                    <i class="bi bi-person-check-fill me-1"></i>Connect Platform User
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-
-        <!-- Safety Circle Protocol Information -->
-        <div class="p-3 border-top bg-light rounded-bottom-3">
-          <h6 class="fw-bold small mb-2 text-dark">
-            <i class="bi bi-shield-check text-success me-1"></i>How Circle Alerts Work During SOS
-          </h6>
-          <ul class="text-muted small ps-3 mb-0" style="font-size:0.78rem; line-height: 1.5;">
-            <li class="mb-1"><strong>Instant Parallel SMS:</strong> Dispatched immediately to all contact mobile phones with exact GPS map link.</li>
-            <li class="mb-1"><strong>Automated Voice Escalation:</strong> Calls Primary Guardian if alert is unacknowledged within 30 seconds.</li>
-            <li class="mb-1"><strong>Live Map Radar:</strong> Circle members can see your moving GPS path in real time.</li>
-            <li><strong>Safe Arrival Confirmation:</strong> Use the "I Reached Safely" button to reassure your circle with one tap.</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-</div>
-
-<!-- MODAL 1: Safe Check-in ("I Reached Safely") -->
-<div class="modal fade" id="safeCheckinModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content rounded-3 border-0 shadow">
-      <div class="modal-header border-bottom py-3" style="background:var(--cream);">
-        <h6 class="modal-title fw-bold" style="color:var(--maroon);font-family:'Plus Jakarta Sans',sans-serif;">
-          <i class="bi bi-geo-alt-fill text-danger me-2"></i>Send "I Reached Safely" Check-in
-        </h6>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <form method="post" action="{% url 'send_safe_checkin' %}">
-        {% csrf_token %}
-        <div class="modal-body p-4">
-          <p class="text-muted small mb-3">
-            Broadcast an instant reassuring update to all {{ contact_count }} contacts in your trusted circle.
-          </p>
-
-          <label class="form-label small fw-bold">Choose or customize arrival message</label>
-          <div class="d-flex flex-wrap gap-2 mb-3">
-            <button type="button" class="btn btn-outline-secondary btn-sm quick-msg-btn rounded-2" onclick="document.getElementById('checkinMsgInput').value='Reached home safely. All is well!';">
-              <i class="bi bi-house me-1"></i> Reached Home Safely
-            </button>
-            <button type="button" class="btn btn-outline-secondary btn-sm quick-msg-btn rounded-2" onclick="document.getElementById('checkinMsgInput').value='Reached college / hostel room safely!';">
-              <i class="bi bi-mortarboard me-1"></i> Reached Hostel / Campus
-            </button>
-            <button type="button" class="btn btn-outline-secondary btn-sm quick-msg-btn rounded-2" onclick="document.getElementById('checkinMsgInput').value='Safely reached office/work.';">
-              <i class="bi bi-briefcase me-1"></i> Reached Office
-            </button>
-            <button type="button" class="btn btn-outline-secondary btn-sm quick-msg-btn rounded-2" onclick="document.getElementById('checkinMsgInput').value='Boarded metro/cab safely. On my way!';">
-              <i class="bi bi-car-front me-1"></i> Boarded Transit Safely
-            </button>
-          </div>
-
-          <textarea name="message" id="checkinMsgInput" class="form-control rounded-3 mb-3" rows="3" placeholder="I have reached my destination safely. All is well!"></textarea>
-
-          <div class="alert alert-info py-2 px-3 small border-0 rounded-3 mb-0">
-            <i class="bi bi-info-circle-fill me-1"></i>Will be dispatched via in-app notifications and simulated SMS to your trusted network.
-          </div>
-        </div>
-        <div class="modal-footer border-top py-2 bg-light rounded-bottom-3">
-          <button type="button" class="btn btn-sm btn-light border px-3" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-sm btn-trusted-submit fw-bold px-3">
-            <i class="bi bi-send-fill me-1"></i>Broadcast Check-in
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL 2: Fake Escape Call Simulator -->
-<div class="modal fade" id="fakeCallModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content rounded-3 border-0 shadow">
-      <div class="modal-header border-bottom py-3" style="background:var(--cream);">
-        <h6 class="modal-title fw-bold" style="color:var(--maroon);font-family:'Plus Jakarta Sans',sans-serif;">
-          <i class="bi bi-telephone-inbound-fill text-danger me-2"></i>Fake Escape Call Trigger
-        </h6>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body p-4 text-center">
-        <p class="text-muted small mb-3">
-          Simulate an urgent incoming call on your screen to excuse yourself safely from uncomfortable or threatening situations without raising suspicion.
-        </p>
-
-        <div class="mb-3 text-start">
-          <label class="form-label small fw-bold">Select Caller Display</label>
-          <select id="fakeCallerSelect" class="form-select rounded-3">
-            <option value="Dad (Papa)"> Dad (Papa)</option>
-            <option value="Mom (Maa)"> Mom (Maa)</option>
-            <option value="Police Inspector"><i class="bi bi-shield-lock me-1"></i> Police Control / Inspector</option>
-            <option value="Hostel Warden"><i class="bi bi-building me-1"></i> Hostel Warden</option>
-            <option value="Pooja (Emergency)"><i class="bi bi-telephone-fill me-1"></i> Pooja (Emergency)</option>
-          </select>
-        </div>
-
-        <div class="mb-4 text-start">
-          <label class="form-label small fw-bold">Trigger Delay</label>
-          <div class="d-flex gap-2">
-            <button type="button" class="btn btn-outline-danger flex-fill active py-2 rounded-3" onclick="triggerFakeCall(2);">
-              <i class="bi bi-lightning-charge-fill me-1"></i> In 2 Seconds
-            </button>
-            <button type="button" class="btn btn-outline-secondary flex-fill py-2 rounded-3" onclick="triggerFakeCall(15);">
-              <i class="bi bi-stopwatch me-1"></i> In 15 Seconds
-            </button>
-            <button type="button" class="btn btn-outline-secondary flex-fill py-2 rounded-3" onclick="triggerFakeCall(30);">
-              <i class="bi bi-stopwatch me-1"></i> In 30 Seconds
-            </button>
-          </div>
-        </div>
-
-        <div class="small text-muted">
-          <i class="bi bi-lightbulb-fill text-warning me-1"></i>Tip: Keep your phone volume audible so onlookers can hear it ringing.
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- FULLSCREEN FAKE CALL OVERLAY -->
-<div id="fakeCallScreen" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:#111111; z-index:999999; color:#ffffff; font-family:'Inter',sans-serif; text-align:center; padding: 60px 20px;">
-  <div style="max-width:380px; margin: 0 auto; display:flex; flex-column; justify-content:space-between; height:100%;">
+    <!-- RIGHT COLUMN: ADD TO YOUR CIRCLE -->
     <div>
-      <div class="mb-3" style="width:90px; height:90px; border-radius:50%; background:#2B2320; border:2px solid #555; margin:0 auto; display:flex; align-items:center; justify-content:center; font-size:2.5rem;">
-        <i class="bi bi-person-fill text-light"></i>
+      <div class="tc-add-card">
+        <div class="tc-add-head">
+          <div class="tc-phone-icon-box">
+            <i class="bi bi-phone"></i>
+          </div>
+          <h3 class="tc-add-title">Add to your circle</h3>
+        </div>
+        <p class="tc-add-subtitle">
+          Add someone you trust. They will get SMS alerts and voice calls during an SOS.
+        </p>
+
+        <!-- Tabs -->
+        <div class="tc-tabs-nav">
+          <button type="button" class="tc-tab-btn active" id="tabBtnDirect" onclick="switchAddTab('direct')">
+            <i class="bi bi-person"></i> Direct contact
+          </button>
+          <button type="button" class="tc-tab-btn" id="tabBtnSearch" onclick="switchAddTab('search')">
+            <i class="bi bi-search"></i> Search user
+          </button>
+        </div>
+
+        <!-- Form 1: Direct Contact -->
+        <div id="paneDirect">
+          <form method="post" action="{% url 'add_trusted_contact' %}">
+            {% csrf_token %}
+            <input type="hidden" name="add_type" value="phone">
+
+            <!-- Full Name and Relationship -->
+            <div class="tc-form-row">
+              <div class="tc-form-group">
+                <label class="tc-label">Full name *</label>
+                <input type="text" name="name" id="tcNameInput" class="tc-input" placeholder="e.g. Papa, Priya" required>
+              </div>
+              <div class="tc-form-group">
+                <label class="tc-label">Relationship *</label>
+                <select name="relation" class="tc-input" required>
+                  <option value="family" selected>Family</option>
+                  <option value="parent">Parent</option>
+                  <option value="sibling">Sibling</option>
+                  <option value="spouse">Spouse</option>
+                  <option value="friend">Friend</option>
+                  <option value="colleague">Colleague</option>
+                  <option value="neighbor">Neighbor</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Mobile Number -->
+            <div class="tc-form-group">
+              <label class="tc-label">Mobile number *</label>
+              <div class="tc-input-group">
+                <span class="tc-addon">+91</span>
+                <input type="tel" name="phone" class="tc-input tc-input-addon" placeholder="10-digit mobile number" required pattern="[0-9]{10}">
+              </div>
+              <span class="tc-help-hint">Receives SMS alerts and voice calls during SOS.</span>
+            </div>
+
+            <!-- Add Email (Optional) -->
+            <div>
+              <span class="tc-optional-link" onclick="toggleEmailInput();">
+                <i class="bi bi-plus-lg"></i> Add email (optional)
+              </span>
+              <div id="optionalEmailWrap" style="display: none;" class="mb-3">
+                <input type="email" name="email" class="tc-input" placeholder="guardian@email.com">
+              </div>
+            </div>
+
+            <!-- Make Primary Guardian Switch Box -->
+            <div class="tc-primary-toggle-box">
+              <div class="tc-pt-text">
+                <div class="tc-pt-title">
+                  <i class="bi bi-bookmark text-warning"></i> Make primary guardian
+                </div>
+                <div class="tc-pt-sub">
+                  First to get the automated voice call and priority SMS.
+                </div>
+              </div>
+              <label class="tc-switch">
+                <input type="checkbox" name="is_primary" {% if not primary_contact %}checked{% endif %}>
+                <span class="tc-slider"></span>
+              </label>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn-submit-circle">
+              <i class="bi bi-plus-circle"></i> Add to circle
+            </button>
+          </form>
+        </div>
+
+        <!-- Form 2: Search User -->
+        <div id="paneSearch" style="display: none;">
+          <form method="post" action="{% url 'add_trusted_contact' %}">
+            {% csrf_token %}
+            <input type="hidden" name="add_type" value="user">
+
+            <div class="tc-form-group">
+              <label class="tc-label">Select Registered User *</label>
+              <select name="contact_id" class="tc-input" required>
+                <option value="" disabled selected>-- Choose a registered user --</option>
+                {% for u in all_users %}
+                <option value="{{ u.id }}">{{ u.full_name|default:u.username }} ({{ u.phone|default:u.email }})</option>
+                {% empty %}
+                <option disabled>No other registered users available</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="tc-form-group">
+              <label class="tc-label">Relationship *</label>
+              <select name="relation" class="tc-input" required>
+                <option value="friend" selected>Friend</option>
+                <option value="family">Family</option>
+                <option value="colleague">Colleague</option>
+                <option value="neighbor">Neighbor</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+
+            <div class="tc-primary-toggle-box">
+              <div class="tc-pt-text">
+                <div class="tc-pt-title">
+                  <i class="bi bi-bookmark text-warning"></i> Make primary guardian
+                </div>
+                <div class="tc-pt-sub">
+                  First to get the automated voice call and priority SMS.
+                </div>
+              </div>
+              <label class="tc-switch">
+                <input type="checkbox" name="is_primary">
+                <span class="tc-slider"></span>
+              </label>
+            </div>
+
+            <button type="submit" class="btn-submit-circle">
+              <i class="bi bi-plus-circle"></i> Add to circle
+            </button>
+          </form>
+        </div>
+
       </div>
-      <h3 id="fakeCallDisplayName" class="fw-bold mb-1" style="font-size:1.8rem;">Dad (Papa)</h3>
-      <p id="fakeCallStatusText" class="text-secondary small mb-2" style="letter-spacing:0.05em;">INCOMING CALL...</p>
-      <div id="fakeCallTimer" class="fw-bold text-success" style="display:none; font-size:1.2rem;">00:01</div>
     </div>
 
-    <!-- Incoming Buttons -->
-    <div id="fakeCallIncomingControls" class="d-flex justify-content-around align-items-center mb-5">
-      <div onclick="rejectFakeCall();" style="cursor:pointer;">
-        <div style="width:70px; height:70px; border-radius:50%; background:#e74c3c; display:flex; align-items:center; justify-content:center; font-size:1.8rem; margin:0 auto 8px;">
-          <i class="bi bi-telephone-x-fill text-white"></i>
-        </div>
-        <span class="small text-white">Decline</span>
-      </div>
-      <div onclick="acceptFakeCall();" style="cursor:pointer;">
-        <div style="width:70px; height:70px; border-radius:50%; background:#27ae60; display:flex; align-items:center; justify-content:center; font-size:1.8rem; margin:0 auto 8px; animation: pulseCall 1.2s infinite;">
-          <i class="bi bi-telephone-fill text-white"></i>
-        </div>
-        <span class="small text-white">Accept</span>
-      </div>
-    </div>
+  </div>
 
-    <!-- Active Call Buttons -->
-    <div id="fakeCallActiveControls" style="display:none; margin-bottom: 40px;">
-      <div class="row g-3 mb-4 text-center">
-        <div class="col-4"><i class="bi bi-mic-mute fs-3"></i><div class="small text-secondary">Mute</div></div>
-        <div class="col-4"><i class="bi bi-grid-3x3 fs-3"></i><div class="small text-secondary">Keypad</div></div>
-        <div class="col-4"><i class="bi bi-volume-up fs-3 text-warning"></i><div class="small text-secondary">Speaker</div></div>
-      </div>
-      <div onclick="rejectFakeCall();" style="cursor:pointer; display:inline-block;">
-        <div style="width:70px; height:70px; border-radius:50%; background:#e74c3c; display:flex; align-items:center; justify-content:center; font-size:1.8rem; margin:0 auto 8px;">
-          <i class="bi bi-telephone-x-fill text-white"></i>
+</div>
+
+<!-- 1. Fake Escape Call Modal -->
+<div class="modal fade" id="fakeCallModal" tabindex="-1" aria-labelledby="fakeCallModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg" style="border-radius:20px; overflow:hidden;">
+      <div id="fakeCallSetup">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold" id="fakeCallModalLabel">
+            <i class="bi bi-telephone-inbound text-danger me-2"></i>Trigger Fake Escape Call
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <span class="small text-white">End Call</span>
+        <div class="modal-body p-4">
+          <p class="small text-muted mb-3">
+            In an uncomfortable situation? Simulate an urgent incoming call to give you an immediate, natural excuse to leave safely.
+          </p>
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Caller ID / Name</label>
+            <input type="text" id="fakeCallerName" class="form-control form-control-sm rounded-3" value="Dad" placeholder="Dad, Boss, Mom, Doctor">
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Call Delay</label>
+            <select id="fakeCallDelay" class="form-select form-select-sm rounded-3">
+              <option value="0">Immediately</option>
+              <option value="5" selected>In 5 seconds</option>
+              <option value="15">In 15 seconds</option>
+              <option value="30">In 30 seconds</option>
+            </select>
+          </div>
+          <div class="d-grid mt-4">
+            <button type="button" class="btn btn-danger fw-bold py-2 rounded-3" onclick="startFakeCallCountdown();">
+              <i class="bi bi-telephone-outbound me-2"></i>Arm Escape Call
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ringing Screen -->
+      <div id="fakeCallRinging" style="display:none; background:#0f172a; color:#fff; min-height:420px; padding:3rem 1.5rem; text-align:center; flex-direction:column; justify-content:space-between; align-items:center;">
+        <div>
+          <span class="badge bg-secondary-subtle text-light rounded-pill px-3 py-1 mb-3" style="font-size:11px;">Incoming Call...</span>
+          <h2 class="fw-bold mb-1" id="ringingCallerName">Dad</h2>
+          <small class="text-white-50">Mobile</small>
+        </div>
+        <div class="my-4">
+          <div style="width:90px; height:90px; border-radius:50%; background:rgba(255,255,255,0.1); border:2px solid rgba(255,255,255,0.25); display:inline-flex; align-items:center; justify-content:center; font-size:2.5rem; animation: pulse 1.5s infinite;">
+            <i class="bi bi-person-fill text-white"></i>
+          </div>
+        </div>
+        <div class="d-flex justify-content-center gap-5 w-100">
+          <button type="button" class="btn btn-danger rounded-circle p-3 shadow" style="width:64px; height:64px;" onclick="declineFakeCall();">
+            <i class="bi bi-telephone-x-fill fs-4 text-white"></i>
+          </button>
+          <button type="button" class="btn btn-success rounded-circle p-3 shadow" style="width:64px; height:64px;" onclick="answerFakeCall();">
+            <i class="bi bi-telephone-fill fs-4 text-white"></i>
+          </button>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<style>
-@keyframes pulseCall {
-  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(39, 174, 96, 0.7); }
-  70% { transform: scale(1.08); box-shadow: 0 0 0 16px rgba(39, 174, 96, 0); }
-  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(39, 174, 96, 0); }
-}
-.transition-hover {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-.transition-hover:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.08) !important;
-}
-.hover-lift:hover {
-  background: var(--cream) !important;
-  border-color: var(--crimson) !important;
-  transform: translateY(-2px);
-}
-</style>
+<!-- 2. Safe Arrival Check-in Modal -->
+<div class="modal fade" id="safeCheckinModal" tabindex="-1" aria-labelledby="safeCheckinModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow" style="border-radius:18px;">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold" id="safeCheckinModalLabel">
+          <i class="bi bi-check-circle-fill text-success me-2"></i>Send "I Reached Safely" Check-in
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4">
+        <p class="small text-muted mb-3">
+          Sends an instant safe check-in notification and SMS to your <strong>{{ contact_count }}</strong> designated guardian{{ contact_count|pluralize }} with your confirmation.
+        </p>
+        <form method="post" action="{% url 'send_safe_checkin' %}">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Custom Note (Optional)</label>
+            <input type="text" name="message" class="form-control rounded-3" placeholder="e.g. Reached hostel safely! All good.">
+          </div>
+          <div class="d-grid mt-3">
+            <button type="submit" class="btn btn-danger fw-bold py-2 rounded-3">
+              <i class="bi bi-send me-1"></i> Send Safe Check-in Now
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
 
+{% block extra_js %}
 <script>
-let fakeCallAudioCtx = null;
-let fakeCallInterval = null;
-let fakeCallTimerInterval = null;
-let fakeCallSeconds = 0;
+  function switchAddTab(tab) {
+    const btnDirect = document.getElementById('tabBtnDirect');
+    const btnSearch = document.getElementById('tabBtnSearch');
+    const paneDirect = document.getElementById('paneDirect');
+    const paneSearch = document.getElementById('paneSearch');
 
-function triggerFakeCall(delaySeconds) {
-  const modalEl = document.getElementById('fakeCallModal');
-  const modal = bootstrap.Modal.getInstance(modalEl);
-  if (modal) modal.hide();
-
-  const callerName = document.getElementById('fakeCallerSelect').value;
-  document.getElementById('fakeCallDisplayName').innerText = callerName;
-  document.getElementById('fakeCallStatusText').innerText = "INCOMING CALL...";
-  document.getElementById('fakeCallIncomingControls').style.display = 'flex';
-  document.getElementById('fakeCallActiveControls').style.display = 'none';
-  document.getElementById('fakeCallTimer').style.display = 'none';
-
-  setTimeout(() => {
-    document.getElementById('fakeCallScreen').style.display = 'block';
-    startRingtone();
-  }, delaySeconds * 1000);
-}
-
-function startRingtone() {
-  try {
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    if (AudioContext) {
-      fakeCallAudioCtx = new AudioContext();
-      playBeep();
-      fakeCallInterval = setInterval(playBeep, 3000);
+    if (tab === 'direct') {
+      btnDirect.classList.add('active');
+      btnSearch.classList.remove('active');
+      paneDirect.style.display = 'block';
+      paneSearch.style.display = 'none';
+    } else {
+      btnSearch.classList.add('active');
+      btnDirect.classList.remove('active');
+      paneSearch.style.display = 'block';
+      paneDirect.style.display = 'none';
     }
-  } catch (e) {
-    // AudioContext not supported on device
   }
-}
 
-function playBeep() {
-  if (!fakeCallAudioCtx) return;
-  try {
-    const osc = fakeCallAudioCtx.createOscillator();
-    const gain = fakeCallAudioCtx.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(440, fakeCallAudioCtx.currentTime);
-    gain.gain.setValueAtTime(0.2, fakeCallAudioCtx.currentTime);
-    osc.connect(gain);
-    gain.connect(fakeCallAudioCtx.destination);
-    osc.start();
-    osc.stop(fakeCallAudioCtx.currentTime + 1.2);
-  } catch (e) {}
-}
-
-function stopRingtone() {
-  if (fakeCallInterval) {
-    clearInterval(fakeCallInterval);
-    fakeCallInterval = null;
+  function toggleEmailInput() {
+    const wrap = document.getElementById('optionalEmailWrap');
+    if (!wrap) return;
+    wrap.style.display = (wrap.style.display === 'none' || wrap.style.display === '') ? 'block' : 'none';
   }
-  if (fakeCallAudioCtx) {
-    fakeCallAudioCtx.close().catch(()=>{});
-    fakeCallAudioCtx = null;
-  }
-}
 
-function acceptFakeCall() {
-  stopRingtone();
-  document.getElementById('fakeCallIncomingControls').style.display = 'none';
-  document.getElementById('fakeCallActiveControls').style.display = 'block';
-  document.getElementById('fakeCallStatusText').innerText = "CONNECTED";
-  document.getElementById('fakeCallTimer').style.display = 'block';
-  fakeCallSeconds = 0;
-  fakeCallTimerInterval = setInterval(() => {
-    fakeCallSeconds++;
-    const mins = String(Math.floor(fakeCallSeconds / 60)).padStart(2, '0');
-    const secs = String(fakeCallSeconds % 60).padStart(2, '0');
-    document.getElementById('fakeCallTimer').innerText = `${mins}:${secs}`;
-  }, 1000);
-}
+  // Fake Escape Call Simulation
+  let fakeCallTimeout = null;
 
-function rejectFakeCall() {
-  stopRingtone();
-  if (fakeCallTimerInterval) {
-    clearInterval(fakeCallTimerInterval);
-    fakeCallTimerInterval = null;
+  function startFakeCallCountdown() {
+    const name = document.getElementById('fakeCallerName').value || 'Dad';
+    const delay = parseInt(document.getElementById('fakeCallDelay').value, 10);
+    const setup = document.getElementById('fakeCallSetup');
+    const ringing = document.getElementById('fakeCallRinging');
+    const nameSpan = document.getElementById('ringingCallerName');
+
+    setup.style.display = 'none';
+    nameSpan.textContent = name;
+
+    const modal = bootstrap.Modal.getInstance(document.getElementById('fakeCallModal'));
+
+    if (delay === 0) {
+      ringing.style.display = 'flex';
+      playRingtone();
+    } else {
+      if (modal) modal.hide();
+      setTimeout(() => {
+        setup.style.display = 'none';
+        ringing.style.display = 'flex';
+        const m = new bootstrap.Modal(document.getElementById('fakeCallModal'));
+        m.show();
+        playRingtone();
+      }, delay * 1000);
+    }
   }
-  document.getElementById('fakeCallScreen').style.display = 'none';
-}
+
+  let audioCtx = null;
+  let ringInterval = null;
+
+  function playRingtone() {
+    try {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      function beep() {
+        if (!audioCtx) return;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 1.2);
+      }
+      beep();
+      ringInterval = setInterval(beep, 3000);
+    } catch(e) {}
+  }
+
+  function stopRingtone() {
+    if (ringInterval) clearInterval(ringInterval);
+    if (audioCtx) {
+      try { audioCtx.close(); } catch(e){}
+      audioCtx = null;
+    }
+  }
+
+  function declineFakeCall() {
+    stopRingtone();
+    const modal = bootstrap.Modal.getInstance(document.getElementById('fakeCallModal'));
+    if (modal) modal.hide();
+    resetFakeCallModal();
+  }
+
+  function answerFakeCall() {
+    stopRingtone();
+    const ringing = document.getElementById('fakeCallRinging');
+    ringing.innerHTML = `
+      <div style="padding: 3rem 1rem;">
+        <i class="bi bi-telephone-fill text-success fs-1 mb-3"></i>
+        <h3 class="fw-bold mb-1">Call Connected</h3>
+        <p class="text-white-50 small mb-4">00:12 &middot; Urgent call in progress</p>
+        <button type="button" class="btn btn-danger rounded-pill px-4 py-2" onclick="declineFakeCall();">
+          End Call
+        </button>
+      </div>
+    `;
+  }
+
+  function resetFakeCallModal() {
+    const setup = document.getElementById('fakeCallSetup');
+    const ringing = document.getElementById('fakeCallRinging');
+    if (setup) setup.style.display = 'block';
+    if (ringing) ringing.style.display = 'none';
+  }
+
+  const fakeModalEl = document.getElementById('fakeCallModal');
+  if (fakeModalEl) {
+    fakeModalEl.addEventListener('hidden.bs.modal', function () {
+      stopRingtone();
+      resetFakeCallModal();
+    });
+  }
 </script>
-
 {% endblock %}
