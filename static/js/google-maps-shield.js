@@ -825,6 +825,17 @@
             const rawMap = map && map.rawMap ? map.rawMap : map;
             const isGoogle = map && map.isGoogleMap === true;
 
+            // Support passing options object as 2nd argument
+            if (typeof lat === 'object' && lat !== null) {
+                options = lat;
+                radiusMeters = options.radius !== undefined ? options.radius : 3000;
+                lng = options.lng;
+                lat = options.lat;
+            }
+
+            lat = parseFloat(lat);
+            lng = parseFloat(lng);
+
             if (isGoogle) {
                 const circleOptions = Object.assign({
                     map: rawMap,
@@ -846,7 +857,8 @@
                     color: options.strokeColor || '#2563eb',
                     fillColor: options.fillColor || '#3b82f6',
                     fillOpacity: options.fillOpacity !== undefined ? options.fillOpacity : 0.16,
-                    weight: options.strokeWeight || 1.5
+                    weight: options.strokeWeight || 1.5,
+                    dashArray: options.dashArray || null
                 });
                 if (rawMap && typeof rawMap.addLayer === 'function') circle.addTo(rawMap);
 
@@ -1058,7 +1070,7 @@
                     icon: sweepIcon,
                     interactive: false,
                     keyboard: false,
-                    zIndexOffset: -500
+                    zIndexOffset: 100
                 });
 
                 if (typeof rawMap.addLayer === 'function') {

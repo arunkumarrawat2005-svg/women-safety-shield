@@ -1354,7 +1354,7 @@
         icon: sweepIcon,
         interactive: false,
         keyboard: false,
-        zIndexOffset: -100
+        zIndexOffset: 100
       }).addTo(raw);
     }
   }
@@ -1389,6 +1389,97 @@
 
     label1500Marker = L.marker([lat + offset1500, lng], { icon: icon1500, interactive: false, zIndexOffset: 800 }).addTo(raw);
     label3000Marker = L.marker([lat + offset3000, lng], { icon: icon3000, interactive: false, zIndexOffset: 800 }).addTo(raw);
+  }
+
+  function renderUserBeacon(lat, lng) {
+    const raw = mapObj ? (mapObj.rawMap || mapObj) : null;
+    if (!raw) return;
+
+    if (userBeacon) {
+      try {
+        if (typeof userBeacon.remove === 'function') userBeacon.remove();
+        else if (raw.removeLayer) raw.removeLayer(userBeacon);
+      } catch(e) {}
+    }
+
+    if (window.L && typeof L.divIcon === 'function') {
+      const beaconIcon = L.divIcon({
+        className: 'radar-sweep-div-icon',
+        html: `
+          <div class="radar-user-beacon">
+            <div class="radar-user-pulse"></div>
+          </div>
+        `,
+        iconSize: [22, 22],
+        iconAnchor: [11, 11]
+      });
+
+      userBeacon = L.marker([lat, lng], {
+        icon: beaconIcon,
+        zIndexOffset: 1000
+      }).addTo(raw);
+    }
+  }
+
+  function initOrgRadarMap() {
+    const mapEl = document.getElementById('orgRadarMap');
+    if (!mapEl) return;
+
+    if (orgPinsData && orgPinsData.length > 0) {
+      userLat = orgPinsData[0].lat;
+      userLng = orgPinsData[0].lng;
+    }
+
+    if (window.GoogleMapsShield) {
+      GoogleMapsShield.registerMapInit('orgRadarMap', initOrgRadarMap);
+    }
+
+    mapObj = GoogleMapsShield.createMap(mapEl, {
+      center: { lat: userLat, lng: userLng },
+      zoom: 13,
+      mapId: 'DEMO_MAP_ID'
+    });
+
+    const raw = mapObj.rawMap || mapObj;
+
+    // Inner 1.5 km dashed circle (Soft dashed circle matching screenshot)
+    circle1500 = GoogleMapsShield.createRadiusCircle(mapObj, userLat, userLng, 1500, {
+      strokeColor: '#f43f5e',
+      strokeOpacity: 0.65,
+      strokeWeight: 1.5,
+      fillColor: 'transparent',
+      fillOpacity: 0,
+      dashArray: '5, 5'
+    });
+
+    // Outer 3.0 km crimson dashed circle (Dashed red circle matching screenshot)
+    circle3000 = GoogleMapsShield.createRadiusCircle(mapObj, userLat, userLng, 3000, {
+      strokeColor: '#dc2626',
+      strokeOpacity: 0.8,
+      strokeWeight: 1.8,
+      fillColor: 'rgba(220, 38, 38, 0.02)',
+      fillOpacity: 0.02,
+      dashArray: '6, 6'
+    });
+
+    // Continuous 360 degree Rotating Radar Sweep
+    createRotatingRadarSweep(userLat, userLng, 3000);
+    updateDistanceCircleLabels(userLat, userLng);
+
+    if (raw && typeof raw.on === 'function') {
+      raw.on('zoom', updateRadarSweepSize);
+      raw.on('zoomend', updateRadarSweepSize);
+      raw.on('viewreset', updateRadarSweepSize);
+      raw.on('resize', updateRadarSweepSize);
+    }
+
+    // Center Blue Beacon Pin
+    renderUserBeacon(userLat, userLng);
+
+    // Plot Org Markers
+    plotOrgMarkers(orgPinsData);
+
+    locateUserSilent();
   }
 
   // Sample Institutional Radar Units when DB has 0 orgs
