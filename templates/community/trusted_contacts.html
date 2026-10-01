@@ -6,40 +6,31 @@
 {% block extra_css %}
 <style>
   :root {
-    --tc-canvas-bg: #fbfbfa;
-    --tc-card-bg: #ffffff;
-    --tc-border: #edf0f3;
-    --tc-text-main: #111827;
-    --tc-text-muted: #6b7280;
+    --tc-bg: #fdfaf9;
+    --tc-card: #ffffff;
+    --tc-border: #f0eae7;
+    --tc-border-light: #f5eeea;
+    --tc-text-dark: #18181b;
+    --tc-text-body: #3f3f46;
+    --tc-text-muted: #71717a;
     --tc-crimson: #dc2626;
     --tc-crimson-hover: #b91c1c;
-    --tc-pink-bg: #fdf2f2;
+    --tc-pink-soft: #fef2f2;
     --tc-pink-border: #fee2e2;
     --tc-pink-text: #991b1b;
+    --tc-green: #10b981;
   }
 
   body {
-    background-color: var(--tc-canvas-bg) !important;
+    background-color: var(--tc-bg) !important;
   }
 
-  /* Outer Container */
-  .tc-page-outer {
-    max-width: 1280px;
+  /* Page Wrapper - Note: No giant white card around everything; elements sit on soft canvas */
+  .tc-container {
+    max-width: 1180px;
     margin: 1.5rem auto 3.5rem;
-    padding: 2rem 2.25rem;
-    background: #ffffff;
-    border: 1px solid var(--tc-border);
-    border-radius: 24px;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.02);
+    padding: 0 1.25rem;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  }
-
-  @media (max-width: 768px) {
-    .tc-page-outer {
-      padding: 1.25rem 1rem;
-      border-radius: 16px;
-      margin: 0.75rem auto 2rem;
-    }
   }
 
   /* 1. TOP HEADER */
@@ -49,30 +40,31 @@
     align-items: flex-start;
     flex-wrap: wrap;
     gap: 1.25rem;
-    margin-bottom: 1.75rem;
+    margin-bottom: 1.6rem;
   }
 
-  .tc-pill-tag {
+  .tc-tag-pill {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
-    background: var(--tc-pink-bg);
+    gap: 0.4rem;
+    background: var(--tc-pink-soft);
     border: 1px solid var(--tc-pink-border);
     color: var(--tc-pink-text);
-    font-size: 11px;
+    font-size: 11.5px;
     font-weight: 700;
     padding: 3px 9px;
     border-radius: 6px;
-    margin-bottom: 0.4rem;
+    margin-bottom: 0.45rem;
+    letter-spacing: -0.01em;
   }
 
   .tc-title {
     font-family: 'Plus Jakarta Sans', sans-serif;
     font-weight: 800;
-    font-size: 1.85rem;
-    letter-spacing: -0.02em;
-    color: var(--tc-text-main);
-    margin: 0 0 0.3rem;
+    font-size: 1.95rem;
+    letter-spacing: -0.025em;
+    color: var(--tc-text-dark);
+    margin: 0 0 0.35rem;
     line-height: 1.2;
   }
 
@@ -80,8 +72,8 @@
     color: var(--tc-text-muted);
     font-size: 0.88rem;
     margin: 0;
-    line-height: 1.45;
-    max-width: 680px;
+    line-height: 1.5;
+    max-width: 640px;
   }
 
   .tc-header-actions {
@@ -126,7 +118,7 @@
     align-items: center;
     gap: 0.45rem;
     text-decoration: none;
-    box-shadow: 0 2px 6px rgba(220, 38, 38, 0.25);
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.28);
     transition: all 0.15s ease;
     cursor: pointer;
   }
@@ -136,64 +128,80 @@
     border-color: var(--tc-crimson-hover);
     color: #ffffff;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.38);
   }
 
-  /* 2. CIRCLE PROTECTION BANNER */
+  /* 2. CIRCLE PROTECTION PROGRESS BANNER */
   .tc-protection-card {
     background: #ffffff;
     border: 1px solid var(--tc-border);
-    border-radius: 16px;
-    padding: 1.25rem 1.5rem;
+    border-radius: 18px;
+    padding: 1.25rem 1.75rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 1.5rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
-    flex-wrap: wrap;
+    margin-bottom: 1.75rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  }
+
+  @media (max-width: 900px) {
+    .tc-protection-card {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 1.25rem;
+    }
   }
 
   .tc-prot-left {
     display: flex;
     align-items: center;
-    gap: 1.15rem;
-  }
-
-  .tc-gauge-ring {
-    position: relative;
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    background: conic-gradient(
-      var(--tc-crimson) 0deg,
-      var(--tc-crimson) calc({{ score }} * 3.6deg),
-      #fee2e2 calc({{ score }} * 3.6deg),
-      #fee2e2 360deg
-    );
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    gap: 1.1rem;
     flex-shrink: 0;
   }
 
-  .tc-gauge-inner {
-    width: 52px;
-    height: 52px;
-    background: #ffffff;
-    border-radius: 50%;
+  .tc-gauge-wrap {
+    position: relative;
+    width: 64px;
+    height: 64px;
+    flex-shrink: 0;
+  }
+
+  .tc-gauge-svg {
+    width: 64px;
+    height: 64px;
+    transform: rotate(-90deg);
+  }
+
+  .tc-gauge-track {
+    fill: none;
+    stroke: #f3f4f6;
+    stroke-width: 5;
+  }
+
+  .tc-gauge-fill {
+    fill: none;
+    stroke: var(--tc-crimson);
+    stroke-width: 5;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.8s ease;
+  }
+
+  .tc-gauge-text {
+    position: absolute;
+    inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 800;
-    font-size: 14px;
-    color: var(--tc-text-main);
+    font-size: 15px;
+    color: var(--tc-text-dark);
   }
 
   .tc-prot-details {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.15rem;
   }
 
   .tc-prot-title-row {
@@ -204,101 +212,133 @@
 
   .tc-prot-h3 {
     font-weight: 800;
-    font-size: 14.5px;
-    color: var(--tc-text-main);
+    font-size: 15px;
+    color: var(--tc-text-dark);
     margin: 0;
   }
 
   .tc-status-pill {
-    font-size: 10.5px;
+    background: #fee2e2;
+    color: var(--tc-crimson);
+    font-size: 11px;
     font-weight: 700;
-    padding: 2px 7px;
-    border-radius: 6px;
-    background: var(--tc-pink-bg);
-    color: var(--tc-pink-text);
-    border: 1px solid var(--tc-pink-border);
+    padding: 2px 8px;
+    border-radius: 9999px;
+    letter-spacing: -0.01em;
+  }
+
+  .tc-status-pill.success {
+    background: #dcfce7;
+    color: #15803d;
+  }
+
+  .tc-status-pill.warning {
+    background: #fef3c7;
+    color: #b45309;
   }
 
   .tc-prot-sub {
-    font-size: 11.5px;
+    font-size: 12px;
     color: var(--tc-text-muted);
     margin: 0;
+    line-height: 1.4;
   }
 
   /* Center Checklist */
   .tc-checklist {
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
+    gap: 0.45rem;
+    border-left: 1px solid var(--tc-border-light);
+    border-right: 1px solid var(--tc-border-light);
+    padding: 0 1.5rem;
+    flex: 1;
+  }
+
+  @media (max-width: 900px) {
+    .tc-checklist {
+      border: none;
+      padding: 0;
+      width: 100%;
+    }
   }
 
   .tc-check-item {
     display: flex;
     align-items: center;
-    gap: 0.45rem;
-    font-size: 11.5px;
+    gap: 0.55rem;
+    font-size: 12.5px;
     color: #4b5563;
     font-weight: 500;
   }
 
-  .tc-check-dot {
-    width: 14px;
-    height: 14px;
+  .tc-check-circle {
+    width: 17px;
+    height: 17px;
+    border: 1.8px solid #d1d5db;
     border-radius: 50%;
-    border: 1.5px solid #cbd5e1;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 8px;
-    color: transparent;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
   }
 
-  .tc-check-dot.checked {
-    border-color: #10b981;
+  .tc-check-circle.checked {
     background: #10b981;
+    border-color: #10b981;
     color: #ffffff;
   }
 
-  /* Right Stats */
+  /* Right Channel Stats */
   .tc-channel-stats {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 900px) {
+    .tc-channel-stats {
+      width: 100%;
+      justify-content: space-between;
+    }
   }
 
   .tc-stat-box {
-    background: #f9fafb;
-    border: 1px solid #f3f4f6;
+    background: #f8fafc;
+    border: 1px solid #f1f5f9;
     border-radius: 10px;
-    padding: 0.5rem 0.85rem;
+    padding: 0.55rem 0.95rem;
     text-align: center;
     min-width: 68px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.15rem;
   }
 
   .tc-stat-num {
     font-weight: 800;
-    font-size: 14px;
-    color: var(--tc-text-main);
+    font-size: 16px;
+    color: var(--tc-text-dark);
     line-height: 1.1;
-    display: block;
-    margin-bottom: 2px;
   }
 
   .tc-stat-lbl {
-    font-size: 10px;
-    color: var(--tc-text-muted);
-    display: inline-flex;
+    font-size: 11px;
+    font-weight: 600;
+    display: flex;
     align-items: center;
     gap: 0.25rem;
-    white-space: nowrap;
   }
 
-  /* 3. MAIN WORKSPACE GRID */
+  /* 3. TWO-COLUMN LAYOUT */
   .tc-main-grid {
     display: grid;
-    grid-template-columns: 1fr 370px;
+    grid-template-columns: 1fr 390px;
     gap: 1.5rem;
-    align-items: flex-start;
+    align-items: start;
   }
 
   @media (max-width: 991px) {
@@ -307,72 +347,63 @@
     }
   }
 
-  /* LEFT SECTION */
-  .tc-left-col {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-
+  /* Left Column Header */
   .tc-section-head {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.65rem;
+    margin-bottom: 0.75rem;
   }
 
   .tc-section-title {
     font-weight: 800;
     font-size: 14.5px;
-    color: var(--tc-text-main);
+    color: var(--tc-text-dark);
     margin: 0;
   }
 
   .tc-order-hint {
-    font-size: 11px;
-    color: var(--tc-text-muted);
+    font-size: 11.5px;
+    color: #9ca3af;
+    font-weight: 500;
   }
 
   /* Empty State Card */
   .tc-empty-card {
     background: #ffffff;
     border: 1px solid var(--tc-border);
-    border-radius: 16px;
-    padding: 3.25rem 1.5rem;
+    border-radius: 18px;
+    padding: 3rem 1.5rem;
     text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
   }
 
   .tc-empty-icon-square {
-    width: 58px;
-    height: 58px;
-    background: #fee2e2;
-    border-radius: 16px;
-    display: flex;
+    width: 52px;
+    height: 52px;
+    background: var(--tc-pink-soft);
+    border: 1px solid var(--tc-pink-border);
+    border-radius: 12px;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     color: var(--tc-crimson);
-    font-size: 1.6rem;
     margin-bottom: 1rem;
   }
 
   .tc-empty-h4 {
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--tc-text-main);
+    font-weight: 800;
+    font-size: 16px;
+    color: var(--tc-text-dark);
     margin: 0 0 0.35rem;
   }
 
   .tc-empty-p {
-    font-size: 12px;
+    font-size: 12.5px;
     color: var(--tc-text-muted);
+    max-width: 420px;
+    margin: 0 auto 1.25rem;
     line-height: 1.5;
-    margin: 0 0 1.25rem;
-    max-width: 360px;
   }
 
   .btn-add-first-guardian {
@@ -380,13 +411,13 @@
     color: #ffffff;
     border: none;
     font-weight: 700;
-    font-size: 12px;
-    padding: 8px 18px;
+    font-size: 12.5px;
+    padding: 0.55rem 1.25rem;
     border-radius: 8px;
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    box-shadow: 0 2px 6px rgba(220, 38, 38, 0.25);
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.28);
     cursor: pointer;
     transition: all 0.15s ease;
   }
@@ -395,37 +426,36 @@
     background: var(--tc-crimson-hover);
     color: #ffffff;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.38);
   }
 
-  /* Contact List Cards (When contacts exist) */
+  /* Populated Contacts Stack */
   .tc-contacts-stack {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.65rem;
   }
 
   .tc-contact-item {
     background: #ffffff;
     border: 1px solid var(--tc-border);
     border-radius: 14px;
-    padding: 1rem 1.15rem;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.02);
+    padding: 1rem 1.2rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
     transition: all 0.15s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
   }
 
   .tc-contact-item:hover {
-    border-color: #cbd5e1;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border-color: #fca5a5;
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.06);
   }
 
   .tc-contact-item.is-primary {
-    border-color: #fecaca;
-    background: #fffdfd;
+    border-left: 3.5px solid var(--tc-crimson);
   }
 
   .tc-contact-left {
@@ -435,13 +465,13 @@
   }
 
   .tc-avatar-circle {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
+    width: 40px;
+    height: 40px;
     background: #fee2e2;
     color: var(--tc-crimson);
     font-weight: 800;
-    font-size: 15px;
+    font-size: 14px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -449,32 +479,34 @@
   }
 
   .tc-contact-name {
-    font-weight: 700;
+    font-weight: 800;
     font-size: 13.5px;
-    color: var(--tc-text-main);
-    margin: 0;
+    color: var(--tc-text-dark);
+    margin: 0 0 0.15rem;
     display: flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.45rem;
   }
 
   .tc-primary-star-badge {
     background: #fef3c7;
-    border: 1px solid #fde68a;
-    color: #92400e;
-    font-size: 9.5px;
+    color: #b45309;
+    font-size: 10px;
     font-weight: 700;
-    padding: 1px 6px;
+    padding: 1.5px 6px;
     border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
   }
 
   .tc-contact-meta {
-    font-size: 11px;
+    font-size: 11.5px;
     color: var(--tc-text-muted);
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    margin-top: 2px;
+    gap: 0.45rem;
+    flex-wrap: wrap;
   }
 
   .tc-actions-group {
@@ -484,84 +516,79 @@
   }
 
   .btn-icon-tc {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
     border-radius: 6px;
     border: 1px solid #e5e7eb;
     background: #ffffff;
-    color: #4b5563;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 13px;
+    color: #4b5563;
     text-decoration: none;
-    transition: all 0.15s ease;
     cursor: pointer;
+    transition: all 0.15s ease;
   }
 
   .btn-icon-tc:hover {
     background: #f9fafb;
-    color: #111827;
+    border-color: #d1d5db;
   }
 
-  .btn-icon-tc.text-danger:hover {
-    background: #fee2e2;
-    border-color: #fca5a5;
-    color: #b91c1c !important;
-  }
-
-  /* "What happens when you send an SOS" Card */
+  /* What happens when you send an SOS Card */
   .tc-sos-explainer-card {
     background: #ffffff;
     border: 1px solid var(--tc-border);
-    border-radius: 16px;
-    padding: 1.35rem 1.5rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    border-radius: 18px;
+    padding: 1.25rem 1.5rem;
+    margin-top: 1.25rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
   }
 
   .tc-explainer-title {
     font-weight: 800;
     font-size: 14.5px;
-    color: var(--tc-text-main);
+    color: var(--tc-text-dark);
     margin: 0 0 1rem;
   }
 
   .tc-explainer-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
+    gap: 0.85rem;
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 680px) {
     .tc-explainer-grid {
       grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
     }
   }
 
   .tc-step-item {
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
+    align-items: flex-start;
   }
 
   .tc-step-icon-box {
-    width: 34px;
-    height: 34px;
-    background: #fee2e2;
+    width: 36px;
+    height: 36px;
+    background: var(--tc-pink-soft);
+    border: 1px solid var(--tc-pink-border);
     border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--tc-crimson);
-    font-size: 14px;
-    margin-bottom: 0.35rem;
+    margin-bottom: 0.65rem;
   }
 
   .tc-step-h4 {
-    font-weight: 700;
-    font-size: 12.5px;
-    color: var(--tc-text-main);
-    margin: 0;
+    font-weight: 800;
+    font-size: 13px;
+    color: var(--tc-text-dark);
+    margin: 0 0 0.2rem;
   }
 
   .tc-step-desc {
@@ -571,23 +598,24 @@
     margin: 0;
   }
 
-  /* 24/7 Helplines Card */
+  /* Official 24/7 Helplines Card */
   .tc-helplines-card {
     background: #ffffff;
     border: 1px solid var(--tc-border);
-    border-radius: 16px;
+    border-radius: 18px;
     padding: 1.15rem 1.5rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    margin-top: 1.25rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
   }
 
   .tc-helplines-head {
     font-weight: 800;
-    font-size: 13px;
-    color: var(--tc-text-main);
+    font-size: 13.5px;
+    color: var(--tc-text-dark);
+    margin-bottom: 0.75rem;
     display: flex;
     align-items: center;
-    gap: 0.35rem;
-    margin-bottom: 0.75rem;
+    gap: 0.45rem;
   }
 
   .tc-helplines-row {
@@ -596,7 +624,7 @@
     gap: 0.65rem;
   }
 
-  @media (max-width: 576px) {
+  @media (max-width: 680px) {
     .tc-helplines-row {
       grid-template-columns: repeat(2, 1fr);
     }
@@ -609,7 +637,7 @@
     background: #ffffff;
     border: 1px solid #fee2e2;
     border-radius: 8px;
-    padding: 0.45rem 0.75rem;
+    padding: 0.5rem 0.75rem;
     text-decoration: none;
     transition: all 0.15s ease;
   }
@@ -632,13 +660,13 @@
     font-weight: 600;
   }
 
-  /* RIGHT SECTION: ADD TO YOUR CIRCLE */
+  /* RIGHT COLUMN: ADD TO YOUR CIRCLE */
   .tc-add-card {
     background: #ffffff;
     border: 1px solid var(--tc-border);
-    border-radius: 16px;
-    padding: 1.4rem;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.03);
+    border-radius: 18px;
+    padding: 1.35rem 1.45rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.02);
     position: sticky;
     top: 90px;
   }
@@ -647,25 +675,26 @@
     display: flex;
     align-items: center;
     gap: 0.65rem;
-    margin-bottom: 0.35rem;
+    margin-bottom: 0.3rem;
   }
 
-  .tc-phone-icon-box {
+  .tc-add-head-icon {
     width: 32px;
     height: 32px;
-    background: #fee2e2;
+    background: var(--tc-pink-soft);
+    border: 1px solid var(--tc-pink-border);
     border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--tc-crimson);
-    font-size: 14px;
+    flex-shrink: 0;
   }
 
   .tc-add-title {
     font-weight: 800;
     font-size: 15px;
-    color: var(--tc-text-main);
+    color: var(--tc-text-dark);
     margin: 0;
   }
 
@@ -673,7 +702,7 @@
     font-size: 11.5px;
     color: var(--tc-text-muted);
     line-height: 1.45;
-    margin: 0 0 1rem;
+    margin: 0 0 0.95rem;
   }
 
   /* Segmented Nav Tabs */
@@ -714,22 +743,22 @@
   /* Form Elements */
   .tc-form-row {
     display: grid;
-    grid-template-columns: 1.2fr 1fr;
+    grid-template-columns: 1.15fr 1fr;
     gap: 0.65rem;
-    margin-bottom: 0.85rem;
+    margin-bottom: 0.8rem;
   }
 
   .tc-form-group {
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
-    margin-bottom: 0.85rem;
+    gap: 0.3rem;
+    margin-bottom: 0.8rem;
   }
 
   .tc-label {
     font-size: 11.5px;
     font-weight: 700;
-    color: var(--tc-text-main);
+    color: var(--tc-text-dark);
   }
 
   .tc-input {
@@ -739,7 +768,7 @@
     border-radius: 8px;
     padding: 0.45rem 0.75rem;
     font-size: 12px;
-    color: var(--tc-text-main);
+    color: var(--tc-text-dark);
     outline: none;
     transition: all 0.15s ease;
     background: #ffffff;
@@ -750,57 +779,75 @@
     box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.12);
   }
 
-  .tc-input-group {
+  /* Mobile Input with +91 Addon */
+  .tc-phone-group {
     display: flex;
-    align-items: center;
-  }
-
-  .tc-addon {
-    height: 38px;
-    background: #f9fafb;
     border: 1px solid #e5e7eb;
-    border-right: none;
-    border-radius: 8px 0 0 8px;
-    padding: 0.45rem 0.65rem;
-    font-size: 12px;
-    font-weight: 700;
-    color: #4b5563;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #ffffff;
+    transition: all 0.15s ease;
+  }
+
+  .tc-phone-group:focus-within {
+    border-color: var(--tc-crimson);
+    box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.12);
+  }
+
+  .tc-phone-addon {
+    background: #f9fafb;
+    border-right: 1px solid #e5e7eb;
+    padding: 0 0.65rem;
     display: flex;
     align-items: center;
+    font-weight: 700;
+    font-size: 12px;
+    color: #4b5563;
   }
 
-  .tc-input-addon {
-    border-radius: 0 8px 8px 0 !important;
+  .tc-phone-input {
+    border: none;
+    height: 38px;
+    padding: 0 0.75rem;
+    font-size: 12px;
+    width: 100%;
+    outline: none;
+    color: var(--tc-text-dark);
   }
 
-  .tc-help-hint {
-    font-size: 11px;
-    color: var(--tc-text-muted);
+  .tc-field-subtext {
+    font-size: 10.5px;
+    color: #9ca3af;
     margin-top: 0.25rem;
+    line-height: 1.35;
   }
 
-  .tc-optional-link {
+  .tc-toggle-link {
     font-size: 11.5px;
-    font-weight: 600;
     color: var(--tc-pink-text);
+    font-weight: 700;
     text-decoration: none;
     display: inline-flex;
     align-items: center;
-    gap: 0.25rem;
-    cursor: pointer;
+    gap: 0.3rem;
     margin-bottom: 0.85rem;
+    cursor: pointer;
   }
 
-  /* Make Primary Guardian Toggle Box */
+  .tc-toggle-link:hover {
+    text-decoration: underline;
+  }
+
+  /* Primary Toggle Card */
   .tc-primary-toggle-box {
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
+    background: #fffdf5;
+    border: 1px solid #fef3c7;
     border-radius: 10px;
     padding: 0.75rem 0.85rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 1.15rem;
+    margin-bottom: 1.1rem;
   }
 
   .tc-pt-text {
@@ -812,7 +859,7 @@
   .tc-pt-title {
     font-size: 12px;
     font-weight: 700;
-    color: var(--tc-text-main);
+    color: var(--tc-text-dark);
     display: flex;
     align-items: center;
     gap: 0.3rem;
@@ -824,7 +871,7 @@
     line-height: 1.35;
   }
 
-  /* Switch Toggle */
+  /* iOS Switch Toggle */
   .tc-switch {
     position: relative;
     display: inline-block;
@@ -881,7 +928,7 @@
     align-items: center;
     justify-content: center;
     gap: 0.4rem;
-    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.25);
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.28);
     cursor: pointer;
     transition: all 0.15s ease;
   }
@@ -890,19 +937,31 @@
     background: var(--tc-crimson-hover);
     color: #ffffff;
     transform: translateY(-1px);
-    box-shadow: 0 4px 14px rgba(220, 38, 38, 0.35);
+    box-shadow: 0 4px 14px rgba(220, 38, 38, 0.38);
+  }
+
+  /* SVG Icon Helpers */
+  .svg-icon {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    fill: currentColor;
+    flex-shrink: 0;
   }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="tc-page-outer">
+<div class="tc-container">
 
   <!-- 1. TOP HEADER -->
   <div class="tc-header">
     <div>
-      <div class="tc-pill-tag">
-        <i class="bi bi-shield-check"></i> Safety guardian network
+      <div class="tc-tag-pill">
+        <svg class="svg-icon" style="width:12px;height:12px;" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+        </svg>
+        Safety guardian network
       </div>
       <h1 class="tc-title">My Trusted Circle</h1>
       <p class="tc-subtitle">
@@ -912,25 +971,35 @@
 
     <div class="tc-header-actions">
       <button type="button" class="btn-fake-call" data-bs-toggle="modal" data-bs-target="#fakeCallModal">
-        <i class="bi bi-telephone"></i> Fake escape call
+        <svg class="svg-icon" style="width:13px;height:13px;" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-2.2 2.2a15.053 15.053 0 01-6.59-6.59l2.2-2.21a.96.96 0 00.25-1.01A11.36 11.36 0 018.57 3.9c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.52c0-.55-.45-1-.99-1z"/>
+        </svg>
+        Fake escape call
       </button>
       <button type="button" class="btn-reached-safely" data-bs-toggle="modal" data-bs-target="#safeCheckinModal">
-        <i class="bi bi-check-circle"></i> I reached safely
+        <svg class="svg-icon" style="width:13px;height:13px;" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+        </svg>
+        I reached safely
       </button>
     </div>
   </div>
 
-  <!-- 2. CIRCLE PROTECTION BANNER -->
+  <!-- 2. CIRCLE PROTECTION PROGRESS BANNER -->
   <div class="tc-protection-card">
     <!-- Left Meter -->
     <div class="tc-prot-left">
-      <div class="tc-gauge-ring">
-        <div class="tc-gauge-inner">{{ score }}%</div>
+      <div class="tc-gauge-wrap">
+        <svg class="tc-gauge-svg" viewBox="0 0 36 36">
+          <path class="tc-gauge-track" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+          <path class="tc-gauge-fill" stroke-dasharray="{{ score }}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+        </svg>
+        <div class="tc-gauge-text">{{ score }}%</div>
       </div>
       <div class="tc-prot-details">
         <div class="tc-prot-title-row">
           <h3 class="tc-prot-h3">Circle protection</h3>
-          <span class="tc-status-pill">{{ score_badge }}</span>
+          <span class="tc-status-pill {% if score >= 80 %}success{% elif score >= 40 %}warning{% endif %}">{{ score_badge }}</span>
         </div>
         <p class="tc-prot-sub">
           {% if contact_count == 0 %}
@@ -945,20 +1014,26 @@
     <!-- Center Checklist -->
     <div class="tc-checklist">
       <div class="tc-check-item">
-        <span class="tc-check-dot {% if contact_count >= 1 %}checked{% endif %}">
-          {% if contact_count >= 1 %}&#10003;{% endif %}
+        <span class="tc-check-circle {% if contact_count >= 1 %}checked{% endif %}">
+          {% if contact_count >= 1 %}
+          <svg style="width:10px;height:10px;" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+          {% endif %}
         </span>
         <span>Add a trusted contact</span>
       </div>
       <div class="tc-check-item">
-        <span class="tc-check-dot {% if primary_contact %}checked{% endif %}">
-          {% if primary_contact %}&#10003;{% endif %}
+        <span class="tc-check-circle {% if primary_contact %}checked{% endif %}">
+          {% if primary_contact %}
+          <svg style="width:10px;height:10px;" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+          {% endif %}
         </span>
         <span>Choose a primary guardian</span>
       </div>
       <div class="tc-check-item">
-        <span class="tc-check-dot {% if contact_count >= 2 %}checked{% endif %}">
-          {% if contact_count >= 2 %}&#10003;{% endif %}
+        <span class="tc-check-circle {% if contact_count >= 2 %}checked{% endif %}">
+          {% if contact_count >= 2 %}
+          <svg style="width:10px;height:10px;" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+          {% endif %}
         </span>
         <span>Add a second contact</span>
       </div>
@@ -968,15 +1043,24 @@
     <div class="tc-channel-stats">
       <div class="tc-stat-box">
         <span class="tc-stat-num">{{ sms_count }}</span>
-        <span class="tc-stat-lbl"><i class="bi bi-chat-text text-danger"></i> SMS</span>
+        <span class="tc-stat-lbl" style="color:var(--tc-crimson);">
+          <svg style="width:11px;height:11px;" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
+          SMS
+        </span>
       </div>
       <div class="tc-stat-box">
         <span class="tc-stat-num">{{ whatsapp_count }}</span>
-        <span class="tc-stat-lbl"><i class="bi bi-whatsapp text-success"></i> WhatsApp</span>
+        <span class="tc-stat-lbl" style="color:#16a34a;">
+          <svg style="width:11px;height:11px;" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2M12.05 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.72 20.28 11.92C20.28 16.46 16.58 20.15 12.04 20.15C10.56 20.15 9.11 19.76 7.85 19L7.55 18.83L4.43 19.65L5.26 16.61L5.06 16.29C4.24 15 3.8 13.47 3.8 11.91C3.81 7.37 7.5 3.67 12.05 3.67M9.53 7.34C9.36 7.34 9.09 7.4 8.87 7.65C8.65 7.89 8.02 8.48 8.02 9.7C8.02 10.92 8.91 12.1 9.03 12.27C9.15 12.44 10.77 14.94 13.25 16C13.84 16.26 14.3 16.42 14.66 16.53C15.25 16.72 15.79 16.69 16.22 16.63C16.7 16.56 17.69 16.03 17.9 15.45C18.11 14.86 18.11 14.36 18.05 14.25C17.99 14.15 17.83 14.09 17.58 13.96C17.34 13.84 16.14 13.25 15.91 13.17C15.69 13.08 15.53 13.04 15.36 13.29C15.2 13.53 14.73 14.09 14.59 14.25C14.44 14.41 14.3 14.43 14.06 14.31C13.81 14.18 12.77 13.84 11.54 12.74C10.58 11.89 9.93 10.83 9.81 10.62C9.69 10.42 9.8 10.31 9.92 10.19C10.03 10.08 10.17 9.9 10.3 9.75C10.42 9.61 10.46 9.5 10.54 9.34C10.63 9.17 10.59 9.03 10.53 8.91C10.46 8.78 9.99 7.62 9.79 7.15C9.6 6.69 9.41 6.75 9.26 6.75C9.12 6.74 8.96 6.74 8.8 6.74C8.63 6.74 8.36 6.8 8.14 7.05"/></svg>
+          WhatsApp
+        </span>
       </div>
       <div class="tc-stat-box">
         <span class="tc-stat-num">{{ location_count }}</span>
-        <span class="tc-stat-lbl"><i class="bi bi-geo-alt text-primary"></i> Live GPS</span>
+        <span class="tc-stat-lbl" style="color:#2563eb;">
+          <svg style="width:11px;height:11px;" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>
+          Live GPS
+        </span>
       </div>
     </div>
   </div>
@@ -985,7 +1069,7 @@
   <div class="tc-main-grid">
 
     <!-- LEFT COLUMN: GUARDIANS LIST + EXPLAINER + HELPLINES -->
-    <div class="tc-left-col">
+    <div>
 
       <!-- Guardians Section -->
       <div>
@@ -1006,18 +1090,24 @@
                 <h4 class="tc-contact-name">
                   {{ tc.display_name }}
                   {% if tc.is_primary %}
-                  <span class="tc-primary-star-badge"><i class="bi bi-star-fill me-1"></i>Primary</span>
+                  <span class="tc-primary-star-badge">
+                    <svg style="width:10px;height:10px;" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                    Primary
+                  </span>
                   {% endif %}
                 </h4>
                 <div class="tc-contact-meta">
                   <span>{{ tc.get_relation_display|default:tc.relation|title }}</span>
-                  &bull;
-                  <a href="tel:{{ tc.display_phone }}" class="text-decoration-none text-muted" title="Click to Call">
-                    <i class="bi bi-telephone text-danger me-1"></i>{{ tc.display_phone }}
+                  <span>&bull;</span>
+                  <a href="tel:{{ tc.display_phone }}" class="text-decoration-none text-muted" title="Call Contact">
+                    <svg class="svg-icon text-danger" style="width:11px;height:11px;vertical-align:-1px;" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-2.2 2.2a15.053 15.053 0 01-6.59-6.59l2.2-2.21a.96.96 0 00.25-1.01A11.36 11.36 0 018.57 3.9c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.52c0-.55-.45-1-.99-1z"/>
+                    </svg>
+                    {{ tc.display_phone }}
                   </a>
                   {% if tc.display_email %}
-                  &bull;
-                  <span><i class="bi bi-envelope me-1"></i>{{ tc.display_email }}</span>
+                  <span>&bull;</span>
+                  <span>{{ tc.display_email }}</span>
                   {% endif %}
                 </div>
               </div>
@@ -1025,31 +1115,42 @@
 
             <!-- Actions -->
             <div class="tc-actions-group">
-              <a href="{% url 'toggle_primary_contact' tc.pk %}" class="btn-icon-tc {% if tc.is_primary %}text-warning{% endif %}" title="{% if tc.is_primary %}Current Primary Guardian{% else %}Make Primary Guardian{% endif %}">
-                <i class="bi bi-star{% if tc.is_primary %}-fill{% endif %}"></i>
+              <a href="{% url 'toggle_primary_contact' tc.pk %}" class="btn-icon-tc" title="{% if tc.is_primary %}Current Primary Guardian{% else %}Make Primary Guardian{% endif %}" style="{% if tc.is_primary %}color:#d97706;border-color:#fcd34d;background:#fffbeb;{% endif %}">
+                <svg style="width:13px;height:13px;" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                </svg>
               </a>
-              <a href="{% url 'test_trusted_contact' tc.pk %}" class="btn-icon-tc text-primary" title="Test Connection Drill">
-                <i class="bi bi-broadcast"></i>
+              <a href="{% url 'test_trusted_contact' tc.pk %}" class="btn-icon-tc" title="Send Test Ping" style="color:#2563eb;">
+                <svg style="width:13px;height:13px;" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-1.46-1.87-2.35-4.23-2.35-6.8 0-6.08 4.92-11 11-11s11 4.92 11 11c0 2.57-.89 4.93-2.35 6.8l-.62-1.79C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9zm0 4c-2.76 0-5 2.24-5 5 0 1.25.46 2.4 1.22 3.3l1.44-1.44c-.42-.53-.66-1.19-.66-1.86 0-1.66 1.34-3 3-3s3 1.34 3 3c0 .67-.24 1.33-.66 1.86l1.44 1.44c.76-.9 1.22-2.05 1.22-3.3 0-2.76-2.24-5-5-5zm0 3c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                </svg>
               </a>
-              <a href="{% url 'remove_trusted_contact' tc.pk %}" class="btn-icon-tc text-danger" onclick="return confirm('Remove {{ tc.display_name }} from your Trusted Circle?');" title="Remove Contact">
-                <i class="bi bi-trash"></i>
+              <a href="{% url 'remove_trusted_contact' tc.pk %}" class="btn-icon-tc" onclick="return confirm('Remove {{ tc.display_name }} from your Trusted Circle?');" title="Remove" style="color:#dc2626;">
+                <svg style="width:13px;height:13px;" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                </svg>
               </a>
             </div>
           </div>
           {% endfor %}
         </div>
         {% else %}
-        <!-- Empty State (Matching Screenshot Pixel-for-Pixel) -->
+        <!-- Empty State (Matching Reference Screenshot Pixel-for-Pixel) -->
         <div class="tc-empty-card">
           <div class="tc-empty-icon-square">
-            <i class="bi bi-phone"></i>
+            <svg style="width:26px;height:26px;" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/>
+            </svg>
           </div>
           <h3 class="tc-empty-h4">No trusted contacts yet</h3>
           <p class="tc-empty-p">
             In an emergency every second counts. Add someone who should know where you are the moment you send an SOS.
           </p>
           <button type="button" class="btn-add-first-guardian" onclick="document.getElementById('tcNameInput').focus();">
-            <i class="bi bi-plus-lg"></i> Add first guardian
+            <svg style="width:13px;height:13px;" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+            </svg>
+            Add first guardian
           </button>
         </div>
         {% endif %}
@@ -1062,7 +1163,9 @@
           <!-- Step 1 -->
           <div class="tc-step-item">
             <div class="tc-step-icon-box">
-              <i class="bi bi-chat-text"></i>
+              <svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/>
+              </svg>
             </div>
             <h4 class="tc-step-h4">Instant SMS</h4>
             <p class="tc-step-desc">Every contact gets your exact GPS map link at the same time.</p>
@@ -1070,7 +1173,9 @@
           <!-- Step 2 -->
           <div class="tc-step-item">
             <div class="tc-step-icon-box">
-              <i class="bi bi-telephone"></i>
+              <svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-2.2 2.2a15.053 15.053 0 01-6.59-6.59l2.2-2.21a.96.96 0 00.25-1.01A11.36 11.36 0 018.57 3.9c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.52c0-.55-.45-1-.99-1z"/>
+              </svg>
             </div>
             <h4 class="tc-step-h4">Voice call</h4>
             <p class="tc-step-desc">Your primary guardian is called if nobody responds in 30 seconds.</p>
@@ -1078,7 +1183,9 @@
           <!-- Step 3 -->
           <div class="tc-step-item">
             <div class="tc-step-icon-box">
-              <i class="bi bi-geo-alt"></i>
+              <svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"/>
+              </svg>
             </div>
             <h4 class="tc-step-h4">Live map</h4>
             <p class="tc-step-desc">Your circle can follow your moving GPS path in real time.</p>
@@ -1086,7 +1193,9 @@
           <!-- Step 4 -->
           <div class="tc-step-item">
             <div class="tc-step-icon-box">
-              <i class="bi bi-shield-check"></i>
+              <svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+              </svg>
             </div>
             <h4 class="tc-step-h4">Safe arrival</h4>
             <p class="tc-step-desc">Tap "I reached safely" to reassure everyone with one tap.</p>
@@ -1097,7 +1206,10 @@
       <!-- Official 24/7 Helplines Card -->
       <div class="tc-helplines-card">
         <div class="tc-helplines-head">
-          <i class="bi bi-telephone-fill text-warning"></i> Official 24/7 helplines
+          <svg style="width:14px;height:14px;color:#d97706;" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-1 6h2v6h-2V7zm0 8h2v2h-2v-2z"/>
+          </svg>
+          Official 24/7 helplines
         </div>
         <div class="tc-helplines-row">
           <a href="tel:112" class="tc-helpline-btn">
@@ -1125,8 +1237,10 @@
     <div>
       <div class="tc-add-card">
         <div class="tc-add-head">
-          <div class="tc-phone-icon-box">
-            <i class="bi bi-phone"></i>
+          <div class="tc-add-head-icon">
+            <svg style="width:17px;height:17px;" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/>
+            </svg>
           </div>
           <h3 class="tc-add-title">Add to your circle</h3>
         </div>
@@ -1134,13 +1248,19 @@
           Add someone you trust. They will get SMS alerts and voice calls during an SOS.
         </p>
 
-        <!-- Tabs -->
+        <!-- Segmented Tabs -->
         <div class="tc-tabs-nav">
           <button type="button" class="tc-tab-btn active" id="tabBtnDirect" onclick="switchAddTab('direct')">
-            <i class="bi bi-person"></i> Direct contact
+            <svg style="width:13px;height:13px;" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>
+            Direct contact
           </button>
           <button type="button" class="tc-tab-btn" id="tabBtnSearch" onclick="switchAddTab('search')">
-            <i class="bi bi-search"></i> Search user
+            <svg style="width:13px;height:13px;" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+            </svg>
+            Search user
           </button>
         </div>
 
@@ -1150,19 +1270,15 @@
             {% csrf_token %}
             <input type="hidden" name="add_type" value="phone">
 
-            <!-- Full Name and Relationship -->
             <div class="tc-form-row">
-              <div class="tc-form-group">
+              <div>
                 <label class="tc-label">Full name *</label>
-                <input type="text" name="name" id="tcNameInput" class="tc-input" placeholder="e.g. Papa, Priya" required>
+                <input type="text" name="name" id="tcNameInput" class="tc-input" placeholder="e.g. Papa, Priya" required autocomplete="name">
               </div>
-              <div class="tc-form-group">
+              <div>
                 <label class="tc-label">Relationship *</label>
                 <select name="relation" class="tc-input" required>
                   <option value="family" selected>Family</option>
-                  <option value="parent">Parent</option>
-                  <option value="sibling">Sibling</option>
-                  <option value="spouse">Spouse</option>
                   <option value="friend">Friend</option>
                   <option value="colleague">Colleague</option>
                   <option value="neighbor">Neighbor</option>
@@ -1171,31 +1287,39 @@
               </div>
             </div>
 
-            <!-- Mobile Number -->
             <div class="tc-form-group">
               <label class="tc-label">Mobile number *</label>
-              <div class="tc-input-group">
-                <span class="tc-addon">+91</span>
-                <input type="tel" name="phone" class="tc-input tc-input-addon" placeholder="10-digit mobile number" required pattern="[0-9]{10}">
+              <div class="tc-phone-group">
+                <span class="tc-phone-addon">+91</span>
+                <input type="tel" name="phone" class="tc-phone-input" placeholder="10-digit mobile number" required pattern="[0-9]{10}" maxlength="10">
               </div>
-              <span class="tc-help-hint">Receives SMS alerts and voice calls during SOS.</span>
+              <span class="tc-field-subtext">Receives SMS alerts and voice calls during SOS.</span>
             </div>
 
-            <!-- Add Email (Optional) -->
+            <!-- Optional Email Link -->
             <div>
-              <span class="tc-optional-link" onclick="toggleEmailInput();">
-                <i class="bi bi-plus-lg"></i> Add email (optional)
-              </span>
-              <div id="optionalEmailWrap" style="display: none;" class="mb-3">
-                <input type="email" name="email" class="tc-input" placeholder="guardian@email.com">
-              </div>
+              <a href="javascript:void(0)" class="tc-toggle-link" onclick="toggleEmailInput()">
+                <svg style="width:11px;height:11px;" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                </svg>
+                Add email (optional)
+              </a>
             </div>
 
-            <!-- Make Primary Guardian Switch Box -->
+            <div id="optionalEmailWrap" style="display: none;" class="tc-form-group">
+              <label class="tc-label">Email address</label>
+              <input type="email" name="email" class="tc-input" placeholder="guardian@example.com">
+              <span class="tc-field-subtext">Used for detailed incident report delivery and backups.</span>
+            </div>
+
+            <!-- Make Primary Guardian Box -->
             <div class="tc-primary-toggle-box">
               <div class="tc-pt-text">
                 <div class="tc-pt-title">
-                  <i class="bi bi-bookmark text-warning"></i> Make primary guardian
+                  <svg style="width:13px;height:13px;color:#d97706;" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                  </svg>
+                  Make primary guardian
                 </div>
                 <div class="tc-pt-sub">
                   First to get the automated voice call and priority SMS.
@@ -1209,7 +1333,10 @@
 
             <!-- Submit Button -->
             <button type="submit" class="btn-submit-circle">
-              <i class="bi bi-plus-circle"></i> Add to circle
+              <svg style="width:14px;height:14px;" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+              </svg>
+              Add to circle
             </button>
           </form>
         </div>
@@ -1246,7 +1373,10 @@
             <div class="tc-primary-toggle-box">
               <div class="tc-pt-text">
                 <div class="tc-pt-title">
-                  <i class="bi bi-bookmark text-warning"></i> Make primary guardian
+                  <svg style="width:13px;height:13px;color:#d97706;" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                  </svg>
+                  Make primary guardian
                 </div>
                 <div class="tc-pt-sub">
                   First to get the automated voice call and priority SMS.
@@ -1259,7 +1389,10 @@
             </div>
 
             <button type="submit" class="btn-submit-circle">
-              <i class="bi bi-plus-circle"></i> Add to circle
+              <svg style="width:14px;height:14px;" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+              </svg>
+              Add to circle
             </button>
           </form>
         </div>
@@ -1278,7 +1411,10 @@
       <div id="fakeCallSetup">
         <div class="modal-header border-0 pb-0">
           <h5 class="modal-title fw-bold" id="fakeCallModalLabel">
-            <i class="bi bi-telephone-inbound text-danger me-2"></i>Trigger Fake Escape Call
+            <svg style="width:18px;height:18px;color:#dc2626;vertical-align:-2px;margin-right:6px;" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-2.2 2.2a15.053 15.053 0 01-6.59-6.59l2.2-2.21a.96.96 0 00.25-1.01A11.36 11.36 0 018.57 3.9c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.52c0-.55-.45-1-.99-1z"/>
+            </svg>
+            Trigger Fake Escape Call
           </h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
@@ -1301,7 +1437,10 @@
           </div>
           <div class="d-grid mt-4">
             <button type="button" class="btn btn-danger fw-bold py-2 rounded-3" onclick="startFakeCallCountdown();">
-              <i class="bi bi-telephone-outbound me-2"></i>Arm Escape Call
+              <svg style="width:15px;height:15px;vertical-align:-2px;margin-right:6px;" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-2.2 2.2a15.053 15.053 0 01-6.59-6.59l2.2-2.21a.96.96 0 00.25-1.01A11.36 11.36 0 018.57 3.9c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.52c0-.55-.45-1-.99-1z"/>
+              </svg>
+              Arm Escape Call
             </button>
           </div>
         </div>
@@ -1315,16 +1454,22 @@
           <small class="text-white-50">Mobile</small>
         </div>
         <div class="my-4">
-          <div style="width:90px; height:90px; border-radius:50%; background:rgba(255,255,255,0.1); border:2px solid rgba(255,255,255,0.25); display:inline-flex; align-items:center; justify-content:center; font-size:2.5rem; animation: pulse 1.5s infinite;">
-            <i class="bi bi-person-fill text-white"></i>
+          <div style="width:90px; height:90px; border-radius:50%; background:rgba(255,255,255,0.1); border:2px solid rgba(255,255,255,0.25); display:inline-flex; align-items:center; justify-content:center; font-size:2.5rem;">
+            <svg style="width:48px;height:48px;color:#ffffff;" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>
           </div>
         </div>
         <div class="d-flex justify-content-center gap-5 w-100">
           <button type="button" class="btn btn-danger rounded-circle p-3 shadow" style="width:64px; height:64px;" onclick="declineFakeCall();">
-            <i class="bi bi-telephone-x-fill fs-4 text-white"></i>
+            <svg style="width:24px;height:24px;color:#ffffff;" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11H7v-2h10v2z"/>
+            </svg>
           </button>
           <button type="button" class="btn btn-success rounded-circle p-3 shadow" style="width:64px; height:64px;" onclick="answerFakeCall();">
-            <i class="bi bi-telephone-fill fs-4 text-white"></i>
+            <svg style="width:24px;height:24px;color:#ffffff;" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-2.2 2.2a15.053 15.053 0 01-6.59-6.59l2.2-2.21a.96.96 0 00.25-1.01A11.36 11.36 0 018.57 3.9c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.52c0-.55-.45-1-.99-1z"/>
+            </svg>
           </button>
         </div>
       </div>
@@ -1338,7 +1483,10 @@
     <div class="modal-content border-0 shadow" style="border-radius:18px;">
       <div class="modal-header border-0 pb-0">
         <h5 class="modal-title fw-bold" id="safeCheckinModalLabel">
-          <i class="bi bi-check-circle-fill text-success me-2"></i>Send "I Reached Safely" Check-in
+          <svg style="width:18px;height:18px;color:#16a34a;vertical-align:-2px;margin-right:6px;" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+          </svg>
+          Send "I Reached Safely" Check-in
         </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
@@ -1354,7 +1502,10 @@
           </div>
           <div class="d-grid mt-3">
             <button type="submit" class="btn btn-danger fw-bold py-2 rounded-3">
-              <i class="bi bi-send me-1"></i> Send Safe Check-in Now
+              <svg style="width:15px;height:15px;vertical-align:-2px;margin-right:6px;" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+              </svg>
+              Send Safe Check-in Now
             </button>
           </div>
         </form>
@@ -1463,7 +1614,9 @@
     const ringing = document.getElementById('fakeCallRinging');
     ringing.innerHTML = `
       <div style="padding: 3rem 1rem;">
-        <i class="bi bi-telephone-fill text-success fs-1 mb-3"></i>
+        <svg style="width:48px;height:48px;color:#10b981;margin-bottom:1rem;" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-2.2 2.2a15.053 15.053 0 01-6.59-6.59l2.2-2.21a.96.96 0 00.25-1.01A11.36 11.36 0 018.57 3.9c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.52c0-.55-.45-1-.99-1z"/>
+        </svg>
         <h3 class="fw-bold mb-1">Call Connected</h3>
         <p class="text-white-50 small mb-4">00:12 &middot; Urgent call in progress</p>
         <button type="button" class="btn btn-danger rounded-pill px-4 py-2" onclick="declineFakeCall();">
