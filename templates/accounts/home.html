@@ -599,6 +599,21 @@ body {
   margin-bottom: 0 !important;
 }
 
+/* Suppress duplicate Bootstrap Icon font glyph pseudo-elements so only the clean SVG renders */
+.wrap i[class*="bi-"]::before,
+.ovl i[class*="bi-"]::before,
+#toast i[class*="bi-"]::before,
+.wrap i[class*="bi-"]::after,
+.ovl i[class*="bi-"]::after,
+#toast i[class*="bi-"]::after,
+.wrap i.bi::before,
+.ovl i.bi::before,
+#toast i.bi::before {
+  content: none !important;
+  display: none !important;
+}
+
+
 </style>
 {% endblock %}
 
